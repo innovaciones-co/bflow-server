@@ -3,9 +3,12 @@ package co.innovaciones.bflow_server.domain
 import jakarta.persistence.Column
 import jakarta.persistence.Entity
 import jakarta.persistence.EntityListeners
+import jakarta.persistence.FetchType
 import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import java.time.OffsetDateTime
@@ -15,9 +18,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Notes")
 @EntityListeners(AuditingEntityListener::class)
-class User {
+class Note {
 
     @Id
     @Column(
@@ -36,26 +39,15 @@ class User {
     )
     var id: Long? = null
 
-    @Column(nullable = false)
-    var firstName: String? = null
-
-    @Column(nullable = false)
-    var lastName: String? = null
-
     @Column(
         nullable = false,
-        unique = true
+        columnDefinition = "text"
     )
-    var username: String? = null
+    var body: String? = null
 
-    @Column(nullable = false)
-    var password: String? = null
-
-    @Column(
-        nullable = false,
-        unique = true
-    )
-    var email: String? = null
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    var job: Job? = null
 
     @CreatedDate
     @Column(

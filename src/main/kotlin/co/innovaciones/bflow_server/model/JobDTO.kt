@@ -24,19 +24,19 @@ class JobDTO {
     @Size(max = 255)
     var address: String? = null
 
-    @Size(max = 255)
-    var contract: String? = null
-
     var description: String? = null
 
     @NotNull
-    @Size(max = 255)
-    var buildingType: String? = null
+    var buildingType: BuildingType? = null
 
     @NotNull
     var client: Long? = null
 
     @NotNull
     var user: Long? = null
+
+    var notes: Set<NoteDTO>? = null
+
+    var files: Set<FileDTO>? = null
 
 }

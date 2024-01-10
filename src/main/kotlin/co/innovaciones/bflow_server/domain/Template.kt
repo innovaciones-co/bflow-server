@@ -15,9 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Templates")
 @EntityListeners(AuditingEntityListener::class)
-class User {
+class Template {
 
     @Id
     @Column(
@@ -36,26 +36,17 @@ class User {
     )
     var id: Long? = null
 
-    @Column(nullable = false)
-    var firstName: String? = null
-
-    @Column(nullable = false)
-    var lastName: String? = null
-
     @Column(
         nullable = false,
         unique = true
     )
-    var username: String? = null
-
-    @Column(nullable = false)
-    var password: String? = null
+    var name: String? = null
 
     @Column(
         nullable = false,
-        unique = true
+        columnDefinition = "text"
     )
-    var email: String? = null
+    var template: String? = null
 
     @CreatedDate
     @Column(

@@ -30,4 +30,6 @@ class TaskDTO {
 
     var supplier: Long? = null
 
+    var attachments: List<Long>? = null
+
 }

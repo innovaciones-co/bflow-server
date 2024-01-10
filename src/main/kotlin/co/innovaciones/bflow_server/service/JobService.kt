@@ -1,13 +1,18 @@
 package co.innovaciones.bflow_server.service
 
+import co.innovaciones.bflow_server.domain.File
 import co.innovaciones.bflow_server.domain.Job
+import co.innovaciones.bflow_server.domain.Note
+import co.innovaciones.bflow_server.model.FileDTO
 import co.innovaciones.bflow_server.model.JobDTO
+import co.innovaciones.bflow_server.model.NoteDTO
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.UserRepository
 import co.innovaciones.bflow_server.util.NotFoundException
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 
 
 @Service
@@ -17,6 +22,7 @@ class JobService(
     private val userRepository: UserRepository
 ) {
 
+    @Transactional(readOnly = true)
     fun findAll(): List<JobDTO> {
         val jobs = jobRepository.findAll(Sort.by("id"))
         return jobs.stream()
@@ -24,8 +30,9 @@ class JobService(
                 .toList()
     }
 
+    @Transactional(readOnly = true)
     fun `get`(id: Long): JobDTO = jobRepository.findById(id)
-            .map { job -> mapToDTO(job, JobDTO()) }
+            .map { job -> mapToDTO(job, JobDTO(), true) }
             .orElseThrow { NotFoundException() }
 
     fun create(jobDTO: JobDTO): Long {
@@ -45,19 +52,33 @@ class JobService(
         jobRepository.deleteById(id)
     }
 
-    private fun mapToDTO(job: Job, jobDTO: JobDTO): JobDTO {
+    private fun mapToDTO(job: Job, jobDTO: JobDTO, includeChildren: Boolean = false): JobDTO {
         jobDTO.id = job.id
         jobDTO.jobNumber = job.jobNumber
         jobDTO.name = job.name
         jobDTO.plannedStartDate = job.plannedStartDate
         jobDTO.plannedEndDate = job.plannedEndDate
         jobDTO.address = job.address
-        jobDTO.contract = job.contract
         jobDTO.description = job.description
         jobDTO.buildingType = job.buildingType
         jobDTO.client = job.client?.id
         jobDTO.user = job.user?.id
+        if (includeChildren) {
+            jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
+            jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()
+        }
         return jobDTO
+    }
+
+    private fun mapFileToDTO(file: File, fileDTO: FileDTO): FileDTO {
+        fileDTO.id = file.id
+        fileDTO.uri = file.uri
+        fileDTO.name = file.name
+        fileDTO.type = file.type
+        fileDTO.category = file.category
+        fileDTO.tag = file.tag
+        fileDTO.job = file.job?.id
+        return fileDTO
     }
 
     private fun mapToEntity(jobDTO: JobDTO, job: Job): Job {
@@ -66,7 +87,6 @@ class JobService(
         job.plannedStartDate = jobDTO.plannedStartDate
         job.plannedEndDate = jobDTO.plannedEndDate
         job.address = jobDTO.address
-        job.contract = jobDTO.contract
         job.description = jobDTO.description
         job.buildingType = jobDTO.buildingType
         val client = if (jobDTO.client == null) null else
@@ -77,6 +97,13 @@ class JobService(
                 .orElseThrow { NotFoundException("user not found") }
         job.user = user
         return job
+    }
+
+    private fun mapNoteToDTO(note: Note, noteDTO: NoteDTO): NoteDTO {
+        noteDTO.id = note.id
+        noteDTO.body = note.body
+        noteDTO.job = note.job?.id
+        return noteDTO
     }
 
     fun jobNumberExists(jobNumber: String?): Boolean =
