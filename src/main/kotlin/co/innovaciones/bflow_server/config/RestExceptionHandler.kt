@@ -31,8 +31,10 @@ class RestExceptionHandler {
     fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException):
             ResponseEntity<ErrorResponse> {
         val bindingResult: BindingResult = exception.bindingResult
+
         val fieldErrors: List<FieldError> = bindingResult.fieldErrors
                 .stream()
+
                 .map { error ->
                     var fieldError = FieldError()
                     fieldError.errorCode = error.code
@@ -46,6 +48,8 @@ class RestExceptionHandler {
         errorResponse.fieldErrors = fieldErrors
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
+
+
 
     @ExceptionHandler(ResponseStatusException::class)
     fun handleResponseStatus(exception: ResponseStatusException): ResponseEntity<ErrorResponse> {

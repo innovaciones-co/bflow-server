@@ -38,7 +38,7 @@ allOpen {
 }
 
 tasks.getByName<BootRun>("bootRun") {
-    environment["SPRING_PROFILES_ACTIVE"] = environment["SPRING_PROFILES_ACTIVE"] ?: "local"
+    environment.put("SPRING_PROFILES_ACTIVE", environment.get("SPRING_PROFILES_ACTIVE") ?: "local")
 }
 
 tasks.withType<KotlinCompile> {

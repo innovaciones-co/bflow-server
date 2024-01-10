@@ -1,9 +1,9 @@
 services:
-   postgres:
+  postgres:
     image: postgres:16.1
     environment:
-    - POSTGRES_DB=${DATABASE_DB}
-    - POSTGRES_USER=${DATABASE_USERNAME}
-    - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
+    - POSTGRES_DB=bflow-server
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=P4ssword!
     ports:
-    - 5433:${DATABASE_PORT}
+    - 5433:5432

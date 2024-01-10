@@ -8,6 +8,7 @@ import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.BindingResult
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -30,16 +31,31 @@ class UserResource(
     @GetMapping
     fun getAllUsers(): ResponseEntity<List<UserDTO>> = ResponseEntity.ok(userService.findAll())
 
+
+
     @GetMapping("/{id}")
     fun getUser(@PathVariable(name = "id") id: Long): ResponseEntity<UserDTO> =
             ResponseEntity.ok(userService.get(id))
 
-    @PostMapping
+
+
+
+    @PostMapping("")
     @ApiResponse(responseCode = "201")
-    fun createUser(@RequestBody @Valid userDTO: UserDTO): ResponseEntity<Long> {
+    fun createUser(@RequestBody @Valid userDTO: UserDTO,bindingResult: BindingResult): ResponseEntity<Any> {
+
+        if (bindingResult.hasErrors()) {
+            // Manejo de errores de validación
+            val errors = bindingResult.allErrors.map { it.defaultMessage }.joinToString()
+            return ResponseEntity.badRequest().body(errors)
+        }
+
         val createdId = userService.create(userDTO)
+
         return ResponseEntity(createdId, HttpStatus.CREATED)
     }
+
+
 
     @PutMapping("/{id}")
     fun updateUser(@PathVariable(name = "id") id: Long, @RequestBody @Valid userDTO: UserDTO):
@@ -54,5 +70,8 @@ class UserResource(
         userService.delete(id)
         return ResponseEntity.noContent().build()
     }
+
+
+
 
 }

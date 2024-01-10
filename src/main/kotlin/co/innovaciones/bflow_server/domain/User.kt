@@ -28,7 +28,7 @@ class User {
         name = "primary_sequence",
         sequenceName = "primary_sequence",
         allocationSize = 1,
-        initialValue = 10000
+        initialValue = 1
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
