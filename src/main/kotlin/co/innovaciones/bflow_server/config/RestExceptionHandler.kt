@@ -4,7 +4,6 @@ import co.innovaciones.bflow_server.model.ErrorResponse
 import co.innovaciones.bflow_server.model.FieldError
 import co.innovaciones.bflow_server.util.NotFoundException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
-import kotlin.streams.toList
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -34,9 +33,10 @@ class RestExceptionHandler {
         val fieldErrors: List<FieldError> = bindingResult.fieldErrors
                 .stream()
                 .map { error ->
-                    var fieldError = FieldError()
+                    val fieldError = FieldError()
                     fieldError.errorCode = error.code
                     fieldError.field = error.field
+                    fieldError.message = error.defaultMessage
                     fieldError
                 }
                 .toList()
@@ -44,6 +44,7 @@ class RestExceptionHandler {
         errorResponse.httpStatus = HttpStatus.BAD_REQUEST.value()
         errorResponse.exception = exception::class.simpleName
         errorResponse.fieldErrors = fieldErrors
+        errorResponse.message = "Invalid arguments"
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
