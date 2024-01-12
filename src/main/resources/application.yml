@@ -1,12 +1,13 @@
 spring:
+  config:
+    import: optional:file:.env[.properties]
   datasource:
-    url: ${JDBC_DATABASE_URL:jdbc:postgresql://localhost:5432/bflow-server}
-    username: ${JDBC_DATABASE_USERNAME:postgres}
-    password: ${JDBC_DATABASE_PASSWORD:<<YOUR_PASSWORD>>}
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
     dbcp2:
-      max-wait-millis: 30000
       validation-query: select 1
-      validation-query-timeout: 30
+      max-total: 5000
   jpa:
     hibernate:
       ddl-auto: update
@@ -20,6 +21,6 @@ spring:
           new_generator_mappings: true
   docker:
     compose:
-      lifecycle-management: start-only
+      lifecycle-management: none
 springdoc:
   pathsToMatch: /api/**
