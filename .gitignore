@@ -37,3 +37,4 @@ out/
 /.nb-gradle/
 
 .env
+.env.local
