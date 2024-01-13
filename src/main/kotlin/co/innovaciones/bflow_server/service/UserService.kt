@@ -63,4 +63,6 @@ class UserService(
     fun usernameExists(username: String?): Boolean =
             userRepository.existsByUsernameIgnoreCase(username)
 
+    fun emailExists(email: String?): Boolean = userRepository.existsByEmailIgnoreCase(email)
+
 }

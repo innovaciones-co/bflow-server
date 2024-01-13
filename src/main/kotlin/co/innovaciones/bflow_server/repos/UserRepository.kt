@@ -8,4 +8,6 @@ interface UserRepository : JpaRepository<User, Long> {
 
     fun existsByUsernameIgnoreCase(username: String?): Boolean
 
+    fun existsByEmailIgnoreCase(email: String?): Boolean
+
 }

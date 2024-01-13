@@ -3,18 +3,22 @@ package co.innovaciones.bflow_server.service
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.TaskDTO
 import co.innovaciones.bflow_server.repos.ContactRepository
+import co.innovaciones.bflow_server.repos.FileRepository
 import co.innovaciones.bflow_server.repos.StageRepository
 import co.innovaciones.bflow_server.repos.TaskRepository
 import co.innovaciones.bflow_server.util.NotFoundException
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 
 @Service
+@Transactional
 class TaskService(
     private val taskRepository: TaskRepository,
     private val stageRepository: StageRepository,
-    private val contactRepository: ContactRepository
+    private val contactRepository: ContactRepository,
+    private val fileRepository: FileRepository
 ) {
 
     fun findAll(): List<TaskDTO> {
@@ -55,6 +59,9 @@ class TaskService(
         taskDTO.activity = task.activity?.id
         taskDTO.parentTask = task.parentTask?.id
         taskDTO.supplier = task.supplier?.id
+        taskDTO.attachments = task.attachments?.stream()
+                ?.map { file -> file.id!! }
+                ?.toList()
         return taskDTO
     }
 
@@ -76,6 +83,12 @@ class TaskService(
                 contactRepository.findById(taskDTO.supplier!!)
                 .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
+        val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
+        if (attachments.size != (if (taskDTO.attachments == null) 0 else
+                taskDTO.attachments!!.size)) {
+            throw NotFoundException("one of attachments not found")
+        }
+        task.attachments = attachments.toMutableSet()
         return task
     }
 

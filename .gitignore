@@ -37,3 +37,6 @@ out/
 /.nb-gradle/
 
 .env
+.env.local
+
+**/.DS_Store

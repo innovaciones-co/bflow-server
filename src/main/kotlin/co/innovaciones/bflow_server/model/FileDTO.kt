@@ -4,28 +4,31 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 
-class UserDTO {
+class FileDTO {
 
     var id: Long? = null
 
     @NotNull
     @Size(max = 255)
-    var firstName: String? = null
+    var uuid: String? = null
+
+    var temporaryUrl: String? = null
+
+    @Size(max = 255)
+    var bucket: String? = null
 
     @NotNull
     @Size(max = 255)
-    var lastName: String? = null
+    var name: String? = null
+
+    @Size(max = 255)
+    var type: String? = null
 
     @NotNull
-    @Size(max = 255)
-    var username: String? = null
+    var category: FileCategory? = null
 
-    @NotNull
-    @Size(max = 255)
-    var password: String? = null
+    var tag: FileTag? = null
 
-    @NotNull
-    @Size(max = 255)
-    var email: String? = null
+    var job: Long? = null
 
 }

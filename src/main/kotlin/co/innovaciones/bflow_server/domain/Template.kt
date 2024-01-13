@@ -15,9 +15,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 
 @Entity
-@Table(name = "Users")
+@Table(name = "Templates")
 @EntityListeners(AuditingEntityListener::class)
-class User {
+class Template {
 
     @Id
     @Column(
@@ -25,37 +25,28 @@ class User {
         updatable = false
     )
     @SequenceGenerator(
-        name = "user_primary_sequence",
-        sequenceName = "user_primary_sequence",
+        name = "template_primary_sequence",
+        sequenceName = "template_primary_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "user_primary_sequence"
+        generator = "template_primary_sequence"
     )
     var id: Long? = null
 
-    @Column(nullable = false)
-    var firstName: String? = null
-
-    @Column(nullable = false)
-    var lastName: String? = null
-
     @Column(
         nullable = false,
         unique = true
     )
-    var username: String? = null
-
-    @Column(nullable = false)
-    var password: String? = null
+    var name: String? = null
 
     @Column(
         nullable = false,
-        unique = true
+        columnDefinition = "text"
     )
-    var email: String? = null
+    var template: String? = null
 
     @CreatedDate
     @Column(

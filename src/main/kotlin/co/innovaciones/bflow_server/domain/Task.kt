@@ -11,6 +11,8 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToMany
 import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToOne
 import jakarta.persistence.SequenceGenerator
@@ -74,6 +76,18 @@ class Task {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "supplier_id")
     var supplier: Contact? = null
+
+    @ManyToMany
+    @JoinTable(
+        name = "TaskAttachments",
+        joinColumns = [
+            JoinColumn(name = "taskId")
+        ],
+        inverseJoinColumns = [
+            JoinColumn(name = "fileId")
+        ]
+    )
+    var attachments: MutableSet<File>? = null
 
     @CreatedDate
     @Column(
