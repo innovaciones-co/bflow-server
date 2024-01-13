@@ -47,7 +47,10 @@ class File {
         nullable = false,
         unique = true
     )
-    var uri: String? = null
+    var uuid: String = ""
+
+    @Column(nullable = false)
+    var bucket: String = ""
 
     @Column(nullable = false)
     var name: String? = null
@@ -70,7 +73,6 @@ class File {
     @CreatedDate
     @Column(
         nullable = false,
-        updatable = false
     )
     var dateCreated: OffsetDateTime? = null
 

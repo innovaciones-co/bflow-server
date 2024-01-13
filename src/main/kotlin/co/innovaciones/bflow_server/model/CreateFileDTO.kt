@@ -2,27 +2,13 @@ package co.innovaciones.bflow_server.model
 
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import org.springframework.web.multipart.MultipartFile
 
-
-class FileDTO {
-
-    var id: Long? = null
-
-    @NotNull
-    @Size(max = 255)
-    var uuid: String? = null
-
-    var temporaryUrl: String? = null
-
-    @Size(max = 255)
-    var bucket: String? = null
+class CreateFileDTO {
 
     @NotNull
     @Size(max = 255)
     var name: String? = null
-
-    @Size(max = 255)
-    var type: String? = null
 
     @NotNull
     var category: FileCategory? = null
@@ -31,4 +17,11 @@ class FileDTO {
 
     var job: Long? = null
 
+    @NotNull
+    var file: MultipartFile? = null
+
+    @NotNull
+    var entity: FileEntity = FileEntity.JOB
+
 }
+

@@ -72,7 +72,7 @@ class JobService(
 
     private fun mapFileToDTO(file: File, fileDTO: FileDTO): FileDTO {
         fileDTO.id = file.id
-        fileDTO.uri = file.uri
+        fileDTO.uuid = file.uuid
         fileDTO.name = file.name
         fileDTO.type = file.type
         fileDTO.category = file.category

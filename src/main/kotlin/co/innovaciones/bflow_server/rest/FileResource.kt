@@ -1,27 +1,19 @@
 package co.innovaciones.bflow_server.rest
 
+import co.innovaciones.bflow_server.model.CreateFileDTO
 import co.innovaciones.bflow_server.model.FileDTO
 import co.innovaciones.bflow_server.service.FileService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.Valid
-import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 
 @RestController
 @RequestMapping(
-    value = ["/api/files"],
-    produces = [MediaType.APPLICATION_JSON_VALUE]
+    value = ["/api/files"], produces = [MediaType.APPLICATION_JSON_VALUE]
 )
 class FileResource(
     private val fileService: FileService
@@ -31,8 +23,15 @@ class FileResource(
     fun getAllFiles(): ResponseEntity<List<FileDTO>> = ResponseEntity.ok(fileService.findAll())
 
     @GetMapping("/{id}")
-    fun getFile(@PathVariable(name = "id") id: Long): ResponseEntity<FileDTO> =
-            ResponseEntity.ok(fileService.get(id))
+    fun getFile(@PathVariable(name = "id") id: Long): ResponseEntity<FileDTO> = ResponseEntity.ok(fileService.get(id))
+
+    @PostMapping("/upload")
+    @ApiResponse(responseCode = "201")
+    fun uploadFile(@ModelAttribute @Valid createFileDTO: CreateFileDTO): ResponseEntity<Long> {
+        val createdId = fileService.uploadObject(createFileDTO)
+
+        return ResponseEntity(createdId, HttpStatus.CREATED)
+    }
 
     @PostMapping
     @ApiResponse(responseCode = "201")
@@ -42,8 +41,7 @@ class FileResource(
     }
 
     @PutMapping("/{id}")
-    fun updateFile(@PathVariable(name = "id") id: Long, @RequestBody @Valid fileDTO: FileDTO):
-            ResponseEntity<Long> {
+    fun updateFile(@PathVariable(name = "id") id: Long, @RequestBody @Valid fileDTO: FileDTO): ResponseEntity<Long> {
         fileService.update(id, fileDTO)
         return ResponseEntity.ok(id)
     }

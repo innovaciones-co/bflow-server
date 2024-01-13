@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface FileRepository : JpaRepository<File, Long> {
 
-    fun existsByUriIgnoreCase(uri: String?): Boolean
+    fun existsByUuidIgnoreCase(uri: String?): Boolean
 
 }

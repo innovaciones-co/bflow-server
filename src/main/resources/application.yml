@@ -24,3 +24,11 @@ spring:
       lifecycle-management: none
 springdoc:
   pathsToMatch: /api/**
+
+aws:
+  s3:
+    access-key: ${STORAGE_ACCESS_KEY}
+    secret-key: ${STORAGE_SECRET_KEY}
+    region: ${STORAGE_REGION}
+    endpoint-url: ${STORAGE_ENDPOINT}
+    default-bucket: ${STORAGE_BUCKET}
