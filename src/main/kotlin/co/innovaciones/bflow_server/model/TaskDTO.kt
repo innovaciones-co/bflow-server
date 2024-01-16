@@ -24,12 +24,16 @@ class TaskDTO {
     @NotNull
     var status: TaskStatus? = null
 
-    var activity: Long? = null
+    @NotNull
+    var stage: TaskStage? = null
 
     var parentTask: Long? = null
 
     var supplier: Long? = null
 
     var attachments: List<Long>? = null
+
+    @NotNull
+    var job: Long? = null
 
 }

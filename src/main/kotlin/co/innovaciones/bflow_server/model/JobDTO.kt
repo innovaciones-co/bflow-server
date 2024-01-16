@@ -41,4 +41,8 @@ class JobDTO {
 
     var files: Set<FileDTO>? = null
 
+    var stage: TaskStage = TaskStage.SLAB_DOWN
+
+    var progress: Double = 0.0
+
 }

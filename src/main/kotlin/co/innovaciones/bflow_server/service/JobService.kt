@@ -6,6 +6,7 @@ import co.innovaciones.bflow_server.domain.Note
 import co.innovaciones.bflow_server.model.FileDTO
 import co.innovaciones.bflow_server.model.JobDTO
 import co.innovaciones.bflow_server.model.NoteDTO
+import co.innovaciones.bflow_server.model.TaskStage
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.UserRepository
@@ -63,6 +64,9 @@ class JobService(
         jobDTO.buildingType = job.buildingType
         jobDTO.client = job.client?.id
         jobDTO.user = job.user?.id
+        //TODO: Calculate stage and progress
+        jobDTO.stage = TaskStage.SLAB_DOWN
+        jobDTO.progress = 20.0
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()

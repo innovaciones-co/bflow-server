@@ -2,10 +2,7 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.TaskDTO
-import co.innovaciones.bflow_server.repos.ContactRepository
-import co.innovaciones.bflow_server.repos.FileRepository
-import co.innovaciones.bflow_server.repos.StageRepository
-import co.innovaciones.bflow_server.repos.TaskRepository
+import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
@@ -16,7 +13,7 @@ import org.springframework.stereotype.Service
 @Transactional
 class TaskService(
     private val taskRepository: TaskRepository,
-    private val stageRepository: StageRepository,
+    private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository
 ) {
@@ -48,7 +45,6 @@ class TaskService(
     fun delete(id: Long) {
         taskRepository.deleteById(id)
     }
-
     private fun mapToDTO(task: Task, taskDTO: TaskDTO): TaskDTO {
         taskDTO.id = task.id
         taskDTO.name = task.name
@@ -56,12 +52,13 @@ class TaskService(
         taskDTO.endDate = task.endDate
         taskDTO.progress = task.progress
         taskDTO.status = task.status
-        taskDTO.activity = task.activity?.id
+        taskDTO.stage = task.stage
         taskDTO.parentTask = task.parentTask?.id
         taskDTO.supplier = task.supplier?.id
         taskDTO.attachments = task.attachments?.stream()
-                ?.map { file -> file.id!! }
-                ?.toList()
+            ?.map { file -> file.id!! }
+            ?.toList()
+        taskDTO.job = task.job?.id
         return taskDTO
     }
 
@@ -71,16 +68,13 @@ class TaskService(
         task.endDate = taskDTO.endDate
         task.progress = taskDTO.progress
         task.status = taskDTO.status
-        val activity = if (taskDTO.activity == null) null else
-                stageRepository.findById(taskDTO.activity!!)
-                .orElseThrow { NotFoundException("activity not found") }
-        task.activity = activity
+        task.stage = taskDTO.stage
         val parentTask = if (taskDTO.parentTask == null) null else
-                taskRepository.findById(taskDTO.parentTask!!)
+            taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
         task.parentTask = parentTask
         val supplier = if (taskDTO.supplier == null) null else
-                contactRepository.findById(taskDTO.supplier!!)
+            contactRepository.findById(taskDTO.supplier!!)
                 .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
@@ -89,7 +83,11 @@ class TaskService(
             throw NotFoundException("one of attachments not found")
         }
         task.attachments = attachments.toMutableSet()
+        val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
+            .orElseThrow { NotFoundException("job not found") }
+        task.job = job
         return task
     }
+
 
 }

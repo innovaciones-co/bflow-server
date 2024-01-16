@@ -64,9 +64,6 @@ class Job {
     var client: Contact? = null
 
     @OneToMany(mappedBy = "job")
-    var activities: MutableSet<Stage>? = null
-
-    @OneToMany(mappedBy = "job")
     var purchaseOrders: MutableSet<PurchaseOrder>? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
