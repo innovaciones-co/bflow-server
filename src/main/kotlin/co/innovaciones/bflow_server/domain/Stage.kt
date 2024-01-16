@@ -29,14 +29,14 @@ class Stage {
         updatable = false
     )
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "stage_primary_sequence",
+        sequenceName = "stage_primary_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "stage_primary_sequence"
     )
     var id: Long? = null
 

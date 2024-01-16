@@ -27,7 +27,6 @@ class AwsConfig {
 
     @Bean
     fun s3Client(): S3Client {
-        println("Creating s3Client with ${endpointUrl}")
         return S3Client.builder()
             .region(Region.US_EAST_1)
             .endpointOverride(URI.create(endpointUrl))

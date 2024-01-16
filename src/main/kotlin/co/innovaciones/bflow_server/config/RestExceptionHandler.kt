@@ -4,6 +4,7 @@ import co.innovaciones.bflow_server.model.ErrorResponse
 import co.innovaciones.bflow_server.model.FieldError
 import co.innovaciones.bflow_server.util.NotFoundException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import jakarta.validation.ConstraintViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -11,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.context.request.WebRequest
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -45,6 +47,25 @@ class RestExceptionHandler {
         errorResponse.exception = exception::class.simpleName
         errorResponse.fieldErrors = fieldErrors
         errorResponse.message = "Invalid arguments"
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [ConstraintViolationException::class])
+    fun handleConstraintViolationExceptions(
+        exception: ConstraintViolationException
+    ): ResponseEntity<ErrorResponse> {
+        val errors = exception.constraintViolations.map { violation -> violation.message }
+        val fieldErrors: List<FieldError> = errors.stream().map { error ->
+            val fieldError = FieldError()
+            fieldError.message = error
+            fieldError
+        }.toList()
+        val errorResponse = ErrorResponse()
+        errorResponse.httpStatus = HttpStatus.BAD_REQUEST.value()
+        errorResponse.exception = exception::class.simpleName
+        errorResponse.fieldErrors = fieldErrors
+        errorResponse.message = "Invalid arguments"
+
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
