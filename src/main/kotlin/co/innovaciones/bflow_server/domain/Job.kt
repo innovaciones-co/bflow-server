@@ -79,6 +79,9 @@ class Job {
     @OneToMany(mappedBy = "job")
     var notes: MutableSet<Note>? = null
 
+    @OneToMany(mappedBy = "job")
+    var tasks: MutableSet<Task>? = null
+
     @CreatedDate
     @Column(
         nullable = false,

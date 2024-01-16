@@ -25,6 +25,16 @@ class TaskService(
                 .toList()
     }
 
+    fun findAllByJob(jobId: Long): List<TaskDTO> {
+        val job = jobRepository.findById(jobId)
+        if (job.isEmpty) return listOf()
+
+        val tasks = taskRepository.findAllByJob(job.get(), Sort.by( Sort.Direction.DESC, "id" ))
+        return tasks.stream()
+            .map { task -> mapToDTO(task, TaskDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): TaskDTO = taskRepository.findById(id)
             .map { task -> mapToDTO(task, TaskDTO()) }
             .orElseThrow { NotFoundException() }

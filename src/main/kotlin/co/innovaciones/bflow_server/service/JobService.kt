@@ -3,10 +3,8 @@ package co.innovaciones.bflow_server.service
 import co.innovaciones.bflow_server.domain.File
 import co.innovaciones.bflow_server.domain.Job
 import co.innovaciones.bflow_server.domain.Note
-import co.innovaciones.bflow_server.model.FileDTO
-import co.innovaciones.bflow_server.model.JobDTO
-import co.innovaciones.bflow_server.model.NoteDTO
-import co.innovaciones.bflow_server.model.TaskStage
+import co.innovaciones.bflow_server.domain.Task
+import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.UserRepository
@@ -64,9 +62,8 @@ class JobService(
         jobDTO.buildingType = job.buildingType
         jobDTO.client = job.client?.id
         jobDTO.user = job.user?.id
-        //TODO: Calculate stage and progress
-        jobDTO.stage = TaskStage.SLAB_DOWN
-        jobDTO.progress = 20.0
+        jobDTO.stage = calculateStage(job.tasks)
+        jobDTO.progress = calculateJobCompletionPercentage(job.tasks)
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()
@@ -112,5 +109,28 @@ class JobService(
 
     fun jobNumberExists(jobNumber: String?): Boolean =
             jobRepository.existsByJobNumberIgnoreCase(jobNumber)
+
+    private fun calculateJobCompletionPercentage(tasks : MutableSet<Task>?): Double {
+        val totalTasks = tasks?.size ?: 0
+        if (totalTasks == 0) {
+            return 0.0
+        }
+
+        val completedTasks = tasks!!.count { it.status == TaskStatus.COMPLETED }
+        return (completedTasks.toDouble() / totalTasks) * 100
+    }
+
+    private fun calculateStage(tasks : MutableSet<Task>?): TaskStage {
+        val totalTasks = tasks?.size ?: 0
+        if (totalTasks == 0) {
+            return TaskStage.SLAB_DOWN
+        }
+
+        val filteredTasks = tasks
+            ?.filter { it.status == TaskStatus.COMPLETED }
+            ?.sortedByDescending { it.lastUpdated }
+
+        return filteredTasks?.firstOrNull()?.stage ?: TaskStage.SLAB_DOWN
+    }
 
 }
