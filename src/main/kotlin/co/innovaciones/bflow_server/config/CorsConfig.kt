@@ -1,3 +1,4 @@
+
 package co.innovaciones.bflow_server.config
 
 import org.springframework.context.annotation.Bean;
@@ -20,3 +21,4 @@ class CorsConfig {
         return CorsFilter(source)
     }
 }
+

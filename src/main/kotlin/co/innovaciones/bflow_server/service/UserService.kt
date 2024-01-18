@@ -5,12 +5,14 @@ import co.innovaciones.bflow_server.model.UserDTO
 import co.innovaciones.bflow_server.repos.UserRepository
 import co.innovaciones.bflow_server.util.NotFoundException
 import org.springframework.data.domain.Sort
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val passwordEncoder: PasswordEncoder
 ) {
 
     fun findAll(): List<UserDTO> {
@@ -55,7 +57,7 @@ class UserService(
         user.firstName = userDTO.firstName
         user.lastName = userDTO.lastName
         user.username = userDTO.username
-        user.password = userDTO.password
+        user.password = passwordEncoder.encode(userDTO.password)
         user.email = userDTO.email
         return user
     }

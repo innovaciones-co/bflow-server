@@ -3,6 +3,7 @@ package co.innovaciones.bflow_server.rest
 import co.innovaciones.bflow_server.model.OrderItemDTO
 import co.innovaciones.bflow_server.service.OrderItemService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import java.lang.Void
 import org.springframework.http.HttpStatus
@@ -23,6 +24,8 @@ import org.springframework.web.bind.annotation.RestController
     value = ["/api/orderItems"],
     produces = [MediaType.APPLICATION_JSON_VALUE]
 )
+@SecurityRequirement(name = "bearer-jwt")
+@SecurityRequirement(name = "bearer-jwt")
 class OrderItemResource(
     private val orderItemService: OrderItemService
 ) {

@@ -1,17 +1,17 @@
 INSERT INTO Users (id, first_name, last_name, username, password, email, date_created, last_updated)
-VALUES ( 10000, 'John', 'Doe', 'john_doe', 'password123', 'john.doe@email.com', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
+VALUES ( 10000, 'John', 'Doe', 'john_doe', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'john.doe@email.com', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
 
 INSERT INTO Users (id, first_name, last_name, username, password, email, date_created, last_updated)
-VALUES ( 10001, 'Alice', 'Smith', 'alice_smith', 'securepass', 'alice.smith@email.com', '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z');
+VALUES ( 10001, 'Alice', 'Smith', 'alice_smith', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'alice.smith@email.com', '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z');
 
 INSERT INTO Users (id, first_name, last_name, username, password, email, date_created, last_updated)
-VALUES ( 10002, 'Bob', 'Johnson', 'bob_j', 'pass123', 'bob.johnson@email.com', '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z');
+VALUES ( 10002, 'Bob', 'Johnson', 'bob_j', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'bob.johnson@email.com', '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z');
 
 INSERT INTO Users (id, first_name, last_name, username, password, email, date_created, last_updated)
-VALUES ( 10003, 'Eva', 'Williams', 'eva_w', 'securepassword', 'eva.williams@email.com', '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z');
+VALUES ( 10003, 'Eva', 'Williams', 'eva_w', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'eva.williams@email.com', '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z');
 
 INSERT INTO Users (id, first_name, last_name, username, password, email, date_created, last_updated)
-VALUES ( 10004, 'Charlie', 'Brown', 'charlie_b', 'p@ssword', 'charlie.brown@email.com', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
+VALUES ( 10004, 'Charlie', 'Brown', 'charlie_b', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'charlie.brown@email.com', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
 
 INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
 VALUES (10000, 'John Doe', '123 Main St', 'john.doe@email.com', 'CLIENT', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
