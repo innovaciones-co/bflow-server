@@ -26,6 +26,10 @@ class UserService(
             .map { user -> mapToDTO(user, UserDTO()) }
             .orElseThrow { NotFoundException() }
 
+    fun `get`(username: String): UserDTO = userRepository.findByUsernameIgnoreCase(username)
+        .map { user -> mapToDTO(user, UserDTO()) }
+        .orElseThrow { NotFoundException() }
+
     fun create(userDTO: UserDTO): Long {
         val user = User()
         mapToEntity(userDTO, user)
@@ -50,6 +54,8 @@ class UserService(
         userDTO.username = user.username
         userDTO.password = user.password
         userDTO.email = user.email
+        userDTO.recoveryToken = user.recoveryToken
+        userDTO.tokenExpirationDate = user.tokenExpirationDate
         return userDTO
     }
 
@@ -59,6 +65,8 @@ class UserService(
         user.username = userDTO.username
         user.password = passwordEncoder.encode(userDTO.password)
         user.email = userDTO.email
+        user.recoveryToken = userDTO.recoveryToken
+        user.tokenExpirationDate = userDTO.tokenExpirationDate
         return user
     }
 

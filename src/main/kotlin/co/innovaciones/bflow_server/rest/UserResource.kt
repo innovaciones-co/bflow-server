@@ -1,11 +1,10 @@
 package co.innovaciones.bflow_server.rest
 
-import co.innovaciones.bflow_server.model.AuthenticationRequestDTO
-import co.innovaciones.bflow_server.model.AuthenticationResponseDTO
-import co.innovaciones.bflow_server.model.UserDTO
+import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.service.JwtTokenService
 import co.innovaciones.bflow_server.service.JwtUserDetailsService
 import co.innovaciones.bflow_server.service.UserService
+import co.innovaciones.bflow_server.util.NotFoundException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
@@ -26,6 +25,8 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
+import java.time.OffsetDateTime
+import java.util.UUID
 
 
 @RestController
@@ -49,6 +50,8 @@ class UserResource(
     @GetMapping("/{id}")
     fun getUser(@PathVariable(name = "id") id: Long): ResponseEntity<UserDTO> =
             ResponseEntity.ok(userService.get(id))
+
+
 
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
@@ -90,6 +93,28 @@ class UserResource(
         val authenticationResponseDTO = AuthenticationResponseDTO()
         authenticationResponseDTO.accessToken = jwtTokenService.generateToken(userDetails)
         return authenticationResponseDTO
+    }
+
+    @PostMapping("/recover-password")
+    fun recoverPassword(@RequestBody @Valid recoveryDTO : RecoveryDTO) : ResponseEntity<Long> {
+        try {
+            val username = recoveryDTO.username!!;
+            var userDTO = userService.get(username);
+            val token = UUID.randomUUID().toString();
+            userDTO.recoveryToken = token;
+            userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15);
+            userService.update(userDTO.id!!, userDTO)
+            //TODO: Send an email with the token
+            return ResponseEntity.ok(userDTO.id!!);
+        } catch (ex: NotFoundException) {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND)
+        }
+    }
+
+    @PostMapping("/create-new-password")
+    fun newPassword(@RequestBody @Valid newPassDTO: NewPassDTO) : ResponseEntity<Void> {
+        // TODO
+        return  ResponseEntity.noContent().build();
     }
 
 }

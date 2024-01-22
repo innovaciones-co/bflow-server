@@ -57,6 +57,12 @@ class User {
     )
     var email: String? = null
 
+    @Column
+    var recoveryToken: String? = null
+
+    @Column
+    var tokenExpirationDate: OffsetDateTime? = null
+
     @CreatedDate
     @Column(
         nullable = false,
