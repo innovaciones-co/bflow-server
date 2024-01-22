@@ -1,9 +1,6 @@
 package co.innovaciones.bflow_server.service
 
-import co.innovaciones.bflow_server.domain.File
-import co.innovaciones.bflow_server.domain.Job
-import co.innovaciones.bflow_server.domain.Note
-import co.innovaciones.bflow_server.domain.Task
+import co.innovaciones.bflow_server.domain.*
 import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.JobRepository
@@ -61,7 +58,7 @@ class JobService(
         jobDTO.description = job.description
         jobDTO.buildingType = job.buildingType
         jobDTO.client = job.client?.id
-        jobDTO.user = job.user?.id
+        jobDTO.user = job.user?.let{ user -> mapToDTO(user, UserDTO()) }
         jobDTO.stage = calculateStage(job.tasks)
         jobDTO.progress = calculateJobCompletionPercentage(job.tasks)
         if (includeChildren) {
@@ -69,6 +66,16 @@ class JobService(
             jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()
         }
         return jobDTO
+    }
+
+    private fun mapToDTO(user: User, userDTO: UserDTO): UserDTO {
+        userDTO.id = user.id
+        userDTO.firstName = user.firstName
+        userDTO.lastName = user.lastName
+        userDTO.username = user.username
+        userDTO.password = user.password
+        userDTO.email = user.email
+        return userDTO
     }
 
     private fun mapFileToDTO(file: File, fileDTO: FileDTO): FileDTO {
@@ -94,7 +101,7 @@ class JobService(
                 contactRepository.findById(jobDTO.client!!)
                 .orElseThrow { NotFoundException("client not found") }
         job.client = client
-        val user = if (jobDTO.user == null) null else userRepository.findById(jobDTO.user!!)
+        val user = if (jobDTO.user?.id == null) null else userRepository.findById(jobDTO.user!!.id!!)
                 .orElseThrow { NotFoundException("user not found") }
         job.user = user
         return job

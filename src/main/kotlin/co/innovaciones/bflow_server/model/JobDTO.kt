@@ -35,7 +35,7 @@ class JobDTO {
     var client: Long? = null
 
     @NotNull
-    var user: Long? = null
+    var user: UserDTO? = null
 
     var notes: Set<NoteDTO>? = null
 
