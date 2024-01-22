@@ -3,6 +3,7 @@ package co.innovaciones.bflow_server.rest
 import co.innovaciones.bflow_server.model.TaskDTO
 import co.innovaciones.bflow_server.service.TaskService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import java.lang.Void
 import org.springframework.http.HttpStatus
@@ -15,24 +16,30 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
 @RestController
 @RequestMapping(
-    value = ["/api/tasks"],
-    produces = [MediaType.APPLICATION_JSON_VALUE]
+    value = ["/api/tasks"], produces = [MediaType.APPLICATION_JSON_VALUE]
 )
+@SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
     private val taskService: TaskService
 ) {
 
     @GetMapping
-    fun getAllTasks(): ResponseEntity<List<TaskDTO>> = ResponseEntity.ok(taskService.findAll())
+    fun getAllTasks(@RequestParam(name = "job_id") jobId: Long?): ResponseEntity<List<TaskDTO>> {
+        if (jobId != null) {
+            return ResponseEntity.ok(taskService.findAllByJob(jobId))
+        }
+
+        return ResponseEntity.ok(taskService.findAll())
+    }
 
     @GetMapping("/{id}")
-    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskDTO> =
-            ResponseEntity.ok(taskService.get(id))
+    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskDTO> = ResponseEntity.ok(taskService.get(id))
 
     @PostMapping
     @ApiResponse(responseCode = "201")
@@ -42,8 +49,7 @@ class TaskResource(
     }
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskDTO):
-            ResponseEntity<Long> {
+    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskDTO): ResponseEntity<Long> {
         taskService.update(id, taskDTO)
         return ResponseEntity.ok(id)
     }

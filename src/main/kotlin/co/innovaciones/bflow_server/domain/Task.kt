@@ -1,12 +1,28 @@
 package co.innovaciones.bflow_server.domain
 
+import co.innovaciones.bflow_server.model.TaskStage
 import co.innovaciones.bflow_server.model.TaskStatus
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.JoinTable
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToOne
+import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDate
-import java.time.OffsetDateTime
 
 
 @Entity
@@ -47,9 +63,9 @@ class Task {
     @Enumerated(EnumType.STRING)
     var status: TaskStatus? = null
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "activity_id")
-    var activity: Stage? = null
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var stage: TaskStage? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
@@ -73,6 +89,13 @@ class Task {
         ]
     )
     var attachments: MutableSet<File>? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "job_id",
+        nullable = false
+    )
+    var job: Job? = null
 
     @CreatedDate
     @Column(

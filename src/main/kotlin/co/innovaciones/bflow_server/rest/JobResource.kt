@@ -3,6 +3,7 @@ package co.innovaciones.bflow_server.rest
 import co.innovaciones.bflow_server.model.JobDTO
 import co.innovaciones.bflow_server.service.JobService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*
     value = ["/api/jobs"],
     produces = [MediaType.APPLICATION_JSON_VALUE]
 )
+@SecurityRequirement(name = "bearer-jwt")
 class JobResource(
     private val jobService: JobService
 ) {

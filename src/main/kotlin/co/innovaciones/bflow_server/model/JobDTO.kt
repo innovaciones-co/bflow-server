@@ -35,10 +35,14 @@ class JobDTO {
     var client: Long? = null
 
     @NotNull
-    var user: Long? = null
+    var user: UserDTO? = null
 
     var notes: Set<NoteDTO>? = null
 
     var files: Set<FileDTO>? = null
+
+    var stage: TaskStage = TaskStage.SLAB_DOWN
+
+    var progress: Double = 0.0
 
 }

@@ -4,6 +4,7 @@ import co.innovaciones.bflow_server.model.CreateFileDTO
 import co.innovaciones.bflow_server.model.FileDTO
 import co.innovaciones.bflow_server.service.FileService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
+import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -15,6 +16,7 @@ import org.springframework.web.bind.annotation.*
 @RequestMapping(
     value = ["/api/files"], produces = [MediaType.APPLICATION_JSON_VALUE]
 )
+@SecurityRequirement(name = "bearer-jwt")
 class FileResource(
     private val fileService: FileService
 ) {
