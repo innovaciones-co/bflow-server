@@ -1,7 +1,11 @@
 package co.innovaciones.bflow_server.service
 
+import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
+import co.innovaciones.bflow_server.model.ContactDTO
+import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
 import co.innovaciones.bflow_server.model.TaskDTO
+import co.innovaciones.bflow_server.model.TaskReadDTO
 import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
@@ -18,34 +22,34 @@ class TaskService(
     private val fileRepository: FileRepository
 ) {
 
-    fun findAll(): List<TaskDTO> {
+    fun findAll(): List<TaskReadDTO> {
         val tasks = taskRepository.findAll(Sort.by("id"))
         return tasks.stream()
-                .map { task -> mapToDTO(task, TaskDTO()) }
+                .map { task -> mapToDTO(task, TaskReadDTO()) }
                 .toList()
     }
 
-    fun findAllByJob(jobId: Long): List<TaskDTO> {
+    fun findAllByJob(jobId: Long): List<TaskReadDTO> {
         val job = jobRepository.findById(jobId)
         if (job.isEmpty) return listOf()
 
         val tasks = taskRepository.findAllByJob(job.get(), Sort.by( Sort.Direction.DESC, "id" ))
         return tasks.stream()
-            .map { task -> mapToDTO(task, TaskDTO()) }
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
             .toList()
     }
 
-    fun `get`(id: Long): TaskDTO = taskRepository.findById(id)
-            .map { task -> mapToDTO(task, TaskDTO()) }
+    fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
             .orElseThrow { NotFoundException() }
 
-    fun create(taskDTO: TaskDTO): Long {
+    fun create(taskDTO: TaskCreateUpdateDTO): Long {
         val task = Task()
         mapToEntity(taskDTO, task)
         return taskRepository.save(task).id!!
     }
 
-    fun update(id: Long, taskDTO: TaskDTO) {
+    fun update(id: Long, taskDTO: TaskCreateUpdateDTO) {
         val task = taskRepository.findById(id)
                 .orElseThrow { NotFoundException() }
         mapToEntity(taskDTO, task)
@@ -64,11 +68,16 @@ class TaskService(
         taskDTO.status = task.status
         taskDTO.stage = task.stage
         taskDTO.parentTask = task.parentTask?.id
-        taskDTO.supplier = task.supplier?.id
         taskDTO.attachments = task.attachments?.stream()
             ?.map { file -> file.id!! }
             ?.toList()
         taskDTO.job = task.job?.id
+        return taskDTO
+    }
+
+    private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
+        mapToDTO(task, taskDTO as TaskDTO)
+        taskDTO.supplier = task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }
         return taskDTO
     }
 
@@ -83,10 +92,6 @@ class TaskService(
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
         task.parentTask = parentTask
-        val supplier = if (taskDTO.supplier == null) null else
-            contactRepository.findById(taskDTO.supplier!!)
-                .orElseThrow { NotFoundException("supplier not found") }
-        task.supplier = supplier
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
         if (attachments.size != (if (taskDTO.attachments == null) 0 else
                 taskDTO.attachments!!.size)) {
@@ -99,5 +104,22 @@ class TaskService(
         return task
     }
 
+    private fun mapToEntity(taskCreateUpdateDTO: TaskCreateUpdateDTO, task: Task): Task {
+        mapToEntity(taskCreateUpdateDTO as TaskDTO, task)
+        val supplier = if (taskCreateUpdateDTO.supplier == null) null else
+            contactRepository.findById(taskCreateUpdateDTO.supplier!!)
+                .orElseThrow { NotFoundException("supplier not found") }
+        task.supplier = supplier
+        return task
+    }
+
+    private fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
+        contactDTO.id = contact.id
+        contactDTO.name = contact.name
+        contactDTO.address = contact.address
+        contactDTO.email = contact.email
+        contactDTO.type = contact.type
+        return contactDTO
+    }
 
 }

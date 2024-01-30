@@ -29,6 +29,9 @@ class UserDTO {
     @Size(max = 255)
     var email: String? = null
 
+    @NotNull
+    var role: UserRole? = null
+
     var recoveryToken: String? = null
 
     var tokenExpirationDate: OffsetDateTime? = null
