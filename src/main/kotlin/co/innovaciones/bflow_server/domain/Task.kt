@@ -75,9 +75,9 @@ class Task {
 
     @ManyToMany
     @JoinTable(
-        name = "TaskAttachments",
-        joinColumns = [JoinColumn(name = "taskId")],
-        inverseJoinColumns = [JoinColumn(name = "fileId")]
+        name = "task_attachments",
+        joinColumns = [JoinColumn(name = "task_id")],
+        inverseJoinColumns = [JoinColumn(name = "file_id")]
     )
     var attachments: MutableSet<File>? = null
 
