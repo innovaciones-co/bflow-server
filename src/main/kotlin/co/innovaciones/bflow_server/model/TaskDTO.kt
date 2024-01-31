@@ -34,4 +34,6 @@ open class TaskDTO {
     @NotNull
     var job: Long? = null
 
+    var description: String? = null
+
 }

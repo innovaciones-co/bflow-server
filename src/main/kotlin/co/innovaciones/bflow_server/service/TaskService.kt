@@ -59,11 +59,13 @@ class TaskService(
     fun delete(id: Long) {
         taskRepository.deleteById(id)
     }
+
     private fun mapToDTO(task: Task, taskDTO: TaskDTO): TaskDTO {
         taskDTO.id = task.id
         taskDTO.name = task.name
         taskDTO.startDate = task.startDate
         taskDTO.endDate = task.endDate
+        taskDTO.description = task.description
         taskDTO.progress = task.progress
         taskDTO.status = task.status
         taskDTO.stage = task.stage
@@ -78,6 +80,8 @@ class TaskService(
     private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
         mapToDTO(task, taskDTO as TaskDTO)
         taskDTO.supplier = task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }
+        taskDTO.bookingDate = task.callDate
+
         return taskDTO
     }
 
@@ -85,8 +89,8 @@ class TaskService(
         task.name = taskDTO.name
         task.startDate = taskDTO.startDate
         task.endDate = taskDTO.endDate
-        task.progress = taskDTO.progress
         task.status = taskDTO.status
+        task.progress = taskDTO.progress
         task.stage = taskDTO.stage
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)

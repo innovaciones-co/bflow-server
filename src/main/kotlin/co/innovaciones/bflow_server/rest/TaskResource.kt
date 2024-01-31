@@ -50,9 +50,9 @@ class TaskResource(
     }
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<Long> {
+    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<TaskReadDTO> {
         taskService.update(id, taskDTO)
-        return ResponseEntity.ok(id)
+        return ResponseEntity.ok(taskService.get(id))
     }
 
     @DeleteMapping("/{id}")
