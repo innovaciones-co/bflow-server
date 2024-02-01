@@ -1,13 +1,7 @@
 package co.innovaciones.bflow_server.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.SequenceGenerator
-import jakarta.persistence.Table
+import co.innovaciones.bflow_server.model.UserRole
+import jakarta.persistence.*
 import java.time.OffsetDateTime
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -56,6 +50,10 @@ class User {
         unique = true
     )
     var email: String? = null
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    var role: UserRole? = null
 
     @Column
     var recoveryToken: String? = null

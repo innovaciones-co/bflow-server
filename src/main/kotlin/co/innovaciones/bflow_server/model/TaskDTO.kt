@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
-class TaskDTO {
+open class TaskDTO {
 
     var id: Long? = null
 
@@ -29,11 +29,11 @@ class TaskDTO {
 
     var parentTask: Long? = null
 
-    var supplier: Long? = null
-
     var attachments: List<Long>? = null
 
     @NotNull
     var job: Long? = null
+
+    var description: String? = null
 
 }

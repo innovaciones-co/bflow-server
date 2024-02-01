@@ -1,6 +1,7 @@
 package co.innovaciones.bflow_server.rest
 
-import co.innovaciones.bflow_server.model.TaskDTO
+import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
+import co.innovaciones.bflow_server.model.TaskReadDTO
 import co.innovaciones.bflow_server.service.TaskService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -30,7 +31,7 @@ class TaskResource(
 ) {
 
     @GetMapping
-    fun getAllTasks(@RequestParam(name = "job_id") jobId: Long?): ResponseEntity<List<TaskDTO>> {
+    fun getAllTasks(@RequestParam(name = "job_id") jobId: Long?): ResponseEntity<List<TaskReadDTO>> {
         if (jobId != null) {
             return ResponseEntity.ok(taskService.findAllByJob(jobId))
         }
@@ -39,19 +40,19 @@ class TaskResource(
     }
 
     @GetMapping("/{id}")
-    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskDTO> = ResponseEntity.ok(taskService.get(id))
+    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskReadDTO> = ResponseEntity.ok(taskService.get(id))
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    fun createTask(@RequestBody @Valid taskDTO: TaskDTO): ResponseEntity<Long> {
+    fun createTask(@RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<Long> {
         val createdId = taskService.create(taskDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskDTO): ResponseEntity<Long> {
+    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<TaskReadDTO> {
         taskService.update(id, taskDTO)
-        return ResponseEntity.ok(id)
+        return ResponseEntity.ok(taskService.get(id))
     }
 
     @DeleteMapping("/{id}")
