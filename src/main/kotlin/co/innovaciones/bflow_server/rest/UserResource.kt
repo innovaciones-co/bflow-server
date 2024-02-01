@@ -99,7 +99,7 @@ class UserResource(
     fun recoverPassword(@RequestBody @Valid recoveryDTO : RecoveryDTO) : ResponseEntity<Long> {
         try {
             val username = recoveryDTO.username!!;
-            var userDTO = userService.get(username);
+            val userDTO = userService.get(username);
             val token = UUID.randomUUID().toString();
             userDTO.recoveryToken = token;
             userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15);
