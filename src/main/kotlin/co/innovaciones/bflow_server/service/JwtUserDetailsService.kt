@@ -1,7 +1,6 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.model.JwtUserDetails
-import co.innovaciones.bflow_server.model.UsersRole
 import co.innovaciones.bflow_server.repos.UserRepository
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -23,7 +22,7 @@ class JwtUserDetailsService(
             throw UsernameNotFoundException("User $username not found")
         }
 
-        val authorities = listOf(SimpleGrantedAuthority(UsersRole.ADMIN.name))
+        val authorities = listOf(SimpleGrantedAuthority(user.get().role?.name))
         return JwtUserDetails(user.get().id, username, user.get().password, authorities)
     }
 

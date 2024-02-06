@@ -56,6 +56,7 @@ class UserService(
         userDTO.email = user.email
         userDTO.recoveryToken = user.recoveryToken
         userDTO.tokenExpirationDate = user.tokenExpirationDate
+        userDTO.role = user.role
         return userDTO
     }
 
@@ -67,6 +68,7 @@ class UserService(
         user.email = userDTO.email
         user.recoveryToken = userDTO.recoveryToken
         user.tokenExpirationDate = userDTO.tokenExpirationDate
+        user.role = userDTO.role
         return user
     }
 

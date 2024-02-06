@@ -6,6 +6,10 @@ enum class TaskStatus {
     CREATED,
     IN_PROGRESS,
     COMPLETED,
-    CANCELED
+    CANCELED,
+    SENT,
+    CONFIRMED,
+    DECLINED,
+    RESCHEDULE
 
 }
