@@ -104,6 +104,9 @@ class Task {
     @Column(nullable = false)
     var lastUpdated: OffsetDateTime? = null
 
+    @Column(nullable = true)
+    var order: Int? = null
+
     private fun updateStatus() {
         status = when {
             progress == 0.0 -> TaskStatus.CREATED

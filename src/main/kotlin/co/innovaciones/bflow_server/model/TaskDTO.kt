@@ -36,4 +36,7 @@ open class TaskDTO {
 
     var description: String? = null
 
+    @Size(min = 0, max = 1000)
+    var order: Int? = 0
+
 }
