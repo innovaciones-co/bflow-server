@@ -6,43 +6,19 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
-class JobDTO {
-
-    var id: Long? = null
-
-    @UniqueJobNumber
-    @NotNull
-    @Size(max = 255)
-    var jobNumber: String? = null
-
-    @Size(max = 255)
-    var name: String? = null
-
-    var plannedStartDate: LocalDate? = null
-
-    var plannedEndDate: LocalDate? = null
-
-    @NotNull
-    @Size(max = 255)
-    var address: String? = null
-
-    var description: String? = null
-
-    @NotNull
-    var buildingType: BuildingType? = null
+class JobWriteDTO : JobDTO() {
 
     @NotNull
     var client: Long? = null
 
     @NotNull
-    var user: UserDTO? = null
+    var user: Long? = null
 
-    var notes: Set<NoteDTO>? = null
+    @NotNull
+    var supervisor: Long? = null
 
-    var files: Set<FileDTO>? = null
+    var notes: Set<Long>? = null
 
-    var stage: TaskStage = TaskStage.SLAB_DOWN
-
-    var progress: Double = 0.0
+    var files: Set<Long>? = null
 
 }

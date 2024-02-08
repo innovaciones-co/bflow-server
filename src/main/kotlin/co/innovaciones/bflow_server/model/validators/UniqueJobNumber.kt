@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @Constraint(validatedBy = [UniqueJobNumberValidator::class])
 annotation class UniqueJobNumber(
-    val message: String = "JobNumber is already defined",
+    val message: String = "is already defined",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )
