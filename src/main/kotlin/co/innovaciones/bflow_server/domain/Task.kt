@@ -104,7 +104,7 @@ class Task {
     @Column(nullable = false)
     var lastUpdated: OffsetDateTime? = null
 
-    @Column(nullable = true)
+    @Column(name = "task_order", nullable = true)
     var order: Int? = null
 
     private fun updateStatus() {
