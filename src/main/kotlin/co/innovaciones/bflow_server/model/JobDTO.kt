@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.model
 
+import co.innovaciones.bflow_server.model.validators.OnCreate
 import co.innovaciones.bflow_server.model.validators.UniqueJobNumber
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
@@ -10,7 +11,7 @@ open class JobDTO {
 
     var id: Long? = null
 
-    @UniqueJobNumber
+    @UniqueJobNumber(groups = [OnCreate::class])
     @NotNull
     @Size(max = 255)
     var jobNumber: String? = null
