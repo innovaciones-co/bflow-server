@@ -11,7 +11,10 @@ INSERT INTO Users (id, first_name, last_name, username, password, email, role, d
 VALUES ( 10003, 'Eva', 'Williams', 'eva_w', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'eva.williams@email.com', 'ADMIN', '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z');
 
 INSERT INTO Users (id, first_name, last_name, username, password, email, role, date_created, last_updated)
-VALUES ( 10004, 'Charlie', 'Brown', 'charlie_b', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'charlie.brown@email.com', 'ADMIN', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
+VALUES ( 10004, 'Charlie', 'Brown', 'charlie_b', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'charlie.brown@email.com', 'SUPERVISOR', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
+
+INSERT INTO Users (id, first_name, last_name, username, password, email, role, date_created, last_updated)
+VALUES ( 10005, 'Alberto', 'Federico', 'alberto_f', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'afederico@email.com', 'SUPERVISOR', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
 
 INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
 VALUES (10000, 'John Doe', '123 Main St', 'john.doe@email.com', 'CLIENT', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
@@ -28,20 +31,20 @@ VALUES (10003, 'Eva Williams', '101 Elm St', 'eva.williams@email.com', 'CONTRACT
 INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
 VALUES (10004, 'Charlie Brown', '202 Maple St', 'charlie.brown@email.com', 'SUPPLIER', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
 
-INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated)
-VALUES (10000, 'J10001', 'Construction Project A', '2022-02-01', '2022-06-30', '123 Main St', 'A new building project', 'SINGLE_STOREY', 10000, 10000, '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (10000, 'J10001', 'Construction Project A', '2022-02-01', '2022-06-30', '123 Main St', 'A new building project', 'SINGLE_STOREY', 10000, 10000, '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z', '10005');
 
-INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated)
-VALUES (10001, 'J10002', 'Renovation Project B', '2022-03-15', '2022-08-30', '456 Oak St', 'Renovation of an existing property', 'RENOVATION', 10001, 10001, '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z');
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (10001, 'J10002', 'Renovation Project B', '2022-03-15', '2022-08-30', '456 Oak St', 'Renovation of an existing property', 'RENOVATION', 10001, 10001, '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z', '10005');
 
-INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated)
-VALUES (10002, 'J10003', 'Shop Construction C', '2022-04-01', '2022-09-15', '789 Pine St', 'Construction of a commercial shop', 'SHOP', 10002, 10002, '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z');
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (10002, 'J10003', 'Shop Construction C', '2022-04-01', '2022-09-15', '789 Pine St', 'Construction of a commercial shop', 'SHOP', 10002, 10002, '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z', '10004');
 
-INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated)
-VALUES (10003, 'J10004', 'Double Storey House D', '2022-05-10', '2022-11-30', '101 Elm St', 'Construction of a double storey house', 'DOUBLE_STOREY', 10003, 10003, '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z');
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (10003, 'J10004', 'Double Storey House D', '2022-05-10', '2022-11-30', '101 Elm St', 'Construction of a double storey house', 'DOUBLE_STOREY', 10003, 10003, '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z', '10005');
 
-INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated)
-VALUES (10004, 'J10005', 'Extension Project E', '2022-06-15', '2023-01-15', '202 Maple St', 'Building an extension to an existing property', 'EXTENSION', 10004, 10004, '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (10004, 'J10005', 'Extension Project E', '2022-06-15', '2023-01-15', '202 Maple St', 'Building an extension to an existing property', 'EXTENSION', 10004, 10004, '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z', '10005');
 
 -- Sample Insert Note 1
 INSERT INTO Notes (id, body, job_id, date_created, last_updated)

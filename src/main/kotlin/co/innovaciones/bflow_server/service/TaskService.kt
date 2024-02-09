@@ -74,6 +74,7 @@ class TaskService(
             ?.map { file -> file.id!! }
             ?.toList()
         taskDTO.job = task.job?.id
+        taskDTO.order = task.order
         return taskDTO
     }
 
@@ -105,6 +106,7 @@ class TaskService(
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
+        task.order = taskDTO.order
         return task
     }
 
