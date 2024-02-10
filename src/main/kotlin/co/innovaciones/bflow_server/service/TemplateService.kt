@@ -16,7 +16,8 @@ class TemplateService(
     private val taskRepository: TaskRepository,
     private val contactRepository: ContactRepository,
     private val jobRepository: JobRepository,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
+    private val jobService: JobService
 ) {
 
     fun findAll(): List<TemplateDTO> {
@@ -60,11 +61,12 @@ class TemplateService(
         return template
     }
 
-    fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
+    //fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
 
-    fun createTasks(id: Long, job: JobDTO) {
+    fun createTasks(id: Long, jobId: Long) {
+        val job = jobService.get(jobId)
         val template = templateRepository.findById(id)
-            .orElseThrow { throw NotFoundException("Template not found with id: $id") }
+            .orElseThrow { throw NotFoundException("Template with id $id not found") }
 
         val tasks = parseTemplateAndCreateTasks(template, job)
         taskRepository.saveAll(tasks)

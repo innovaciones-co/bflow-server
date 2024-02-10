@@ -1,6 +1,5 @@
 package co.innovaciones.bflow_server.rest
 
-import co.innovaciones.bflow_server.model.JobDTO
 import co.innovaciones.bflow_server.model.TemplateDTO
 import co.innovaciones.bflow_server.service.TemplateService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -59,11 +59,11 @@ class TemplateResource(
         return ResponseEntity.noContent().build()
     }
 
-    @PostMapping("/{id}")
-    @ApiResponse(responseCode = "202")
-    fun createTasksFromTemplate(@PathVariable(name = "id") id: Long, @RequestBody @Valid jobDTO: JobDTO): ResponseEntity<Void> {
-        templateService.createTasks(id, jobDTO)
-        return ResponseEntity.noContent().build()
+    @PostMapping("/{id}/tasks")
+    @ApiResponse(responseCode = "201")
+    fun createTasksFromTemplate(@PathVariable(name = "id") id: Long, @RequestParam jobId: Long): ResponseEntity<Void> {
+        templateService.createTasks(id, jobId)
+        return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 
 }
