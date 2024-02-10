@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.rest
 
+import co.innovaciones.bflow_server.model.JobDTO
 import co.innovaciones.bflow_server.model.TemplateDTO
 import co.innovaciones.bflow_server.service.TemplateService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -55,6 +56,13 @@ class TemplateResource(
     @ApiResponse(responseCode = "204")
     fun deleteTemplate(@PathVariable(name = "id") id: Long): ResponseEntity<Void> {
         templateService.delete(id)
+        return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{id}")
+    @ApiResponse(responseCode = "202")
+    fun createTasksFromTemplate(@PathVariable(name = "id") id: Long, @RequestBody @Valid jobDTO: JobDTO): ResponseEntity<Void> {
+        templateService.createTasks(id, jobDTO)
         return ResponseEntity.noContent().build()
     }
 

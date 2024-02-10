@@ -14,6 +14,11 @@ spring:
     open-in-view: false
     properties:
       hibernate:
+        jakarta:
+          persistence:
+            validation:
+              group:
+                pre-create: co.innovaciones.bflow_server.model.validators.OnCreate
         jdbc:
           lob:
             non_contextual_creation: true

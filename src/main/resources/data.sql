@@ -144,3 +144,272 @@ INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, 
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-10', 0, '2024-04-06', null, '2024-01-19 15:30:00.000000 +00:00', 10037, 10001, '2024-01-19 15:30:00.000000 +00:00', null, 10004, null, 'Task 37', 'PCI', 'CREATED');
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-15', 0, '2024-04-11', null, '2024-01-20 16:45:00.000000 +00:00', 10038, 10002, '2024-01-20 16:45:00.000000 +00:00', 10014, null, null, 'Task 38', 'PCI', 'CREATED');
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-25', 0, '2024-04-21', null, '2024-01-22 09:15:00.000000 +00:00', 10040, 10004, '2024-01-22 09:15:00.000000 +00:00', null, 10001, null, 'Task 40', 'PCI', 'CREATED');
+
+INSERT INTO templates (id, name, template, date_created, last_updated) VALUES (10001, 'Job Template', '[
+  {
+    "stage": "SLAB_DOWN",
+    "status": "CREATED",
+    "name": "Formwork Installation",
+    "description": null,
+    "supplier_id": 10002
+  },
+  {
+    "stage": "SLAB_DOWN",
+    "status": "CREATED",
+    "name": "Steel Reinforcement",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "SLAB_DOWN",
+    "status": "CREATED",
+    "name": "Slab Inspection",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PLATE_HEIGH",
+    "status": "CREATED",
+    "name": "Walls Construction",
+    "description": null,
+    "supplier_id": 10000
+  },
+  {
+    "stage": "PLATE_HEIGH",
+    "status": "CREATED",
+    "name": "Roof Trusses Installation",
+    "description": null,
+    "supplier_id": 10001
+  },
+  {
+    "stage": "ROOF_COVER",
+    "status": "CREATED",
+    "name": "Roof Covering",
+    "description": null,
+    "supplier_id": 10002
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Lock Up",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "CABINETS",
+    "status": "CREATED",
+    "name": "Cabinets Design",
+    "description": null,
+    "supplier_id": 10004
+  },
+  {
+    "stage": "CABINETS",
+    "status": "CREATED",
+    "name": "Cabinets Approval",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "CABINETS",
+    "status": "CREATED",
+    "name": "Cabinets Construction",
+    "description": null,
+    "supplier_id": 10004
+  },
+  {
+    "stage": "CABINETS",
+    "status": "CREATED",
+    "name": "Cabinets Installation",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "PCI Planning",
+    "description": null,
+    "supplier_id": 10000
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "PCI Inspection",
+    "description": null,
+    "supplier_id": 10001
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "PCI Approval",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Final Touches",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Project Completion",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Task 18",
+    "description": null,
+    "supplier_id": 10002
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Task 19",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Task 20",
+    "description": null,
+    "supplier_id": 10004
+  },
+  {
+    "stage": "SLAB_DOWN",
+    "status": "CREATED",
+    "name": "Foundation Excavation",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "SLAB_DOWN",
+    "status": "CREATED",
+    "name": "Foundation Pouring",
+    "description": null,
+    "supplier_id": 10001
+  },
+  {
+    "stage": "PLATE_HEIGH",
+    "status": "CREATED",
+    "name": "Frame Construction",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "ROOF_COVER",
+    "status": "CREATED",
+    "name": "Roof Framing",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "CABINETS",
+    "status": "CREATED",
+    "name": "Cabinet Installation",
+    "description": null,
+    "supplier_id": 10004
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Final Inspection",
+    "description": null,
+    "supplier_id": 10002
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "HVAC Installation",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PLATE_HEIGH",
+    "status": "CREATED",
+    "name": "Electrical Wiring",
+    "description": null,
+    "supplier_id": 10001
+  },
+  {
+    "stage": "ROOF_COVER",
+    "status": "CREATED",
+    "name": "Window Installation",
+    "description": null,
+    "supplier_id": 10001
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Exterior Painting",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Plumbing Installation",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Landscaping",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Task 33",
+    "description": null,
+    "supplier_id": 10002
+  },
+  {
+    "stage": "LOCK_UP",
+    "status": "CREATED",
+    "name": "Task 34",
+    "description": null,
+    "supplier_id": 10003
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Task 35",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Task 36",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Task 37",
+    "description": null,
+    "supplier_id": 10004
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Task 38",
+    "description": null,
+    "supplier_id": null
+  },
+  {
+    "stage": "PCI",
+    "status": "CREATED",
+    "name": "Task 40",
+    "description": null,
+    "supplier_id": 10001
+  }
+]', now(), now())
