@@ -76,9 +76,9 @@ class TemplateService(
         val mapper = jacksonObjectMapper()
         val templateTasks : List<TaskTemplateDTO>? = mapper.readValue(template.template!!)
 
-        val tasksDTO : List<TaskCreateUpdateDTO> = templateTasks?.let { taskList ->
+        val tasksDTO : List<TaskWriteDTO> = templateTasks?.let { taskList ->
             taskList.map { taskDefinition ->
-                TaskCreateUpdateDTO().apply{
+                TaskWriteDTO().apply{
                     name = taskDefinition.name
                     startDate = job.plannedStartDate
                     endDate = job.plannedEndDate
@@ -123,10 +123,10 @@ class TemplateService(
         return task
     }
 
-    private fun mapToEntity(taskCreateUpdateDTO: TaskCreateUpdateDTO, task: Task): Task {
-        mapToEntity(taskCreateUpdateDTO as TaskDTO, task)
-        val supplier = if (taskCreateUpdateDTO.supplier == null) null else
-            contactRepository.findById(taskCreateUpdateDTO.supplier!!)
+    private fun mapToEntity(taskWriteDTO: TaskWriteDTO, task: Task): Task {
+        mapToEntity(taskWriteDTO as TaskDTO, task)
+        val supplier = if (taskWriteDTO.supplier == null) null else
+            contactRepository.findById(taskWriteDTO.supplier!!)
                 .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
         return task

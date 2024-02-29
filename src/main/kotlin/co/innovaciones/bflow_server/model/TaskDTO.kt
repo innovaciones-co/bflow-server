@@ -1,10 +1,14 @@
 package co.innovaciones.bflow_server.model
 
+import co.innovaciones.bflow_server.model.validators.WithinParentDateRange
+import jakarta.validation.constraints.Max
+import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
+@WithinParentDateRange
 open class TaskDTO {
 
     var id: Long? = null
@@ -36,7 +40,8 @@ open class TaskDTO {
 
     var description: String? = null
 
-    @Size(min = 0, max = 1000)
-    var order: Int? = 0
+    @Min(0)
+    @Max(10000)
+    var order: Int = 0
 
 }
