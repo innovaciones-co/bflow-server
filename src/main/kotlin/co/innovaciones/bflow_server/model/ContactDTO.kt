@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.model
 
+import jakarta.validation.constraints.Email
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
@@ -18,6 +19,7 @@ class ContactDTO {
 
     @NotNull
     @Size(max = 255)
+    @Email
     var email: String? = null
 
     @NotNull

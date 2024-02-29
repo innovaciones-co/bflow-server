@@ -1,10 +1,11 @@
 package co.innovaciones.bflow_server.model
 
+import co.innovaciones.bflow_server.model.validators.EndDateGreaterThanStartDate
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
-
+@EndDateGreaterThanStartDate
 open class TaskDTO {
 
     var id: Long? = null
@@ -16,6 +17,7 @@ open class TaskDTO {
     @NotNull
     var startDate: LocalDate? = null
 
+    @NotNull
     var endDate: LocalDate? = null
 
     @NotNull
