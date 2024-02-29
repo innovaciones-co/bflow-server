@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -56,6 +57,13 @@ class TemplateResource(
     fun deleteTemplate(@PathVariable(name = "id") id: Long): ResponseEntity<Void> {
         templateService.delete(id)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/{id}/tasks")
+    @ApiResponse(responseCode = "201")
+    fun createTasksFromTemplate(@PathVariable(name = "id") id: Long, @RequestParam jobId: Long): ResponseEntity<Void> {
+        templateService.createTasks(id, jobId)
+        return ResponseEntity.status(HttpStatus.CREATED).build()
     }
 
 }

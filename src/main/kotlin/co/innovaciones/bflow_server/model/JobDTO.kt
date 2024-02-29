@@ -1,16 +1,17 @@
 package co.innovaciones.bflow_server.model
 
+import co.innovaciones.bflow_server.model.validators.OnCreate
 import co.innovaciones.bflow_server.model.validators.UniqueJobNumber
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
-class JobDTO {
+open class JobDTO {
 
     var id: Long? = null
 
-    @UniqueJobNumber
+    @UniqueJobNumber(groups = [OnCreate::class])
     @NotNull
     @Size(max = 255)
     var jobNumber: String? = null
@@ -31,17 +32,7 @@ class JobDTO {
     @NotNull
     var buildingType: BuildingType? = null
 
-    @NotNull
-    var client: Long? = null
-
-    @NotNull
-    var user: UserDTO? = null
-
-    var notes: Set<NoteDTO>? = null
-
-    var files: Set<FileDTO>? = null
-
-    var stage: TaskStage = TaskStage.SLAB_DOWN
+   var stage: TaskStage = TaskStage.SLAB_DOWN
 
     var progress: Double = 0.0
 

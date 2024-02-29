@@ -27,6 +27,7 @@ dependencies {
     implementation("software.amazon.awssdk:s3:2.23.2")
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("com.auth0:java-jwt:4.4.0")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.16.+")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     developmentOnly("org.springframework.boot:spring-boot-devtools")

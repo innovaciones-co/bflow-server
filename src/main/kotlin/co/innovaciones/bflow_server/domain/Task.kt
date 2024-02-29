@@ -20,7 +20,7 @@ class Task {
         nullable = false, updatable = false
     )
     @SequenceGenerator(
-        name = "task_primary_sequence", sequenceName = "task_primary_sequence", allocationSize = 1, initialValue = 10000
+        name = "task_primary_sequence", sequenceName = "task_primary_sequence", allocationSize = 1, initialValue = 10100
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE, generator = "task_primary_sequence"
@@ -103,6 +103,9 @@ class Task {
     @LastModifiedDate
     @Column(nullable = false)
     var lastUpdated: OffsetDateTime? = null
+
+    @Column(name = "task_order", nullable = true)
+    var order: Int? = null
 
     private fun updateStatus() {
         status = when {
