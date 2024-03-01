@@ -4,12 +4,12 @@ import jakarta.validation.Constraint
 import jakarta.validation.Payload
 import kotlin.reflect.KClass
 
-@Target(AnnotationTarget.FIELD, AnnotationTarget.PROPERTY_SETTER)
+@Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.RUNTIME)
 @MustBeDocumented
-@Constraint(validatedBy = [UniqueJobNumberValidator::class])
-annotation class UniqueJobNumber(
-    val message: String = "is already defined",
+@Constraint(validatedBy = [WithinParentDateRangeValidator::class])
+annotation class WithinParentDateRange(
+    val message: String = "must be between parent task dates",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

@@ -19,27 +19,27 @@ class JobService(
 ) {
 
     @Transactional(readOnly = true)
-    fun findAll(): List<JobDTO> {
+    fun findAll(): List<JobReadDTO> {
         val jobs = jobRepository.findAll(Sort.by("id"))
         return jobs.stream()
-                .map { job -> mapToDTO(job, JobDTO()) }
-                .toList()
+            .map { job -> mapToDTO(job, JobReadDTO()) }
+            .toList()
     }
 
     @Transactional(readOnly = true)
-    fun `get`(id: Long): JobDTO = jobRepository.findById(id)
-            .map { job -> mapToDTO(job, JobDTO(), true) }
-            .orElseThrow { NotFoundException() }
+    fun `get`(id: Long): JobReadDTO = jobRepository.findById(id)
+        .map { job -> mapToDTO(job, JobReadDTO(), true) }
+        .orElseThrow { NotFoundException() }
 
-    fun create(jobDTO: JobDTO): Long {
+    fun create(jobDTO: JobWriteDTO): Long {
         val job = Job()
         mapToEntity(jobDTO, job)
         return jobRepository.save(job).id!!
     }
 
-    fun update(id: Long, jobDTO: JobDTO) {
+    fun update(id: Long, jobDTO: JobWriteDTO) {
         val job = jobRepository.findById(id)
-                .orElseThrow { NotFoundException() }
+            .orElseThrow { NotFoundException() }
         mapToEntity(jobDTO, job)
         jobRepository.save(job)
     }
@@ -48,7 +48,7 @@ class JobService(
         jobRepository.deleteById(id)
     }
 
-    private fun mapToDTO(job: Job, jobDTO: JobDTO, includeChildren: Boolean = false): JobDTO {
+    private fun mapToDTO(job: Job, jobDTO: JobReadDTO, includeChildren: Boolean = false): JobReadDTO {
         jobDTO.id = job.id
         jobDTO.jobNumber = job.jobNumber
         jobDTO.name = job.name
@@ -57,15 +57,25 @@ class JobService(
         jobDTO.address = job.address
         jobDTO.description = job.description
         jobDTO.buildingType = job.buildingType
-        jobDTO.client = job.client?.id
-        jobDTO.user = job.user?.let{ user -> mapToDTO(user, UserDTO()) }
+        jobDTO.client = job.client?.let { client -> mapToDTO(client, ContactDTO()) }
+        jobDTO.user = job.user?.let { user -> mapToDTO(user, UserDTO()) }
         jobDTO.stage = calculateStage(job.tasks)
         jobDTO.progress = calculateJobCompletionPercentage(job.tasks)
+        jobDTO.supervisor = job.supervisor?.let { user -> mapToDTO(user, UserDTO()) }
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()
         }
         return jobDTO
+    }
+
+    private fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
+        contactDTO.id = contact.id
+        contactDTO.name = contact.name
+        contactDTO.address = contact.address
+        contactDTO.email = contact.email
+        contactDTO.type = contact.type
+        return contactDTO
     }
 
     private fun mapToDTO(user: User, userDTO: UserDTO): UserDTO {
@@ -89,7 +99,7 @@ class JobService(
         return fileDTO
     }
 
-    private fun mapToEntity(jobDTO: JobDTO, job: Job): Job {
+    private fun mapToEntity(jobDTO: JobWriteDTO, job: Job): Job {
         job.jobNumber = jobDTO.jobNumber
         job.name = jobDTO.name
         job.plannedStartDate = jobDTO.plannedStartDate
@@ -97,13 +107,13 @@ class JobService(
         job.address = jobDTO.address
         job.description = jobDTO.description
         job.buildingType = jobDTO.buildingType
-        val client = if (jobDTO.client == null) null else
-                contactRepository.findById(jobDTO.client!!)
+        job.client = if (jobDTO.client == null) null else
+            contactRepository.findById(jobDTO.client!!)
                 .orElseThrow { NotFoundException("client not found") }
-        job.client = client
-        val user = if (jobDTO.user?.id == null) null else userRepository.findById(jobDTO.user!!.id!!)
-                .orElseThrow { NotFoundException("user not found") }
-        job.user = user
+        job.supervisor = if (jobDTO.supervisor == null) null else userRepository.findById(jobDTO.supervisor!!)
+            .orElseThrow { NotFoundException("user not found") }
+        job.user = if (jobDTO.user == null) null else userRepository.findById(jobDTO.user!!)
+            .orElseThrow { NotFoundException("user not found") }
         return job
     }
 
@@ -115,9 +125,9 @@ class JobService(
     }
 
     fun jobNumberExists(jobNumber: String?): Boolean =
-            jobRepository.existsByJobNumberIgnoreCase(jobNumber)
+        jobRepository.existsByJobNumberIgnoreCase(jobNumber)
 
-    private fun calculateJobCompletionPercentage(tasks : MutableSet<Task>?): Double {
+    private fun calculateJobCompletionPercentage(tasks: MutableSet<Task>?): Double {
         val totalTasks = tasks?.size ?: 0
         if (totalTasks == 0) {
             return 0.0
@@ -127,7 +137,7 @@ class JobService(
         return (completedTasks.toDouble() / totalTasks) * 100
     }
 
-    private fun calculateStage(tasks : MutableSet<Task>?): TaskStage {
+    private fun calculateStage(tasks: MutableSet<Task>?): TaskStage {
         val totalTasks = tasks?.size ?: 0
         if (totalTasks == 0) {
             return TaskStage.SLAB_DOWN

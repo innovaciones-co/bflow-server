@@ -3,7 +3,7 @@ package co.innovaciones.bflow_server.service
 import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.ContactDTO
-import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
+import co.innovaciones.bflow_server.model.TaskWriteDTO
 import co.innovaciones.bflow_server.model.TaskDTO
 import co.innovaciones.bflow_server.model.TaskReadDTO
 import co.innovaciones.bflow_server.repos.*
@@ -43,13 +43,13 @@ class TaskService(
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .orElseThrow { NotFoundException() }
 
-    fun create(taskDTO: TaskCreateUpdateDTO): Long {
+    fun create(taskDTO: TaskWriteDTO): Long {
         val task = Task()
         mapToEntity(taskDTO, task)
         return taskRepository.save(task).id!!
     }
 
-    fun update(id: Long, taskDTO: TaskCreateUpdateDTO) {
+    fun update(id: Long, taskDTO: TaskWriteDTO) {
         val task = taskRepository.findById(id)
                 .orElseThrow { NotFoundException() }
         mapToEntity(taskDTO, task)
@@ -74,6 +74,7 @@ class TaskService(
             ?.map { file -> file.id!! }
             ?.toList()
         taskDTO.job = task.job?.id
+        taskDTO.order = if (task.order != null) task.order!! else 0
         return taskDTO
     }
 
@@ -111,13 +112,14 @@ class TaskService(
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
+        task.order = taskDTO.order
         return task
     }
 
-    private fun mapToEntity(taskCreateUpdateDTO: TaskCreateUpdateDTO, task: Task): Task {
-        mapToEntity(taskCreateUpdateDTO as TaskDTO, task)
-        val supplier = if (taskCreateUpdateDTO.supplier == null) null else
-            contactRepository.findById(taskCreateUpdateDTO.supplier!!)
+    private fun mapToEntity(taskWriteDTO: TaskWriteDTO, task: Task): Task {
+        mapToEntity(taskWriteDTO as TaskDTO, task)
+        val supplier = if (taskWriteDTO.supplier == null) null else
+            contactRepository.findById(taskWriteDTO.supplier!!)
                 .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
         return task

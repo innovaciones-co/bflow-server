@@ -23,7 +23,7 @@ class Job {
         name = "job_primary_sequence",
         sequenceName = "job_primary_sequence",
         allocationSize = 1,
-        initialValue = 10000
+        initialValue = 10050
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
@@ -72,6 +72,13 @@ class Job {
         nullable = false
     )
     var user: User? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supervisor_id",
+        nullable = false
+    )
+    var supervisor: User? = null
 
     @OneToMany(mappedBy = "job")
     var files: MutableSet<File>? = null
