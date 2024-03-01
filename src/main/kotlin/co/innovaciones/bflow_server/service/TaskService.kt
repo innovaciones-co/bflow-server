@@ -96,6 +96,12 @@ class TaskService(
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
+
+        if (parentTask != null){
+            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
+            val endDateIsValid = taskDTO.endDate!!.isBefore(parentTask.endDate)||taskDTO.endDate!!.isEqual(parentTask.endDate)
+        }
+
         task.parentTask = parentTask
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
         if (attachments.size != (if (taskDTO.attachments == null) 0 else

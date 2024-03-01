@@ -29,19 +29,21 @@ class RestExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException):
-            ResponseEntity<ErrorResponse> {
+    fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
         val bindingResult: BindingResult = exception.bindingResult
-        val fieldErrors: List<FieldError> = bindingResult.fieldErrors
-                .stream()
-                .map { error ->
-                    val fieldError = FieldError()
-                    fieldError.errorCode = error.code
-                    fieldError.field = error.field
-                    fieldError.message = error.defaultMessage
-                    fieldError
-                }
-                .toList()
+        var fieldErrors: List<FieldError> = bindingResult.fieldErrors.stream().map { error ->
+                val fieldError = FieldError()
+                fieldError.errorCode = error.code
+                fieldError.field = error.field
+                fieldError.message = error.defaultMessage
+                fieldError
+            }.toList()
+        fieldErrors = fieldErrors.plus(bindingResult.allErrors.stream().map { e ->
+            val fieldError = FieldError()
+            fieldError.message = e.defaultMessage
+            fieldError
+        }.toList())
+
         val errorResponse = ErrorResponse()
         errorResponse.httpStatus = HttpStatus.BAD_REQUEST.value()
         errorResponse.exception = exception::class.simpleName
@@ -80,8 +82,7 @@ class RestExceptionHandler {
 
     @ExceptionHandler(Throwable::class)
     @ApiResponse(
-        responseCode = "4xx/5xx",
-        description = "Error"
+        responseCode = "4xx/5xx", description = "Error"
     )
     fun handleThrowable(exception: Throwable): ResponseEntity<ErrorResponse> {
         exception.printStackTrace()
