@@ -1,11 +1,13 @@
 package co.innovaciones.bflow_server.model
 
 import co.innovaciones.bflow_server.model.validators.EndDateGreaterThanStartDate
+import co.innovaciones.bflow_server.model.validators.WithinJobParentDateRange
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 @EndDateGreaterThanStartDate
+@WithinJobParentDateRange
 open class TaskDTO {
 
     var id: Long? = null
