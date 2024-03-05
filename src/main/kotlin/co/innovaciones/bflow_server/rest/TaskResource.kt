@@ -2,6 +2,7 @@ package co.innovaciones.bflow_server.rest
 
 import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
 import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.service.EmailService
 import co.innovaciones.bflow_server.service.TaskService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
+import sibModel.TaskList
 
 
 @RestController
@@ -27,7 +29,8 @@ import org.springframework.web.bind.annotation.RestController
 )
 @SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val emailService: EmailService
 ) {
 
     @GetMapping
@@ -60,6 +63,17 @@ class TaskResource(
     fun deleteTask(@PathVariable(name = "id") id: Long): ResponseEntity<Void> {
         taskService.delete(id)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/send")
+    @ApiResponse(responseCode = "201")
+    fun sendEmailList(taskList: List<Long>): ResponseEntity<String> {
+        //con id llegar a los objetos, extraer la info hacia el correo.
+
+        val emailTo = "diegofelipere@gmail.com"
+
+        val emailSent = emailService.sendEmail()
+        return ResponseEntity(emailSent, HttpStatus.CREATED)
     }
 
 }
