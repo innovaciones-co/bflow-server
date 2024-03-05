@@ -15,7 +15,8 @@ import org.springframework.transaction.annotation.Transactional
 class JobService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val fileService: FileService
 ) {
 
     @Transactional(readOnly = true)
@@ -64,7 +65,7 @@ class JobService(
         jobDTO.supervisor = job.supervisor?.let { user -> mapToDTO(user, UserDTO()) }
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
-            jobDTO.files = job.files?.map { file -> mapFileToDTO(file, FileDTO()) }?.toSet()
+            jobDTO.files = job.files?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toSet()
         }
         return jobDTO
     }
@@ -86,17 +87,6 @@ class JobService(
         userDTO.password = user.password
         userDTO.email = user.email
         return userDTO
-    }
-
-    private fun mapFileToDTO(file: File, fileDTO: FileDTO): FileDTO {
-        fileDTO.id = file.id
-        fileDTO.uuid = file.uuid
-        fileDTO.name = file.name
-        fileDTO.type = file.type
-        fileDTO.category = file.category
-        fileDTO.tag = file.tag
-        fileDTO.job = file.job?.id
-        return fileDTO
     }
 
     private fun mapToEntity(jobDTO: JobWriteDTO, job: Job): Job {

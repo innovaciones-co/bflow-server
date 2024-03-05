@@ -9,7 +9,7 @@ import kotlin.reflect.KClass
 @MustBeDocumented
 @Constraint(validatedBy = [WithinParentDateRangeValidator::class])
 annotation class WithinParentDateRange(
-    val message: String = "must be between parent task dates",
+    val message: String = "Task must be between parent task dates",
     val groups: Array<KClass<*>> = [],
     val payload: Array<KClass<out Payload>> = []
 )

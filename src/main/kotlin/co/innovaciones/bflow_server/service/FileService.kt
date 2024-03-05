@@ -9,6 +9,7 @@ import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.TaskRepository
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -29,6 +30,7 @@ class FileService(
 
     @Value("\${aws.s3.default-bucket}")
     private val defaultBucket: String = ""
+    private val log = LoggerFactory.getLogger(this.javaClass)
 
     fun findAll(): List<FileDTO> {
         val files = fileRepository.findAll(Sort.by("id"))
@@ -74,7 +76,10 @@ class FileService(
         val reqBody = RequestBody.fromBytes(file.bytes)
         val key = UUID.randomUUID()
 
-        s3Service.uploadObject(getBucketFromType(createFileDTO.entity), key.toString(), reqBody)
+        log.debug("Uploading {}...", key)
+
+        val bucket = getBucketFromType(createFileDTO.entity)
+        s3Service.uploadObject(bucket, key.toString(), reqBody)
         val fileDTO = mapToDTO(key, createFileDTO, file)
 
         return this.create(fileDTO)
@@ -91,13 +96,13 @@ class FileService(
         fileDTO.category = createFileDTO.category
         fileDTO.type = file.contentType
         fileDTO.job = createFileDTO.job
-        fileDTO.temporaryUrl = s3Service.getTemporaryUrl(this.defaultBucket, fileDTO.uuid)
+        fileDTO.temporaryUrl = s3Service.getTemporaryUrl(getBucketFromType(createFileDTO.entity), fileDTO.uuid)
         fileDTO.bucket = getBucketFromType(createFileDTO.entity)
         fileDTO.tag = createFileDTO.tag
         return fileDTO
     }
 
-    private fun mapToDTO(`file`: File, fileDTO: FileDTO): FileDTO {
+    fun mapToDTO(`file`: File, fileDTO: FileDTO): FileDTO {
         fileDTO.id = file.id
         fileDTO.uuid = file.uuid
         fileDTO.name = file.name
@@ -105,7 +110,7 @@ class FileService(
         fileDTO.category = file.category
         fileDTO.tag = file.tag
         fileDTO.job = file.job?.id
-        fileDTO.temporaryUrl = s3Service.getTemporaryUrl(this.defaultBucket, fileDTO.uuid)
+        fileDTO.temporaryUrl = s3Service.getTemporaryUrl(file.bucket, fileDTO.uuid)
         fileDTO.bucket = file.bucket
         return fileDTO
     }

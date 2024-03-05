@@ -39,6 +39,15 @@ class TaskService(
             .toList()
     }
 
+    fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
+        val tasks = taskRepository.findByIdIn(ids)
+        return tasks.stream()
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
+            .toList()
+    }
+
+
+
     fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .orElseThrow { NotFoundException() }
@@ -97,11 +106,6 @@ class TaskService(
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
 
-        if (parentTask != null){
-            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
-            val endDateIsValid = taskDTO.endDate!!.isBefore(parentTask.endDate)||taskDTO.endDate!!.isEqual(parentTask.endDate)
-        }
-
         task.parentTask = parentTask
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
         if (attachments.size != (if (taskDTO.attachments == null) 0 else
@@ -112,6 +116,7 @@ class TaskService(
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
+        task.description = taskDTO.description
         task.order = taskDTO.order
         return task
     }

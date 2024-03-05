@@ -14,8 +14,8 @@ class WithinParentDateRangeValidator(
 
         if (parentTaskId != null) {
             val parentTask = taskService.get(parentTaskId)
-            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
-            val endDateIsValid = taskDTO.endDate!!.isBefore(parentTask.endDate)|| taskDTO.endDate!!.isEqual(parentTask.endDate)
+            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate) || taskDTO.startDate!!.isEqual(parentTask.startDate)
+            val endDateIsValid = taskDTO.endDate!!.isBefore(parentTask.endDate) || taskDTO.endDate!!.isEqual(parentTask.endDate)
 
            return startDateIsValid && endDateIsValid
         }
