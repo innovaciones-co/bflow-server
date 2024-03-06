@@ -2,6 +2,7 @@ package co.innovaciones.bflow_server.rest
 
 import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
 import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.service.EmailService
 import co.innovaciones.bflow_server.service.TaskService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -27,7 +28,8 @@ import org.springframework.web.bind.annotation.RestController
 )
 @SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val emailService: EmailService
 ) {
 
     @GetMapping
@@ -60,6 +62,26 @@ class TaskResource(
     fun deleteTask(@PathVariable(name = "id") id: Long): ResponseEntity<Void> {
         taskService.delete(id)
         return ResponseEntity.noContent().build()
+    }
+
+    @PostMapping("/send/{id}")
+    @ApiResponse(responseCode = "201")
+    fun sendEmailList(@PathVariable(name = "id") id: Long/*taskList: List<Long>*/): ResponseEntity<String> {
+        //Reach task with id, to iterate and extract the info required to the email
+        //val tasks = taskService.findAllByIds(taskList)
+        val task = taskService.get(id)
+        /*
+        for (task in tasks){
+            val emailTo = task.supplier?.email
+            val emailSent = emailTo?.let { emailService.sendEmail(it,"body variables") }
+            return ResponseEntity(emailSent, HttpStatus.CREATED)
+        }*/
+        val emailTo =task.supplier?.email
+        val emailDescription = task.name + " starting at " + task.startDate
+        val emailToTest = "diegofelipere@gmail.com"
+
+        val emailSentTest = emailService.sendEmail(emailToTest,emailDescription)
+        return ResponseEntity(emailSentTest, HttpStatus.CREATED)
     }
 
 }

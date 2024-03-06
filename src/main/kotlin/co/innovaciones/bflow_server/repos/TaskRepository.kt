@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 
 interface TaskRepository : JpaRepository<Task, Long> {
 
-    fun findAllByAttachments(taskFile: File) : List<Task>
+    fun findAllByAttachments(taskFile: File): List<Task>
     fun findAllByJob(job: Job, sort: Sort?): List<Task>
+    fun findByIdIn(ids: List<Long>): List<Task>
 }

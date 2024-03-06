@@ -39,6 +39,13 @@ class TaskService(
             .toList()
     }
 
+    fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
+        val tasks = taskRepository.findByIdIn(ids)
+        return tasks.stream()
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .orElseThrow { NotFoundException() }
