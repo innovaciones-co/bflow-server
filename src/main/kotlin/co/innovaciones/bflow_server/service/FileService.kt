@@ -96,6 +96,7 @@ class FileService(
         fileDTO.category = createFileDTO.category
         fileDTO.type = file.contentType
         fileDTO.job = createFileDTO.job
+        fileDTO.task = createFileDTO.task
         fileDTO.temporaryUrl = s3Service.getTemporaryUrl(getBucketFromType(createFileDTO.entity), fileDTO.uuid)
         fileDTO.bucket = getBucketFromType(createFileDTO.entity)
         fileDTO.tag = createFileDTO.tag
@@ -110,6 +111,7 @@ class FileService(
         fileDTO.category = file.category
         fileDTO.tag = file.tag
         fileDTO.job = file.job?.id
+        fileDTO.task = file.task?.id
         fileDTO.temporaryUrl = s3Service.getTemporaryUrl(file.bucket, fileDTO.uuid)
         fileDTO.bucket = file.bucket
         return fileDTO
@@ -124,6 +126,9 @@ class FileService(
         val job = if (fileDTO.job == null) null else jobRepository.findById(fileDTO.job!!)
                 .orElseThrow { NotFoundException("job not found") }
         file.job = job
+        val task = if (fileDTO.task == null) null else taskRepository.findById(fileDTO.task!!)
+            .orElseThrow { NotFoundException("task not found") }
+        file.task = task
         file.bucket = fileDTO.bucket!!
         return file
     }

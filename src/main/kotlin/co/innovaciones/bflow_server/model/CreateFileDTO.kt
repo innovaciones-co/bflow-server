@@ -17,6 +17,8 @@ class CreateFileDTO {
 
     var job: Long? = null
 
+    var task: Long? = null
+
     @NotNull
     var file: MultipartFile? = null
 
