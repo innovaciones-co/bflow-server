@@ -2,15 +2,14 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
-import co.innovaciones.bflow_server.model.ContactDTO
-import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
-import co.innovaciones.bflow_server.model.TaskDTO
-import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 
 @Service
@@ -19,21 +18,22 @@ class TaskService(
     private val taskRepository: TaskRepository,
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
+    private val emailService: EmailService
 ) {
 
     fun findAll(): List<TaskReadDTO> {
         val tasks = taskRepository.findAll(Sort.by("id"))
         return tasks.stream()
-                .map { task -> mapToDTO(task, TaskReadDTO()) }
-                .toList()
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
+            .toList()
     }
 
     fun findAllByJob(jobId: Long): List<TaskReadDTO> {
         val job = jobRepository.findById(jobId)
         if (job.isEmpty) return listOf()
 
-        val tasks = taskRepository.findAllByJob(job.get(), Sort.by( Sort.Direction.DESC, "id" ))
+        val tasks = taskRepository.findAllByJob(job.get(), Sort.by(Sort.Direction.DESC, "id"))
         return tasks.stream()
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .toList()
@@ -47,8 +47,8 @@ class TaskService(
     }
 
     fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
-            .map { task -> mapToDTO(task, TaskReadDTO()) }
-            .orElseThrow { NotFoundException() }
+        .map { task -> mapToDTO(task, TaskReadDTO()) }
+        .orElseThrow { NotFoundException() }
 
     fun create(taskDTO: TaskCreateUpdateDTO): Long {
         val task = Task()
@@ -58,13 +58,27 @@ class TaskService(
 
     fun update(id: Long, taskDTO: TaskCreateUpdateDTO) {
         val task = taskRepository.findById(id)
-                .orElseThrow { NotFoundException() }
+            .orElseThrow { NotFoundException() }
         mapToEntity(taskDTO, task)
         taskRepository.save(task)
     }
 
     fun delete(id: Long) {
         taskRepository.deleteById(id)
+    }
+
+    fun taskNotify(ids: List<Long>) {
+        for (id in ids) {
+            val task = get(id)
+            //emailService.sendEmail(task.supplier?.email, task.name?)
+            emailService.sendEmail(
+                task.supplier?.email ?: "test@gmail.com",
+                task.name ?: "No Name"
+            )
+            task.status = TaskStatus.SENT
+            OffsetDateTime.now().also { task.bookingDate = it }
+            update(id, mapToCreateUpdateDTO(task))
+        }
     }
 
     private fun mapToDTO(task: Task, taskDTO: TaskDTO): TaskDTO {
@@ -91,7 +105,39 @@ class TaskService(
 
         return taskDTO
     }
+////
+    /*private fun mapToDTO(task: TaskReadDTO, taskDTO: TaskCreateUpdateDTO): TaskCreateUpdateDTO {
+        mapToDTO(task, taskDTO as TaskDTO)
+        task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }.also { taskDTO.supplier = it }
+        //taskDTO.supplier = task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }
 
+        return taskDTO
+    }*/
+
+    private fun mapToCreateUpdateDTO(taskReadDTO: TaskReadDTO): TaskCreateUpdateDTO {
+        val taskCreateUpdateDTO = TaskCreateUpdateDTO()
+        //mapToDTO(taskReadDTO as Task, taskCreateUpdateDTO as TaskDTO)
+
+
+        taskCreateUpdateDTO.id = taskReadDTO.id
+        taskCreateUpdateDTO.name = taskReadDTO.name
+        taskCreateUpdateDTO.startDate = taskReadDTO.startDate
+        taskCreateUpdateDTO.endDate = taskReadDTO.endDate
+        taskCreateUpdateDTO.description = taskReadDTO.description
+        taskCreateUpdateDTO.progress = taskReadDTO.progress
+        taskCreateUpdateDTO.status = taskReadDTO.status
+        taskCreateUpdateDTO.stage = taskReadDTO.stage
+        taskCreateUpdateDTO.parentTask = taskReadDTO.parentTask
+        taskCreateUpdateDTO.attachments = taskReadDTO.attachments
+        taskCreateUpdateDTO.job = taskReadDTO.job
+
+        taskCreateUpdateDTO.supplier = taskReadDTO.supplier?.id
+
+        return taskCreateUpdateDTO
+    }
+
+
+    ////
     private fun mapToEntity(taskDTO: TaskDTO, task: Task): Task {
         task.name = taskDTO.name
         task.startDate = taskDTO.startDate
@@ -103,15 +149,17 @@ class TaskService(
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
 
-        if (parentTask != null){
+        if (parentTask != null) {
             val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
-            val endDateIsValid = taskDTO.endDate!!.isBefore(parentTask.endDate)||taskDTO.endDate!!.isEqual(parentTask.endDate)
+            val endDateIsValid =
+                taskDTO.endDate!!.isBefore(parentTask.endDate) || taskDTO.endDate!!.isEqual(parentTask.endDate)
         }
 
         task.parentTask = parentTask
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
         if (attachments.size != (if (taskDTO.attachments == null) 0 else
-                taskDTO.attachments!!.size)) {
+                taskDTO.attachments!!.size)
+        ) {
             throw NotFoundException("one of attachments not found")
         }
         task.attachments = attachments.toMutableSet()

@@ -70,18 +70,25 @@ class TaskResource(
         //Reach task with id, to iterate and extract the info required to the email
         //val tasks = taskService.findAllByIds(taskList)
         val task = taskService.get(id)
-        /*
-        for (task in tasks){
-            val emailTo = task.supplier?.email
-            val emailSent = emailTo?.let { emailService.sendEmail(it,"body variables") }
-            return ResponseEntity(emailSent, HttpStatus.CREATED)
-        }*/
-        val emailTo =task.supplier?.email
+
+        val emailTo = task.supplier?.email
         val emailDescription = task.name + " starting at " + task.startDate
         val emailToTest = "diegofelipere@gmail.com"
 
-        val emailSentTest = emailService.sendEmail(emailToTest,emailDescription)
+        val emailSentTest = emailTo?.let { emailService.sendEmail(it, emailDescription) }
+        //val emailSentTest = emailService.sendEmail(emailTo, emailDescription)
         return ResponseEntity(emailSentTest, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/send")
+    @ApiResponse(responseCode = "201")
+    fun taskNotification(@RequestBody tasks: List<Long>): ResponseEntity<String> {
+        try {
+            taskService.taskNotify(tasks)
+            return ResponseEntity.ok("Tasks notification successfully")
+        } catch (e: Exception){
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing tasks: ${e.message}")
+        }
     }
 
 }
