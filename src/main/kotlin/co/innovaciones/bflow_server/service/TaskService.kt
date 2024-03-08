@@ -2,10 +2,7 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
-import co.innovaciones.bflow_server.model.ContactDTO
-import co.innovaciones.bflow_server.model.TaskWriteDTO
-import co.innovaciones.bflow_server.model.TaskDTO
-import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
@@ -100,7 +97,7 @@ class TaskService(
         task.startDate = taskDTO.startDate
         task.endDate = taskDTO.endDate
         task.status = taskDTO.status
-        task.progress = taskDTO.progress
+        task.progress = if(taskDTO.status == TaskStatus.COMPLETED) 100.0 else taskDTO.progress
         task.stage = taskDTO.stage
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)
