@@ -1,19 +1,17 @@
 package co.innovaciones.bflow_server.model
 
-import co.innovaciones.bflow_server.model.validators.OnCreate
-import co.innovaciones.bflow_server.model.validators.UniqueJobNumber
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
-open class JobDTO {
+class JobDTO {
 
     var id: Long? = null
 
-    @UniqueJobNumber(groups = [OnCreate::class])
     @NotNull
     @Size(max = 255)
+    @JobJobNumberUnique
     var jobNumber: String? = null
 
     @Size(max = 255)
