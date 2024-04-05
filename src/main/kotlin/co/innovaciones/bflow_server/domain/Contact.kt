@@ -42,8 +42,14 @@ class Contact {
     @Column(nullable = false)
     var name: String? = null
 
+    @Column
+    var idNumber: String? = null
+
     @Column(nullable = false)
     var address: String? = null
+
+    @Column(nullable = false)
+    var phone: String? = null
 
     @Column(
         nullable = false,
@@ -54,6 +60,21 @@ class Contact {
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var type: ContactType? = null
+
+    @Column
+    var accountNumber: String? = null
+
+    @Column
+    var accountHolderName: String? = null
+
+    @Column
+    var bankName: String? = null
+
+    @Column
+    var taxNumber: String? = null
+
+    @Column(columnDefinition = "text")
+    var details: String? = null
 
     @CreatedDate
     @Column(
