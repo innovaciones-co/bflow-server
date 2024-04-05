@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
 import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToOne
 import jakarta.persistence.SequenceGenerator
 import jakarta.persistence.Table
 import java.time.OffsetDateTime
@@ -18,9 +19,9 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener
 
 
 @Entity
-@Table(name = "OrderItems")
+@Table(name = "Items")
 @EntityListeners(AuditingEntityListener::class)
-class OrderItem {
+class Item {
 
     @Id
     @Column(
@@ -57,6 +58,26 @@ class OrderItem {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "purchase_order_id")
     var purchaseOrder: PurchaseOrder? = null
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supplier_id",
+        nullable = false,
+        unique = true
+    )
+    var supplier: Contact? = null
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "category_id",
+        nullable = false,
+        unique = true
+    )
+    var category: Category? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "job_id")
+    var job: Job? = null
 
     @CreatedDate
     @Column(
