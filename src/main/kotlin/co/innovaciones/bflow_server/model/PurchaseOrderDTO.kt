@@ -11,6 +11,7 @@ class PurchaseOrderDTO {
 
     @NotNull
     @Size(max = 255)
+    @PurchaseOrderNumberUnique
     var number: String? = null
 
     var sentDate: LocalDateTime? = null
