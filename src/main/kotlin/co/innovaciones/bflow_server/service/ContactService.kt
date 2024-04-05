@@ -4,6 +4,8 @@ import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.model.ContactDTO
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.util.NotFoundException
+import org.apache.coyote.BadRequestException
+import org.hibernate.exception.ConstraintViolationException
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 

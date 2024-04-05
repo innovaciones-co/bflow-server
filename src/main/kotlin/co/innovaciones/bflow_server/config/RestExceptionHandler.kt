@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.model.FieldError
 import co.innovaciones.bflow_server.util.NotFoundException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -12,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.context.request.WebRequest
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -29,19 +29,22 @@ class RestExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException):
-            ResponseEntity<ErrorResponse> {
+    fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
         val bindingResult: BindingResult = exception.bindingResult
-        val fieldErrors: List<FieldError> = bindingResult.fieldErrors
-                .stream()
-                .map { error ->
-                    val fieldError = FieldError()
-                    fieldError.errorCode = error.code
-                    fieldError.field = error.field
-                    fieldError.message = error.defaultMessage
-                    fieldError
-                }
-                .toList()
+        var fieldErrors: List<FieldError> = bindingResult.fieldErrors.stream().map { error ->
+                val fieldError = FieldError()
+                fieldError.errorCode = error.code
+                fieldError.field = error.field
+                fieldError.message = error.defaultMessage
+                fieldError
+            }.toList()
+        fieldErrors = fieldErrors.plus(bindingResult.allErrors.stream().map { e ->
+            val fieldError = FieldError()
+            fieldError.message = e.defaultMessage
+            fieldError.errorCode = e.code
+            fieldError
+        }.toList())
+
         val errorResponse = ErrorResponse()
         errorResponse.httpStatus = HttpStatus.BAD_REQUEST.value()
         errorResponse.exception = exception::class.simpleName
@@ -69,6 +72,26 @@ class RestExceptionHandler {
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
     }
 
+    @ExceptionHandler(value = [DataIntegrityViolationException::class])
+    fun handleConstraintViolationExceptions(
+        exception: DataIntegrityViolationException
+    ): ResponseEntity<ErrorResponse> {
+
+        val errorResponse = ErrorResponse()
+        errorResponse.httpStatus = HttpStatus.CONFLICT.value()
+        errorResponse.exception = exception::class.simpleName
+        errorResponse.fieldErrors = listOf(FieldError(message = extractDetailSection(exception.message)))
+        errorResponse.message = "Data integrity violation."
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    private fun extractDetailSection(input: String?): String? {
+        val regex = Regex("Detail: (.+?)\\]")
+        val matchResult = if(input != null) regex.find(input) else null
+        return if(matchResult != null) matchResult?.groupValues?.get(1) else input
+    }
+
     @ExceptionHandler(ResponseStatusException::class)
     fun handleResponseStatus(exception: ResponseStatusException): ResponseEntity<ErrorResponse> {
         val errorResponse = ErrorResponse()
@@ -80,8 +103,7 @@ class RestExceptionHandler {
 
     @ExceptionHandler(Throwable::class)
     @ApiResponse(
-        responseCode = "4xx/5xx",
-        description = "Error"
+        responseCode = "4xx/5xx", description = "Error"
     )
     fun handleThrowable(exception: Throwable): ResponseEntity<ErrorResponse> {
         exception.printStackTrace()

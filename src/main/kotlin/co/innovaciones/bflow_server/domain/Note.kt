@@ -31,7 +31,7 @@ class Note {
         name = "notes_primary_sequence",
         sequenceName = "notes_primary_sequence",
         allocationSize = 1,
-        initialValue = 10000
+        initialValue = 10050
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,

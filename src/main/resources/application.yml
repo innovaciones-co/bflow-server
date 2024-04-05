@@ -1,13 +1,16 @@
 spring:
   config:
     import: optional:file:.env[.properties]
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
   datasource:
     url: ${DATABASE_URL}
     username: ${DATABASE_USERNAME}
     password: ${DATABASE_PASSWORD}
     dbcp2:
       validation-query: select 1
-      max-total: 5000
   jpa:
     hibernate:
       ddl-auto: update
@@ -24,9 +27,14 @@ spring:
             non_contextual_creation: true
         id:
           new_generator_mappings: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
   docker:
     compose:
-      lifecycle-management: none
+      lifecycle-management: start-only
+
 springdoc:
   pathsToMatch: /api/**
 jwt:

@@ -2,10 +2,7 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
-import co.innovaciones.bflow_server.model.ContactDTO
-import co.innovaciones.bflow_server.model.TaskWriteDTO
-import co.innovaciones.bflow_server.model.TaskDTO
-import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import jakarta.transaction.Transactional
@@ -38,6 +35,15 @@ class TaskService(
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .toList()
     }
+
+    fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
+        val tasks = taskRepository.findByIdIn(ids)
+        return tasks.stream()
+            .map { task -> mapToDTO(task, TaskReadDTO()) }
+            .toList()
+    }
+
+
 
     fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
             .map { task -> mapToDTO(task, TaskReadDTO()) }
@@ -91,11 +97,12 @@ class TaskService(
         task.startDate = taskDTO.startDate
         task.endDate = taskDTO.endDate
         task.status = taskDTO.status
-        task.progress = taskDTO.progress
+        task.progress = if(taskDTO.status == TaskStatus.COMPLETED) 100.0 else taskDTO.progress
         task.stage = taskDTO.stage
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
+
         task.parentTask = parentTask
         val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
         if (attachments.size != (if (taskDTO.attachments == null) 0 else
@@ -106,6 +113,7 @@ class TaskService(
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
+        task.description = taskDTO.description
         task.order = taskDTO.order
         return task
     }
