@@ -2,9 +2,11 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.PurchaseOrder
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
+import co.innovaciones.bflow_server.repos.ItemRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.PurchaseOrderRepository
 import co.innovaciones.bflow_server.util.NotFoundException
+import co.innovaciones.bflow_server.util.ReferencedWarning
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
@@ -12,7 +14,8 @@ import org.springframework.stereotype.Service
 @Service
 class PurchaseOrderService(
     private val purchaseOrderRepository: PurchaseOrderRepository,
-    private val jobRepository: JobRepository
+    private val jobRepository: JobRepository,
+    private val itemRepository: ItemRepository
 ) {
 
     fun findAll(): List<PurchaseOrderDTO> {
@@ -43,7 +46,7 @@ class PurchaseOrderService(
         purchaseOrderRepository.deleteById(id)
     }
 
-    private fun mapToDTO(purchaseOrder: PurchaseOrder, purchaseOrderDTO: PurchaseOrderDTO):
+    fun mapToDTO(purchaseOrder: PurchaseOrder, purchaseOrderDTO: PurchaseOrderDTO):
             PurchaseOrderDTO {
         purchaseOrderDTO.id = purchaseOrder.id
         purchaseOrderDTO.number = purchaseOrder.number
@@ -71,5 +74,18 @@ class PurchaseOrderService(
 
     fun numberExists(number: String?): Boolean =
             purchaseOrderRepository.existsByNumberIgnoreCase(number)
+
+    fun getReferencedWarning(id: Long): ReferencedWarning? {
+        val referencedWarning = ReferencedWarning()
+        val purchaseOrder = purchaseOrderRepository.findById(id)
+                .orElseThrow { NotFoundException() }
+        val purchaseOrderItem = itemRepository.findFirstByPurchaseOrder(purchaseOrder)
+        if (purchaseOrderItem != null) {
+            referencedWarning.key = "purchaseOrder.item.purchaseOrder.referenced"
+            referencedWarning.addParam(purchaseOrderItem.id)
+            return referencedWarning
+        }
+        return null
+    }
 
 }
