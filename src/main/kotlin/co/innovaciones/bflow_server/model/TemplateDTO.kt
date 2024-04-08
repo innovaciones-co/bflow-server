@@ -10,6 +10,7 @@ class TemplateDTO {
 
     @NotNull
     @Size(max = 255)
+    @TemplateNameUnique
     var name: String? = null
 
     @NotNull

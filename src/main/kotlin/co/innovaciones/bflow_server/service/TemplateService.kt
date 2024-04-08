@@ -61,7 +61,7 @@ class TemplateService(
         return template
     }
 
-    //fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
+    fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
 
     fun createTasks(id: Long, jobId: Long) {
         val job = jobService.get(jobId)
