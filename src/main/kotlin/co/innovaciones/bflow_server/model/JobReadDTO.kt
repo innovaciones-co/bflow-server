@@ -1,10 +1,5 @@
 package co.innovaciones.bflow_server.model
 
-import co.innovaciones.bflow_server.model.validators.UniqueJobNumber
-import jakarta.validation.constraints.NotNull
-import jakarta.validation.constraints.Size
-import java.time.LocalDate
-
 
 class JobReadDTO : JobDTO() {
 
@@ -18,5 +13,5 @@ class JobReadDTO : JobDTO() {
 
     var files: Set<FileDTO>? = null
 
-
+    var purchaseOrders: Set<PurchaseOrderDTO>? = null
 }

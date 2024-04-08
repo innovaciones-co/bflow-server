@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size
 import java.time.LocalDate
 
 
-class JobDTO {
+open class JobDTO {
 
     var id: Long? = null
 

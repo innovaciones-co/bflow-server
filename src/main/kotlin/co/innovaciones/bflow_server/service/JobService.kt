@@ -16,7 +16,8 @@ class JobService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val userRepository: UserRepository,
-    private val fileService: FileService
+    private val fileService: FileService,
+    private val purchaseOrderService: PurchaseOrderService
 ) {
 
     @Transactional(readOnly = true)
@@ -49,7 +50,7 @@ class JobService(
         jobRepository.deleteById(id)
     }
 
-    private fun mapToDTO(job: Job, jobDTO: JobReadDTO, includeChildren: Boolean = false): JobReadDTO {
+    protected fun mapToDTO(job: Job, jobDTO: JobReadDTO, includeChildren: Boolean = false): JobReadDTO {
         jobDTO.id = job.id
         jobDTO.jobNumber = job.jobNumber
         jobDTO.name = job.name
@@ -66,6 +67,7 @@ class JobService(
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toSet()
+            jobDTO.purchaseOrders = job.purchaseOrders?.map { purchaseOrder ->  purchaseOrderService.mapToDTO(purchaseOrder, PurchaseOrderDTO()) }?.toSet()
         }
         return jobDTO
     }
