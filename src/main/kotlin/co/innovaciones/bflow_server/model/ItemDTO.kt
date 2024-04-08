@@ -4,7 +4,7 @@ import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 
 
-class OrderItemDTO {
+class ItemDTO {
 
     var id: Long? = null
 
@@ -22,5 +22,15 @@ class OrderItemDTO {
     var price: Double? = null
 
     var purchaseOrder: Long? = null
+
+    @NotNull
+    @ItemSupplierUnique
+    var supplier: Long? = null
+
+    @NotNull
+    @ItemCategoryUnique
+    var category: Long? = null
+
+    var job: Long? = null
 
 }

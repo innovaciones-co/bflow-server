@@ -59,19 +59,17 @@ class Item {
     @JoinColumn(name = "purchase_order_id")
     var purchaseOrder: PurchaseOrder? = null
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "supplier_id",
         nullable = false,
-        unique = true
     )
     var supplier: Contact? = null
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "category_id",
-        nullable = false,
-        unique = true
+        nullable = false
     )
     var category: Category? = null
 
