@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
+import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
@@ -136,4 +137,16 @@ class TaskService(
         return contactDTO
     }
 
+    fun getReferencedWarning(id: Long): ReferencedWarning? {
+        val referencedWarning = ReferencedWarning()
+        val task = taskRepository.findById(id)
+            .orElseThrow { NotFoundException() }
+        val parentTaskTask = taskRepository.findFirstByParentTaskAndIdNot(task, task.id)
+        if (parentTaskTask != null) {
+            referencedWarning.key = "task.task.parentTask.referenced"
+            referencedWarning.addParam(parentTaskTask.id)
+            return referencedWarning
+        }
+        return null
+    }
 }
