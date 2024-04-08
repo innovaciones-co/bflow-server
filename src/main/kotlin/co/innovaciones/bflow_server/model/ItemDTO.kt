@@ -31,6 +31,7 @@ class ItemDTO {
     @ItemCategoryUnique
     var category: Long? = null
 
+    @NotNull
     var job: Long? = null
 
 }
