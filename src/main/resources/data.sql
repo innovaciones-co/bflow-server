@@ -16,20 +16,21 @@ VALUES ( 10004, 'Charlie', 'Brown', 'charlie_b', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP
 INSERT INTO Users (id, first_name, last_name, username, password, email, role, date_created, last_updated)
 VALUES ( 10005, 'Alberto', 'Federico', 'alberto_f', '{bcrypt}$2a$10$MLHmPwZ8cLDOduP9V.9q1u8RzLCUgF0Xc8KHbMkp7mlxItMZVHdlO', 'afederico@email.com', 'SUPERVISOR', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
 
-INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
-VALUES (10000, 'John Doe', '123 Main St', 'john.doe@email.com', 'CLIENT', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z');
+INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
+VALUES (10000, 'John Doe', '123 Main St', 'john.doe@email.com', 'CLIENT', '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z', '123-456-7890');
 
-INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
-VALUES (10001, 'Alice Smith', '456 Oak St', 'alice.smith@email.com', 'SUPPLIER', '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z');
+INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
+VALUES (10001, 'Alice Smith', '456 Oak St', 'alice.smith@email.com', 'SUPPLIER', '2022-01-15T13:45:00Z', '2022-01-15T13:45:00Z', '456-789-0123');
 
-INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
-VALUES (10002, 'Bob Johnson', '789 Pine St', 'bob.johnson@email.com', 'CLIENT', '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z');
+INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
+VALUES (10002, 'Bob Johnson', '789 Pine St', 'bob.johnson@email.com', 'CLIENT', '2022-01-15T14:15:00Z', '2022-01-15T14:15:00Z', '789-012-3456');
 
-INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
-VALUES (10003, 'Eva Williams', '101 Elm St', 'eva.williams@email.com', 'CONTRACTOR', '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z');
+INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
+VALUES (10003, 'Eva Williams', '101 Elm St', 'eva.williams@email.com', 'CONTRACTOR', '2022-01-15T15:00:00Z', '2022-01-15T15:00:00Z', '321-654-9870');
 
-INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated)
-VALUES (10004, 'Charlie Brown', '202 Maple St', 'charlie.brown@email.com', 'SUPPLIER', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z');
+INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
+VALUES (10004, 'Charlie Brown', '202 Maple St', 'charlie.brown@email.com', 'SUPPLIER', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z', '654-987-0123');
+
 
 INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
 VALUES (10000, 'J10001', 'Construction Project A', '2022-02-01', '2022-06-30', '123 Main St', 'A new building project', 'SINGLE_STOREY', 10000, 10000, '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z', '10005');
@@ -145,7 +146,63 @@ INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, 
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-15', 0, '2024-04-11', null, '2024-01-20 16:45:00.000000 +00:00', 10038, 10002, '2024-01-20 16:45:00.000000 +00:00', 10014, null, null, 'Task 38', 'PCI', 'CREATED');
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-25', 0, '2024-04-21', null, '2024-01-22 09:15:00.000000 +00:00', 10040, 10004, '2024-01-22 09:15:00.000000 +00:00', null, 10001, null, 'Task 40', 'PCI', 'CREATED');
 
-INSERT INTO templates (id, name, template, date_created, last_updated) VALUES (10001, 'Job Template', '[
+-- Insert categories
+INSERT INTO Categories (id, name, date_created, last_updated, contact_id)
+VALUES (1, 'Wood', NOW(), NOW(), 10001),
+       (2, 'Metal', NOW(), NOW(), 10001),
+       (3, 'Concrete', NOW(), NOW(), 10001),
+       (4, 'Plumbing', NOW(), NOW(), 10004),
+       (5, 'Electrical', NOW(), NOW(), 10004);
+
+-- Insert products for suppliers
+INSERT INTO products (id, name, description, unit_price, uom_order_increment, unit_of_measure, category_id, date_created, last_updated, sku)
+VALUES
+    -- Wood products
+    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 10, 'FEET', 1, NOW(), NOW(), 'WOOD001'),
+    (2, 'Plywood', 'Sheets of plywood for building', 25.00, 1, 'SQUARE_FEET', 1, NOW(), NOW(), 'WOOD002'),
+    (3, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 100, 'PIECES', 1, NOW(), NOW(), 'WOOD003'),
+    -- Metal products
+    (4, 'Steel Beams', 'Structural steel beams for support', 50.00, 5, 'FEET', 2, NOW(), NOW(), 'METAL001'),
+    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 1, 'SQUARE_FEET', 2, NOW(), NOW(), 'METAL002'),
+    (6, 'Nails', 'Assorted nails for metal framing', 0.05, 200, 'PIECES', 2, NOW(), NOW(), 'METAL003'),
+    -- Concrete products
+    (7, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 1, 'EACH', 3, NOW(), NOW(), 'CONCRETE001'),
+    (8, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 1, 'CUBIC_METERS', 3, NOW(), NOW(), 'CONCRETE002'),
+    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 10, 'FEET', 3, NOW(), NOW(), 'CONCRETE003'),
+    -- Plumbing products
+    (10, 'PVC Pipes', 'Pipes for plumbing installations', 2.50, 1, 'FEET', 4, NOW(), NOW(), 'PLUMBING001'),
+    (11, 'Faucets', 'Various faucets for sinks and showers', 30.00, 1, 'EACH', 4, NOW(), NOW(), 'PLUMBING002'),
+    (12, 'Pipe Fittings', 'Assorted fittings for plumbing systems', 1.00, 50, 'PIECES', 4, NOW(), NOW(), 'PLUMBING003'),
+    -- Electrical products
+    (13, 'Electrical Wire', 'Wire for electrical installations', 0.75, 100, 'FEET', 5, NOW(), NOW(), 'ELECTRICAL001'),
+    (14, 'Light Fixtures', 'Various light fixtures for indoor and outdoor use', 50.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL002'),
+    (15, 'Circuit Breakers', 'Breakers for electrical panels', 20.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL003');
+
+-- Generate sample purchase orders and items
+INSERT INTO purchase_orders (id, number, status, date_created, last_updated, job_id)
+VALUES
+    (1, 'PO001', 'DRAFT', NOW(), NOW(), 10001),
+    (2, 'PO002', 'DRAFT', NOW(), NOW(), 10001),
+    (3, 'PO003', 'DRAFT', NOW(), NOW(), 10002);
+
+-- Insert items for each purchase order
+INSERT INTO items (id, name, description, unit_price, category_id, date_created, last_updated, purchase_order_id, supplier_id)
+VALUES
+    -- Purchase Order 1 items
+    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 1, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
+    (2, 'Steel Beams', 'Structural steel beams for support', 50.00, 2, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
+    (3, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 3, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
+    -- Purchase Order 2 items
+    (4, 'Plywood', 'Sheets of plywood for building', 25.00, 1, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
+    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 2, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
+    (6, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 3, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
+    -- Purchase Order 3 items
+    (7, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 1, NOW(), NOW(), 3, 10002), -- Supplier: Bob Johnson
+    (8, 'Nails', 'Assorted nails for metal framing', 0.05, 2, NOW(), NOW(), 3, 10002), -- Supplier: Bob Johnson
+    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 3, NOW(), NOW(), 3, 10002); -- Supplier: Bob Johnson
+
+
+INSERT INTO Templates (id, name, template, date_created, last_updated) VALUES (10001, 'Job Template', '[
   {
     "stage": "SLAB_DOWN",
     "status": "CREATED",
