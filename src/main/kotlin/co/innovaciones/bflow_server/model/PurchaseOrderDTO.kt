@@ -3,6 +3,7 @@ package co.innovaciones.bflow_server.model
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDateTime
+import java.time.OffsetDateTime
 
 
 class PurchaseOrderDTO {
@@ -20,9 +21,14 @@ class PurchaseOrderDTO {
 
     var completedDate: LocalDateTime? = null
 
+    var createdDate: OffsetDateTime? = null
+
+    var orderItems: Set<ItemDTO>? = null
+
     @NotNull
     var status: OrderStatus? = null
 
+    @NotNull
     var job: Long? = null
 
 }

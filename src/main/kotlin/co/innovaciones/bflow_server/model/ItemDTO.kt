@@ -21,6 +21,11 @@ class ItemDTO {
 
     var price: Double? = null
 
+    @NotNull
+    var units: Long? = null
+
+    var measure: Units? = null
+
     var purchaseOrder: Long? = null
 
     @NotNull

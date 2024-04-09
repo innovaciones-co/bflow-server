@@ -28,6 +28,14 @@ class ItemService(
                 .toList()
     }
 
+    fun findByJob(jobId: Long): List<ItemDTO> {
+        val job = jobRepository.findById(jobId).get()
+        val items = itemRepository.findAllByJob(job, Sort.by("name"))
+        return items.stream()
+            .map { item -> mapToDTO(item, ItemDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): ItemDTO = itemRepository.findById(id)
             .map { item -> mapToDTO(item, ItemDTO()) }
             .orElseThrow { NotFoundException() }
@@ -49,26 +57,31 @@ class ItemService(
         itemRepository.deleteById(id)
     }
 
-    private fun mapToDTO(item: Item, itemDTO: ItemDTO): ItemDTO {
+    fun mapToDTO(item: Item, itemDTO: ItemDTO): ItemDTO {
         itemDTO.id = item.id
         itemDTO.name = item.name
         itemDTO.description = item.description
         itemDTO.unitPrice = item.unitPrice
         itemDTO.vat = item.vat
         itemDTO.price = item.price
+        itemDTO.units = item.units
+        itemDTO.units = item.units
         itemDTO.purchaseOrder = item.purchaseOrder?.id
         itemDTO.supplier = item.supplier?.id
         itemDTO.category = item.category?.id
         itemDTO.job = item.job?.id
+        itemDTO.measure = item.measure
         return itemDTO
     }
 
     private fun mapToEntity(itemDTO: ItemDTO, item: Item): Item {
         item.name = itemDTO.name
         item.description = itemDTO.description
-        item.unitPrice = itemDTO.unitPrice
-        item.vat = itemDTO.vat
-        item.price = itemDTO.price
+        item.unitPrice = if(itemDTO.unitPrice != null) itemDTO.unitPrice!! else 0.0
+        item.vat = if(itemDTO.vat != null) itemDTO.vat!! else 0.0
+        //item.price = if(itemDTO.price != null) itemDTO.price!! else 0.0
+        item.units = if(itemDTO.units != null) itemDTO.units!! else 0
+        item.measure = itemDTO.measure
         val purchaseOrder = if (itemDTO.purchaseOrder == null) null else
                 purchaseOrderRepository.findById(itemDTO.purchaseOrder!!)
                 .orElseThrow { NotFoundException("purchaseOrder not found") }

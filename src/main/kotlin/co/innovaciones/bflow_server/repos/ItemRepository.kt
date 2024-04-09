@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Item
 import co.innovaciones.bflow_server.domain.Job
 import co.innovaciones.bflow_server.domain.PurchaseOrder
+import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
 
 
@@ -16,7 +17,7 @@ interface ItemRepository : JpaRepository<Item, Long> {
 
     fun findFirstByCategory(category: Category): Item?
 
-    fun findFirstByJob(job: Job): Item?
+    fun findAllByJob(job: Job, sort: Sort?): List<Item>
 
     fun existsBySupplierId(id: Long?): Boolean
 

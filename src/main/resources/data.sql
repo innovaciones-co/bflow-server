@@ -186,20 +186,20 @@ VALUES
     (3, 'PO003', 'DRAFT', NOW(), NOW(), 10002);
 
 -- Insert items for each purchase order
-INSERT INTO items (id, name, description, unit_price, category_id, date_created, last_updated, purchase_order_id, supplier_id)
+INSERT INTO items (id, name, description, unit_price, units, category_id, date_created, last_updated, purchase_order_id, supplier_id, job_id, measure)
 VALUES
     -- Purchase Order 1 items
-    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 1, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
-    (2, 'Steel Beams', 'Structural steel beams for support', 50.00, 2, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
-    (3, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 3, NOW(), NOW(), 1, 10001), -- Supplier: Alice Smith
+    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 2, 1, NOW(), NOW(), 1, 10001, 10001, 'SQUARE_METERS'), -- Supplier: Alice Smith
+    (2, 'Steel Beams', 'Structural steel beams for support', 50.00, 4, 2, NOW(), NOW(), 1, 10001, 10001, 'SQUARE_METERS'), -- Supplier: Alice Smith
+    (3, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 5, 3, NOW(), NOW(), 1, 10001, 10001, 'EACH'), -- Supplier: Alice Smith
     -- Purchase Order 2 items
-    (4, 'Plywood', 'Sheets of plywood for building', 25.00, 1, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
-    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 2, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
-    (6, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 3, NOW(), NOW(), 2, 10004), -- Supplier: Charlie Brown
+    (4, 'Plywood', 'Sheets of plywood for building', 25.00, 10, 1, NOW(), NOW(), 2, 10004, 10001, 'EACH'), -- Supplier: Charlie Brown
+    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 5, 2, NOW(), NOW(), 2, 10004, 10001, 'EACH'), -- Supplier: Charlie Brown
+    (6, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 8, 3, NOW(), NOW(), 2, 10004, 10001, 'KILOGRAMS'), -- Supplier: Charlie Brown
     -- Purchase Order 3 items
-    (7, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 1, NOW(), NOW(), 3, 10002), -- Supplier: Bob Johnson
-    (8, 'Nails', 'Assorted nails for metal framing', 0.05, 2, NOW(), NOW(), 3, 10002), -- Supplier: Bob Johnson
-    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 3, NOW(), NOW(), 3, 10002); -- Supplier: Bob Johnson
+    (7, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 1, 1, NOW(), NOW(), 3, 10002, 10001, 'EACH'), -- Supplier: Bob Johnson
+    (8, 'Nails', 'Assorted nails for metal framing', 0.05, 5, 2, NOW(), NOW(), 3, 10002, 10001, 'EACH'), -- Supplier: Bob Johnson
+    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 4, 3, NOW(), NOW(), 3, 10002, 10001, 'METERS'); -- Supplier: Bob Johnson
 
 
 INSERT INTO Templates (id, name, template, date_created, last_updated) VALUES (10001, 'Job Template', '[

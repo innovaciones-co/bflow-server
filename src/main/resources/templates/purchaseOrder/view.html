@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Purchase Order - ' + ${order.number}"></title>
+
+    <link rel="stylesheet" th:href="${'/assets/css/base.css'}">
+</head>
+<body class="A4">
+<section class="sheet padding-10mm">
+    <h1 th:text="'Purchase Order -' + ${order.number}"></h1>
+    <p th:text="'Date: ' + ${#temporals.format(order.createdDate,'EEEE d MMM, yyyy')}"></p>
+    <p th:text="'Order No.: ' + ${order.number}"></p>
+
+    <p>Job Site: </p>
+    <p th:text="'Address: ' + ${job.address}"></p>
+    <p>Phone: 0403 353 398</p>
+    <p>ABN: 86150702239 ACN: 150702239 Reg No: 13696</p>
+    <p>Supplier: </p>
+    <p>Ph: </p>
+    <table>
+        <thead>
+        <tr>
+            <th>Material</th>
+            <th>Units</th>
+            <th>Measure</th>
+            <th>Price per unit</th>
+            <th>VAT</th>
+            <th>Price</th>
+        </tr>
+        </thead>
+        <tbody>
+        <div th:each="category : ${categories}">
+            <tr>
+                <td class="category" colspan="6" th:text="${category.id} + ' - ' +${category.name}"></td>
+            </tr>
+
+            <tr th:each="item : ${order.orderItems}" th:if="${category.id == item.category}">
+                <td th:text="${item.name}"></td>
+                <td class="ta-center" th:text="${item.units}">
+                <td class="ta-center" th:text="${item.measure}">
+                <td class="ta-right" th:text="'$' + ${item.unitPrice}"></td>
+                <td class="ta-center" th:text="${item.vat * 100} + '%'"></td>
+                <td class="ta-right" th:text="'$' + ${item.price}"></td>
+            </tr>
+        </div>
+        </tbody>
+    </table>
+</section>
+</body>
+</html>

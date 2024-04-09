@@ -1,21 +1,25 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.PurchaseOrder
+import co.innovaciones.bflow_server.model.ItemDTO
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
 import co.innovaciones.bflow_server.repos.ItemRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.PurchaseOrderRepository
 import co.innovaciones.bflow_server.util.NotFoundException
 import co.innovaciones.bflow_server.util.ReferencedWarning
+import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 
 
 @Service
+@Transactional
 class PurchaseOrderService(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val jobRepository: JobRepository,
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
+    private val itemService: ItemService,
 ) {
 
     fun findAll(): List<PurchaseOrderDTO> {
@@ -50,11 +54,13 @@ class PurchaseOrderService(
             PurchaseOrderDTO {
         purchaseOrderDTO.id = purchaseOrder.id
         purchaseOrderDTO.number = purchaseOrder.number
+        purchaseOrderDTO.createdDate = purchaseOrder.dateCreated
         purchaseOrderDTO.sentDate = purchaseOrder.sentDate
         purchaseOrderDTO.approvedDate = purchaseOrder.approvedDate
         purchaseOrderDTO.completedDate = purchaseOrder.completedDate
         purchaseOrderDTO.status = purchaseOrder.status
         purchaseOrderDTO.job = purchaseOrder.job?.id
+        purchaseOrderDTO.orderItems = purchaseOrder.orderItems?.map { orderItem ->  itemService.mapToDTO(orderItem, ItemDTO()) }?.toSet()
         return purchaseOrderDTO
     }
 

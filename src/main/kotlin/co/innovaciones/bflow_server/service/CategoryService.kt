@@ -27,6 +27,13 @@ class CategoryService(
                 .toList()
     }
 
+    fun findAllById(ids: List<Long>): List<CategoryDTO> {
+        val categories = categoryRepository.findAllByIdIn(ids, Sort.by("name"))
+        return categories.stream()
+            .map { category -> mapToDTO(category, CategoryDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): CategoryDTO = categoryRepository.findById(id)
             .map { category -> mapToDTO(category, CategoryDTO()) }
             .orElseThrow { NotFoundException() }
