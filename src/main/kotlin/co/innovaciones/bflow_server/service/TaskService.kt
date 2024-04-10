@@ -71,9 +71,12 @@ class TaskService(
         for (id in ids) {
             val task = get(id)
             //emailService.sendEmail(task.supplier?.email, task.name?)
+            if (task.supplier == null){
+                continue
+            }
             emailService.sendEmail(
-                task.supplier?.email ?: "test@gmail.com",
-                task.name ?: "No Name"
+                task.supplier?.email!!,
+                task.name?:"No name"
             )
             task.status = TaskStatus.SENT
             OffsetDateTime.now().also { task.bookingDate = it }
