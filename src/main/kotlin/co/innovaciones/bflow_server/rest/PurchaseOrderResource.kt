@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.rest
 
+import co.innovaciones.bflow_server.model.CreatePurchaseOrderDTO
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
 import co.innovaciones.bflow_server.service.PurchaseOrderService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -43,6 +44,14 @@ class PurchaseOrderResource(
             ResponseEntity<Long> {
         val createdId = purchaseOrderService.create(purchaseOrderDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/items")
+    @ApiResponse(responseCode = "201")
+    fun createPurchaseOrder(@RequestBody @Valid createPurchaseOrderDTO: CreatePurchaseOrderDTO):
+            ResponseEntity<List<Long>> {
+        val orderIds = purchaseOrderService.createFromItems(createPurchaseOrderDTO)
+        return ResponseEntity(orderIds, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")

@@ -29,11 +29,9 @@ class ItemDTO {
     var purchaseOrder: Long? = null
 
     @NotNull
-    @ItemSupplierUnique
     var supplier: Long? = null
 
     @NotNull
-    @ItemCategoryUnique
     var category: Long? = null
 
     @NotNull

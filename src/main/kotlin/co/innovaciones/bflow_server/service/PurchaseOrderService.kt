@@ -1,7 +1,9 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.PurchaseOrder
+import co.innovaciones.bflow_server.model.CreatePurchaseOrderDTO
 import co.innovaciones.bflow_server.model.ItemDTO
+import co.innovaciones.bflow_server.model.OrderStatus
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
 import co.innovaciones.bflow_server.repos.ItemRepository
 import co.innovaciones.bflow_server.repos.JobRepository
@@ -11,6 +13,7 @@ import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.util.*
 
 
 @Service
@@ -39,6 +42,33 @@ class PurchaseOrderService(
         return purchaseOrderRepository.save(purchaseOrder).id!!
     }
 
+    fun createFromItems(createPurchaseOrderDTO: CreatePurchaseOrderDTO): List<Long> {
+        val orderIds = mutableListOf<Long>()
+
+        val itemsBySupplier = createPurchaseOrderDTO.items!!.groupBy { it.supplier }
+
+        itemsBySupplier.forEach { (supplier, items) ->
+            val purchaseOrder = PurchaseOrder()
+            mapToEntity(createPurchaseOrderDTO, purchaseOrder)
+
+            // Set supplier for the purchase order
+            //purchaseOrder.supplier = supplier
+
+            // Save purchase order
+            val orderId = purchaseOrderRepository.save(purchaseOrder).id!!
+            orderIds.add(orderId)
+
+            // Update items with the purchase order ID
+            items.forEach { item ->
+                item.purchaseOrder = orderId
+                itemService.update(item.id!!, item)
+            }
+        }
+
+        return orderIds
+    }
+
+
     fun update(id: Long, purchaseOrderDTO: PurchaseOrderDTO) {
         val purchaseOrder = purchaseOrderRepository.findById(id)
                 .orElseThrow { NotFoundException() }
@@ -62,6 +92,17 @@ class PurchaseOrderService(
         purchaseOrderDTO.job = purchaseOrder.job?.id
         purchaseOrderDTO.orderItems = purchaseOrder.orderItems?.map { orderItem ->  itemService.mapToDTO(orderItem, ItemDTO()) }?.toSet()
         return purchaseOrderDTO
+    }
+
+    private fun mapToEntity(createPurchaseOrderDTO: CreatePurchaseOrderDTO, purchaseOrder: PurchaseOrder):
+            PurchaseOrder {
+        purchaseOrder.number = generateOrderNumber("PO")
+        purchaseOrder.status = OrderStatus.DRAFT
+        val job = if (createPurchaseOrderDTO.job == null) null else
+            jobRepository.findById(createPurchaseOrderDTO.job!!)
+                .orElseThrow { NotFoundException("job not found") }
+        purchaseOrder.job = job
+        return purchaseOrder
     }
 
     private fun mapToEntity(purchaseOrderDTO: PurchaseOrderDTO, purchaseOrder: PurchaseOrder):
@@ -92,6 +133,11 @@ class PurchaseOrderService(
             return referencedWarning
         }
         return null
+    }
+
+    fun generateOrderNumber(prefix: String): String {
+        val uniqueId = UUID.randomUUID().toString().replace("-", "")
+        return "$prefix-$uniqueId"
     }
 
 }

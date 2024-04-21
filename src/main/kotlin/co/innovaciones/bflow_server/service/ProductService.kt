@@ -22,6 +22,14 @@ class ProductService(
                 .toList()
     }
 
+    fun findByCategory(categoryId: Long): List<ProductDTO> {
+        val category = categoryRepository.findById(categoryId).get()
+        val products = productRepository.findAllByCategory(category, Sort.by("name"))
+        return products.stream()
+            .map { item -> mapToDTO(item, ProductDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): ProductDTO = productRepository.findById(id)
             .map { product -> mapToDTO(product, ProductDTO()) }
             .orElseThrow { NotFoundException() }
@@ -49,6 +57,7 @@ class ProductService(
         productDTO.sku = product.sku
         productDTO.description = product.description
         productDTO.unitPrice = product.unitPrice
+        productDTO.vat = product.vat
         productDTO.unitOfMeasure = product.unitOfMeasure
         productDTO.uomOrderIncrement = product.uomOrderIncrement
         productDTO.url = product.url
@@ -61,6 +70,7 @@ class ProductService(
         product.sku = productDTO.sku
         product.description = productDTO.description
         product.unitPrice = productDTO.unitPrice
+        product.vat = productDTO.vat ?: 0.0
         product.unitOfMeasure = productDTO.unitOfMeasure
         product.uomOrderIncrement = productDTO.uomOrderIncrement
         product.url = productDTO.url

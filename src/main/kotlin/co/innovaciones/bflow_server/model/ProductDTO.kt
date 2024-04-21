@@ -23,6 +23,8 @@ class ProductDTO {
     @NotNull
     var unitPrice: Double? = null
 
+    var vat: Double? = null
+
     @NotNull
     var unitOfMeasure: Units? = null
 

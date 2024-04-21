@@ -50,7 +50,7 @@ class ContactService(
         contactRepository.deleteById(id)
     }
 
-    private fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
+    fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
         contactDTO.id = contact.id
         contactDTO.name = contact.name
         contactDTO.idNumber = contact.idNumber

@@ -28,14 +28,14 @@ class Contact {
         updatable = false
     )
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "contact_primary_sequence",
+        sequenceName = "contact_primary_sequence",
         allocationSize = 1,
-        initialValue = 10000
+        initialValue = 10100
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "contact_primary_sequence"
     )
     var id: Long? = null
 
