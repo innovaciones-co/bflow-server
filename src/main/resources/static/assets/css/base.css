@@ -42,15 +42,15 @@ body.A4 .sheet {
     }
 }
 
-.logo {
+#logo {
     position: relative;
 }
 
-.logo img {
+#logo img {
     position: absolute;
     right: 0;
     top: 0;
-    width: 30%;
+    width: 15%;
 }
 
 table {

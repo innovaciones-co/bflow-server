@@ -1,15 +1,10 @@
 package co.innovaciones.bflow_server.controller
 
-import co.innovaciones.bflow_server.domain.Job
-import co.innovaciones.bflow_server.model.CategoryDTO
+
 import co.innovaciones.bflow_server.model.OrderStatus
-import co.innovaciones.bflow_server.model.PurchaseOrderDTO
-import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.service.CategoryService
 import co.innovaciones.bflow_server.service.JobService
 import co.innovaciones.bflow_server.service.PurchaseOrderService
-import co.innovaciones.bflow_server.util.CustomCollectors
-import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Controller
 import org.springframework.ui.Model
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,7 +21,7 @@ class PurchaseOrderController(
 ) {
     @ModelAttribute
     fun prepareContext(model: Model) {
-        model.addAttribute("statusValues", OrderStatus.values())
+        model.addAttribute("statusValues", OrderStatus.entries.toTypedArray())
     }
 
     @GetMapping("/{id}")
@@ -35,10 +30,12 @@ class PurchaseOrderController(
         val job = jobService.get(purchaseOrder.job!!)
         val categoriesIds = purchaseOrder.orderItems!!.map { item -> item.category!! }.toList()
         val categories = categoryService.findAllById( categoriesIds )
+        val total = purchaseOrder.orderItems!!.map { item -> if(item.price != null) item.price!! else 0.0 }.toList().sum()
         model.addAttribute("order", purchaseOrder)
         model.addAttribute("job", job)
         model.addAttribute("categories", categories)
+        model.addAttribute("total", total)
 
-        return "purchaseOrder/view";
+        return "purchaseOrder/view"
     }
 }

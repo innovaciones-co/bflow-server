@@ -156,4 +156,12 @@ class PurchaseOrderService(
 
     }
 
+    fun findAllByJob(jobId: Long): List<PurchaseOrderDTO>? {
+        val job = jobRepository.findById(jobId).get()
+        val purchaseOrders = purchaseOrderRepository.findAllByJob(job, Sort.by("id"))
+        return purchaseOrders.stream()
+            .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
+            .toList()
+    }
+
 }

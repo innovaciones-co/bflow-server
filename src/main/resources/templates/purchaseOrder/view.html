@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" />
 <head>
     <meta charset="UTF-8">
     <title th:text="'Purchase Order - ' + ${order.number}"></title>
@@ -9,24 +9,32 @@
 <body class="A4">
 <section class="sheet padding-10mm">
     <h1 th:text="'Purchase Order -' + ${order.number}"></h1>
+
+    <div id="logo">
+        <img th:src="${'/assets/img/sh_logo.png'}">
+    </div>
+
     <p th:text="'Date: ' + ${#temporals.format(order.createdDate,'EEEE d MMM, yyyy')}"></p>
     <p th:text="'Order No.: ' + ${order.number}"></p>
 
     <p>Job Site: </p>
     <p th:text="'Address: ' + ${job.address}"></p>
-    <p>Phone: 0403 353 398</p>
+    <p th:text="'Phone: ' + ${job.client.phone}"></p>
     <p>ABN: 86150702239 ACN: 150702239 Reg No: 13696</p>
     <p>Supplier: </p>
     <p>Ph: </p>
+
+
+
     <table>
         <thead>
         <tr>
             <th>Material</th>
             <th>Units</th>
             <th>Measure</th>
-            <th>Price per unit</th>
+            <th>Unit cost</th>
             <th>VAT</th>
-            <th>Price</th>
+            <th>Cost</th>
         </tr>
         </thead>
         <tbody>
@@ -45,6 +53,32 @@
             </tr>
         </div>
         </tbody>
+
+        <tfoot>
+        <tr>
+            <td style="border:none" colspan="6"></td>
+        </tr>
+        <!--<tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SUBTOTAL:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr>
+        <tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SALES TAX:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr>
+        <tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SHIPPING & HANDLING:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr> -->
+        <tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none" class="ta-right">TOTAL:</td>
+            <td class="amount subtotal" th:class="ta-right" th:text="'$' + ${total}"></td>
+        </tr>
+        </tfoot>
     </table>
 </section>
 </body>
