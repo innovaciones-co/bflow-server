@@ -9,6 +9,10 @@ interface PurchaseOrderRepository : JpaRepository<PurchaseOrder, Long> {
 
     fun findFirstByJob(job: Job): PurchaseOrder?
 
+    fun findByJob(job: Job): List<PurchaseOrder>
+
     fun existsByNumberIgnoreCase(number: String?): Boolean
+
+    fun findTopByOrderByIdDesc() : PurchaseOrder?
 
 }

@@ -46,6 +46,12 @@ class ItemService(
         return itemRepository.save(item).id!!
     }
 
+    fun createAll(itemsDTO: List<ItemDTO>): List<Long?> {
+        val items = itemsDTO.map { mapToEntity(it, Item()) }
+
+        return itemRepository.saveAll(items).map { it.id }
+    }
+
     fun update(id: Long, itemDTO: ItemDTO) {
         val item = itemRepository.findById(id)
                 .orElseThrow { NotFoundException() }

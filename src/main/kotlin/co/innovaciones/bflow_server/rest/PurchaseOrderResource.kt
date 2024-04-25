@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -31,8 +32,13 @@ class PurchaseOrderResource(
 ) {
 
     @GetMapping
-    fun getAllPurchaseOrders(): ResponseEntity<List<PurchaseOrderDTO>> =
-            ResponseEntity.ok(purchaseOrderService.findAll())
+    fun getAllPurchaseOrders(@RequestParam jobId: Long?): ResponseEntity<List<PurchaseOrderDTO>> {
+        if (jobId != null) {
+            return ResponseEntity.ok(purchaseOrderService.findByJob(jobId))
+        }
+        return ResponseEntity.ok(purchaseOrderService.findAll())
+    }
+
 
     @GetMapping("/{id}")
     fun getPurchaseOrder(@PathVariable(name = "id") id: Long): ResponseEntity<PurchaseOrderDTO> =

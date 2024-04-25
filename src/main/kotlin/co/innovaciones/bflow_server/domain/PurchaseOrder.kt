@@ -50,6 +50,13 @@ class PurchaseOrder {
     )
     var number: String? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supplier_id",
+        nullable = false,
+    )
+    var supplier: Contact? = null
+
     @Column
     var sentDate: LocalDateTime? = null
 

@@ -31,4 +31,7 @@ class PurchaseOrderDTO {
     @NotNull
     var job: Long? = null
 
+    @NotNull
+    var supplier: Long? = null
+
 }

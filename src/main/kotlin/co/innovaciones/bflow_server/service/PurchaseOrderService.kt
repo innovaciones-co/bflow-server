@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.model.CreatePurchaseOrderDTO
 import co.innovaciones.bflow_server.model.ItemDTO
 import co.innovaciones.bflow_server.model.OrderStatus
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
+import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.ItemRepository
 import co.innovaciones.bflow_server.repos.JobRepository
 import co.innovaciones.bflow_server.repos.PurchaseOrderRepository
@@ -13,7 +14,6 @@ import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.util.*
 
 
 @Service
@@ -23,6 +23,7 @@ class PurchaseOrderService(
     private val jobRepository: JobRepository,
     private val itemRepository: ItemRepository,
     private val itemService: ItemService,
+    private val contactRepository: ContactRepository
 ) {
 
     fun findAll(): List<PurchaseOrderDTO> {
@@ -30,6 +31,14 @@ class PurchaseOrderService(
         return purchaseOrders.stream()
                 .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
                 .toList()
+    }
+
+    fun findByJob(jobId: Long): List<PurchaseOrderDTO> {
+        val job = jobRepository.findById(jobId).get()
+        val purchaseOrders = purchaseOrderRepository.findByJob(job)
+        return purchaseOrders.stream()
+            .map { item -> mapToDTO(item, PurchaseOrderDTO()) }
+            .toList()
     }
 
     fun `get`(id: Long): PurchaseOrderDTO = purchaseOrderRepository.findById(id)
@@ -47,12 +56,12 @@ class PurchaseOrderService(
 
         val itemsBySupplier = createPurchaseOrderDTO.items!!.groupBy { it.supplier }
 
-        itemsBySupplier.forEach { (supplier, items) ->
+        itemsBySupplier.forEach { (supplierId, items) ->
             val purchaseOrder = PurchaseOrder()
             mapToEntity(createPurchaseOrderDTO, purchaseOrder)
 
-            // Set supplier for the purchase order
-            //purchaseOrder.supplier = supplier
+            purchaseOrder.supplier = contactRepository.findById(supplierId!!)
+                .orElseThrow { NotFoundException("client not found") }
 
             // Save purchase order
             val orderId = purchaseOrderRepository.save(purchaseOrder).id!!
@@ -90,6 +99,7 @@ class PurchaseOrderService(
         purchaseOrderDTO.completedDate = purchaseOrder.completedDate
         purchaseOrderDTO.status = purchaseOrder.status
         purchaseOrderDTO.job = purchaseOrder.job?.id
+        purchaseOrderDTO.supplier = purchaseOrder.supplier?.id
         purchaseOrderDTO.orderItems = purchaseOrder.orderItems?.map { orderItem ->  itemService.mapToDTO(orderItem, ItemDTO()) }?.toSet()
         return purchaseOrderDTO
     }
@@ -102,6 +112,7 @@ class PurchaseOrderService(
             jobRepository.findById(createPurchaseOrderDTO.job!!)
                 .orElseThrow { NotFoundException("job not found") }
         purchaseOrder.job = job
+
         return purchaseOrder
     }
 
@@ -136,8 +147,13 @@ class PurchaseOrderService(
     }
 
     fun generateOrderNumber(prefix: String): String {
-        val uniqueId = UUID.randomUUID().toString().replace("-", "")
-        return "$prefix-$uniqueId"
+        val lastOrder = purchaseOrderRepository.findTopByOrderByIdDesc()
+        var orderNumber : Long = 1
+        if (lastOrder?.id != null) {
+            orderNumber = lastOrder.id!! + 1
+        }
+        return "$prefix${orderNumber.toString().padStart(4, '0')}"
+
     }
 
 }

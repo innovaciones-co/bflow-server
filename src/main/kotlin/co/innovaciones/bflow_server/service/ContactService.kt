@@ -66,7 +66,7 @@ class ContactService(
         return contactDTO
     }
 
-    private fun mapToEntity(contactDTO: ContactDTO, contact: Contact): Contact {
+    fun mapToEntity(contactDTO: ContactDTO, contact: Contact): Contact {
         contact.name = contactDTO.name
         contact.idNumber = contactDTO.idNumber
         contact.address = contactDTO.address

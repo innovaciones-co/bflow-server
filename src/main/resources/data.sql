@@ -31,6 +31,9 @@ VALUES (10003, 'Eva Williams', '101 Elm St', 'eva.williams@email.com', 'CONTRACT
 INSERT INTO Contacts (id, name, address, email, type, date_created, last_updated, phone)
 VALUES (10004, 'Charlie Brown', '202 Maple St', 'charlie.brown@email.com', 'SUPPLIER', '2022-01-15T16:30:00Z', '2022-01-15T16:30:00Z', '654-987-0123');
 
+INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
+VALUES (9999, 'J9999', 'Nemo''s House', '2024-02-01', '2024-06-30', '123 Main St', 'The house of Nemo', 'SINGLE_STOREY', 10000, 10000, '2024-01-15T12:30:00Z', '2024-01-15T12:30:00Z', '10005');
+
 
 INSERT INTO Jobs (id, job_number, name, planned_start_date, planned_end_date, address, description, building_type, client_id, user_id, date_created, last_updated, supervisor_id)
 VALUES (10000, 'J10001', 'Construction Project A', '2022-02-01', '2022-06-30', '123 Main St', 'A new building project', 'SINGLE_STOREY', 10000, 10000, '2022-01-15T12:30:00Z', '2022-01-15T12:30:00Z', '10005');
@@ -179,11 +182,10 @@ VALUES
     (15, 'Circuit Breakers', 'Breakers for electrical panels', 20.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL003');
 
 -- Generate sample purchase orders and items
-INSERT INTO purchase_orders (id, number, status, date_created, last_updated, job_id)
-VALUES
-    (1, 'PO001', 'DRAFT', NOW(), NOW(), 10001),
-    (2, 'PO002', 'DRAFT', NOW(), NOW(), 10001),
-    (3, 'PO003', 'DRAFT', NOW(), NOW(), 10002);
+insert into public.purchase_orders (approved_date, completed_date, date_created, id, job_id, last_updated, sent_date, supplier_id, number, status)
+values  (null, null, '2024-04-21 01:20:54.021014 +00:00', 2, 10001, '2024-04-21 01:20:54.021014 +00:00', null, 10001, 'PO002', 'DRAFT'),
+        (null, null, '2024-04-21 01:20:54.021014 +00:00', 3, 10002, '2024-04-21 01:20:54.021014 +00:00', null, 10001, 'PO003', 'DRAFT'),
+        (null, null, '2024-04-21 01:20:54.021014 +00:00', 1, 10001, '2024-04-21 01:20:54.021014 +00:00', null, 10001, 'PO001', 'DRAFT');
 
 -- Insert items for each purchase order
 INSERT INTO items (id, name, description, unit_price, units, category_id, date_created, last_updated, purchase_order_id, supplier_id, job_id, measure)
@@ -202,7 +204,7 @@ VALUES
     (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 4, 3, NOW(), NOW(), 3, 10002, 10001, 'METERS'); -- Supplier: Bob Johnson
 
 
-INSERT INTO Templates (id, name, template, date_created, last_updated) VALUES (10001, 'Job Template', '[
+INSERT INTO Templates (id, type, name, template, date_created, last_updated) VALUES (10001, 'TASK_TEMPLATE', 'Job Template', '[
   {
     "stage": "SLAB_DOWN",
     "status": "CREATED",
@@ -468,5 +470,16 @@ INSERT INTO Templates (id, name, template, date_created, last_updated) VALUES (1
     "name": "Task 40",
     "description": null,
     "supplier_id": 10001
+  }
+]', now(), now());
+
+INSERT INTO Templates (id, type, name, template, date_created, last_updated) VALUES (10002, 'MATERIAL_TEMPLATE', 'Material Template 1', '[
+  {
+    "productName": "Lumber",
+    "quantity": 10
+  },
+  {
+    "productName": "Circuit Breakers",
+    "quantity": 20
   }
 ]', now(), now())

@@ -17,7 +17,8 @@ class TaskService(
     private val taskRepository: TaskRepository,
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
-    private val fileRepository: FileRepository
+    private val fileRepository: FileRepository,
+    private val contactService: ContactService,
 ) {
 
     fun findAll(): List<TaskReadDTO> {
@@ -87,7 +88,7 @@ class TaskService(
 
     private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
         mapToDTO(task, taskDTO as TaskDTO)
-        taskDTO.supplier = task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }
+        taskDTO.supplier = task.supplier?.let { supplier -> contactService.mapToDTO(supplier, ContactDTO()) }
         taskDTO.bookingDate = task.callDate
 
         return taskDTO
@@ -126,15 +127,6 @@ class TaskService(
                 .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
         return task
-    }
-
-    private fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
-        contactDTO.id = contact.id
-        contactDTO.name = contact.name
-        contactDTO.address = contact.address
-        contactDTO.email = contact.email
-        contactDTO.type = contact.type
-        return contactDTO
     }
 
     fun getReferencedWarning(id: Long): ReferencedWarning? {
