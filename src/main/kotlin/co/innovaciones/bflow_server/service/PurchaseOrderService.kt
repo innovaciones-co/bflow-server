@@ -14,6 +14,7 @@ import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.util.*
 
 
 @Service
@@ -56,12 +57,13 @@ class PurchaseOrderService(
 
         val itemsBySupplier = createPurchaseOrderDTO.items!!.groupBy { it.supplier }
 
-        itemsBySupplier.forEach { (supplierId, items) ->
+        itemsBySupplier.forEach { (supplier, items) ->
             val purchaseOrder = PurchaseOrder()
             mapToEntity(createPurchaseOrderDTO, purchaseOrder)
 
-            purchaseOrder.supplier = contactRepository.findById(supplierId!!)
-                .orElseThrow { NotFoundException("client not found") }
+            // Set supplier for the purchase order
+            if (supplier != null)
+                purchaseOrder.supplier = contactRepository.findById(supplier).get()
 
             // Save purchase order
             val orderId = purchaseOrderRepository.save(purchaseOrder).id!!
@@ -127,6 +129,10 @@ class PurchaseOrderService(
                 jobRepository.findById(purchaseOrderDTO.job!!)
                 .orElseThrow { NotFoundException("job not found") }
         purchaseOrder.job = job
+        val supplier = if (purchaseOrderDTO.supplier == null) null else
+            contactRepository.findById(purchaseOrderDTO.supplier!!)
+                .orElseThrow { NotFoundException("Supplier not found") }
+        purchaseOrder.supplier = supplier
         return purchaseOrder
     }
 
@@ -158,7 +164,7 @@ class PurchaseOrderService(
 
     fun findAllByJob(jobId: Long): List<PurchaseOrderDTO>? {
         val job = jobRepository.findById(jobId).get()
-        val purchaseOrders = purchaseOrderRepository.findAllByJob(job, Sort.by("id"))
+        val purchaseOrders = purchaseOrderRepository.findByJob(job)
         return purchaseOrders.stream()
             .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
             .toList()

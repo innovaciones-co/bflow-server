@@ -77,6 +77,10 @@ class PurchaseOrder {
     @JoinColumn(name = "job_id")
     var job: Job? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    var supplier: Contact? = null
+
     @CreatedDate
     @Column(
         nullable = false,
