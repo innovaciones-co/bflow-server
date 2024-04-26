@@ -6,6 +6,7 @@
 body {
     font-family: 'IBM Plex Sans', sans-serif;
     margin: 0;
+    font-size: 12px;
 }
 
 .sheet {
@@ -43,14 +44,16 @@ body.A4 .sheet {
 }
 
 #logo {
-    position: relative;
+    position: absolute;
+    top: 0;
+    right: 0;
 }
 
 #logo img {
+    width: 60px;
     position: absolute;
     right: 0;
     top: 0;
-    width: 15%;
 }
 
 table {
@@ -62,6 +65,11 @@ table th,
 table td {
     padding: 5px;
     border: 1px solid #ccc;
+}
+
+td p {
+    margin: 0;
+    line-height: 13px;
 }
 
 th {

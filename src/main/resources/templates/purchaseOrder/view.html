@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org" />
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title th:text="'Purchase Order - ' + ${order.number}"></title>
@@ -8,22 +8,47 @@
 </head>
 <body class="A4">
 <section class="sheet padding-10mm">
-    <h1 th:text="'Purchase Order -' + ${order.number}"></h1>
 
-    <div id="logo">
-        <img th:src="${'/assets/img/sh_logo.png'}">
+    <div style="position: relative">
+        <div><h1 th:text="'Purchase Order -' + ${order.number}"></h1></div>
+
+        <div id="logo">
+            <img th:src="${'/assets/img/sh_logo.png'}" alt="logo">
+        </div>
     </div>
 
     <p th:text="'Date: ' + ${#temporals.format(order.createdDate,'EEEE d MMM, yyyy')}"></p>
     <p th:text="'Order No.: ' + ${order.number}"></p>
 
-    <p>Job Site: </p>
-    <p th:text="'Address: ' + ${job.address}"></p>
-    <p th:text="'Phone: ' + ${job.client.phone}"></p>
-    <p>ABN: 86150702239 ACN: 150702239 Reg No: 13696</p>
-    <p th:text="'Supplier: ' + ${supplier.name}"></p>
-    <p>Ph: </p>
+    <table style="margin-top: 15px; margin-bottom: 20px">
+        <thead>
+        <tr>
+            <th>Job Info</th>
+            <th>Supplier</th>
+        </tr>
+        </thead>
 
+        <tbody>
+
+        <tr>
+            <td>
+                <p th:text="'Ref.: ' + ${job.jobNumber}"></p>
+                <p th:text="'Address: ' + ${job.address}"></p>
+                <p th:text="'Phone: ' + ${job.client.phone}"></p>
+                <p th:text="'Supervisor: ' + ${job.supervisor.firstName} + ${job.supervisor.lastName}"></p>
+            </td>
+            <td>
+                <p th:text="'Name: ' + ${supplier.name}"></p>
+                <p th:text="'Phone: ' + ${supplier.phone}"></p>
+                <p th:text="'Address: ' + ${supplier.address}"></p>
+                <p th:text="'Email: ' + ${supplier.email}"></p>
+            </td>
+        </tr>
+
+        </tbody>
+
+
+    </table>
 
 
     <table>
@@ -56,7 +81,7 @@
 
         <tfoot>
         <tr>
-            <td style="border:none" colspan="6"></td>
+            <td colspan="6" style="border:none"></td>
         </tr>
         <!--<tr>
             <td style="border:none" colspan="4"></td>
@@ -74,8 +99,8 @@
             <td class="amount subtotal">0.00</td>
         </tr> -->
         <tr>
-            <td style="border:none" colspan="4"></td>
-            <td style="border:none" class="ta-right">TOTAL:</td>
+            <td colspan="4" style="border:none"></td>
+            <td class="ta-right" style="border:none">TOTAL:</td>
             <td class="amount subtotal" th:class="ta-right" th:text="'$' + ${total}"></td>
         </tr>
         </tfoot>
