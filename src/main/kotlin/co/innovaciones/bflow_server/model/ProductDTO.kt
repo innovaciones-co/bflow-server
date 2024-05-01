@@ -14,6 +14,7 @@ class ProductDTO {
 
     @NotNull
     @Size(max = 255)
+    @ProductSkuUnique
     var sku: String? = null
 
     @Size(max = 255)
@@ -21,6 +22,8 @@ class ProductDTO {
 
     @NotNull
     var unitPrice: Double? = null
+
+    var vat: Double? = null
 
     @NotNull
     var unitOfMeasure: Units? = null

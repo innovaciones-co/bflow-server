@@ -30,11 +30,27 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
-      mode: never
+      mode: always
   docker:
     compose:
       lifecycle-management: start-only
-
+error:
+  handling:
+    http-status-in-json-response: true
+    exception-logging: NO_LOGGING
+    full-stacktrace-http-statuses: 5xx
+    log-levels:
+      5xx: ERROR
+    codes:
+      JobJobNumberUnique: JOB_JOB_NUMBER_UNIQUE
+      ProductSkuUnique: PRODUCT_SKU_UNIQUE
+      ContactEmailUnique: CONTACT_EMAIL_UNIQUE
+      CategoryParentCategoryUnique: CATEGORY_PARENT_CATEGORY_UNIQUE
+      PurchaseOrderNumberUnique: PURCHASE_ORDER_NUMBER_UNIQUE
+      UserUsernameUnique: USER_USERNAME_UNIQUE
+      UserEmailUnique: USER_EMAIL_UNIQUE
+      FileUriUnique: FILE_URI_UNIQUE
+      TemplateNameUnique: TEMPLATE_NAME_UNIQUE
 springdoc:
   pathsToMatch: /api/**
 jwt:

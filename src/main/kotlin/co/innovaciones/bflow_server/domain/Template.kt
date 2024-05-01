@@ -1,13 +1,7 @@
 package co.innovaciones.bflow_server.domain
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.EntityListeners
-import jakarta.persistence.GeneratedValue
-import jakarta.persistence.GenerationType
-import jakarta.persistence.Id
-import jakarta.persistence.SequenceGenerator
-import jakarta.persistence.Table
+import co.innovaciones.bflow_server.model.TemplateType
+import jakarta.persistence.*
 import java.time.OffsetDateTime
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
@@ -35,6 +29,13 @@ class Template {
         generator = "template_primary_sequence"
     )
     var id: Long? = null
+
+    @Column(
+        nullable = false,
+        unique = false
+    )
+    @Enumerated(EnumType.STRING)
+    var type: TemplateType? = null
 
     @Column(
         nullable = false,

@@ -13,8 +13,10 @@ class CategoryDTO {
     var name: String? = null
 
     @NotNull
+    @CategoryContactUnique
     var contact: Long? = null
 
+    @CategoryParentCategoryUnique
     var parentCategory: Long? = null
 
 }
