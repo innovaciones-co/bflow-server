@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.service.ProductService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
+import org.springframework.data.repository.query.Param
 import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -31,8 +33,12 @@ class ProductResource(
 ) {
 
     @GetMapping
-    fun getAllProducts(): ResponseEntity<List<ProductDTO>> =
-            ResponseEntity.ok(productService.findAll())
+    fun getAllProducts(@RequestParam categoryId: Long?): ResponseEntity<List<ProductDTO>> {
+        if (categoryId != null) return ResponseEntity.ok(productService.findByCategory(categoryId))
+
+        return ResponseEntity.ok(productService.findAll())
+    }
+
 
     @GetMapping("/{id}")
     fun getProduct(@PathVariable(name = "id") id: Long): ResponseEntity<ProductDTO> =

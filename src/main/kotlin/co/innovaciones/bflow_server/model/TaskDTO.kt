@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
 import java.time.LocalDate
+import java.time.OffsetDateTime
 
 @EndDateGreaterThanStartDate
 @WithinParentDateRange
@@ -24,6 +25,8 @@ open class TaskDTO {
     @NotNull
     var endDate: LocalDate? = null
 
+    var bookingDate: OffsetDateTime? = null
+
     @NotNull
     var progress: Double? = null
 
@@ -33,17 +36,17 @@ open class TaskDTO {
     @NotNull
     var stage: TaskStage? = null
 
+    var description: String? = null
+
+    @Min(0)
+    @Max(10000)
+    var order: Int? = null
+
     var parentTask: Long? = null
 
     var attachments: List<Long>? = null
 
     @NotNull
     var job: Long? = null
-
-    var description: String? = null
-
-    @Min(0)
-    @Max(10000)
-    var order: Int = 0
 
 }

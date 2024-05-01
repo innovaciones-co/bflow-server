@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.service
 
+import co.innovaciones.bflow_server.domain.Item
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.domain.Template
 import co.innovaciones.bflow_server.model.*
@@ -17,14 +18,23 @@ class TemplateService(
     private val contactRepository: ContactRepository,
     private val jobRepository: JobRepository,
     private val fileRepository: FileRepository,
-    private val jobService: JobService
+    private val productRepository: ProductRepository,
+    private val jobService: JobService,
+    private val itemService: ItemService,
 ) {
 
     fun findAll(): List<TemplateDTO> {
-        val templates = templateRepository.findAll(Sort.by("id"))
+        val templates = templateRepository.findAll(Sort.by("name"))
         return templates.stream()
                 .map { template -> mapToDTO(template, TemplateDTO()) }
                 .toList()
+    }
+
+    fun findAllByType(type: TemplateType): List<TemplateDTO> {
+        val templates = templateRepository.findByType(type, Sort.by("name"))
+        return templates.stream()
+            .map { template -> mapToDTO(template, TemplateDTO()) }
+            .toList()
     }
 
     fun `get`(id: Long): TemplateDTO = templateRepository.findById(id)
@@ -50,6 +60,7 @@ class TemplateService(
 
     private fun mapToDTO(template: Template, templateDTO: TemplateDTO): TemplateDTO {
         templateDTO.id = template.id
+        templateDTO.type = template.type
         templateDTO.name = template.name
         templateDTO.template = template.template
         return templateDTO
@@ -57,11 +68,12 @@ class TemplateService(
 
     private fun mapToEntity(templateDTO: TemplateDTO, template: Template): Template {
         template.name = templateDTO.name
+        template.type = templateDTO.type
         template.template = templateDTO.template
         return template
     }
 
-    //fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
+    fun nameExists(name: String?): Boolean = templateRepository.existsByNameIgnoreCase(name)
 
     fun createTasks(id: Long, jobId: Long) {
         val job = jobService.get(jobId)
@@ -70,6 +82,15 @@ class TemplateService(
 
         val tasks = parseTemplateAndCreateTasks(template, job)
         taskRepository.saveAll(tasks)
+    }
+
+    fun createMaterials(id: Long, jobId: Long) {
+        val job = jobService.get(jobId)
+        val template = templateRepository.findById(id)
+            .orElseThrow { throw NotFoundException("Template with id $id not found") }
+
+        val items = parseTemplateAndCreateMaterials(template, job)
+        itemService.createAll(items)
     }
 
     private fun parseTemplateAndCreateTasks(template: Template, job: JobDTO): List<Task> {
@@ -98,6 +119,30 @@ class TemplateService(
 
         return tasksDTO.map { taskDTO -> mapToEntity(taskDTO, Task())}
     }
+
+    private fun parseTemplateAndCreateMaterials(template: Template, jobDTO: JobDTO): List<ItemDTO> {
+        val mapper = jacksonObjectMapper()
+        val templateMaterials: List<MaterialTemplateDTO>? = mapper.readValue(template.template!!)
+
+        return templateMaterials?.mapNotNull { item ->
+            val product = productRepository.findFirstByName(item.productName)
+            product?.let {
+                ItemDTO().apply {
+                    id = product.id
+                    name = product.name
+                    description = product.description
+                    unitPrice = product.unitPrice ?: 0.0
+                    vat = product.vat
+                    units = item.quantity
+                    measure = product.unitOfMeasure
+                    category = product.category?.id
+                    job = jobDTO.id
+                    supplier = product.category!!.contact!!.id
+                }
+            }
+        } ?: emptyList()
+    }
+
 
     private fun mapToEntity(taskDTO: TaskDTO, task: Task): Task {
         task.name = taskDTO.name

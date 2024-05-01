@@ -64,11 +64,15 @@ class PurchaseOrder {
     var status: OrderStatus? = null
 
     @OneToMany(mappedBy = "purchaseOrder")
-    var orderItems: MutableSet<OrderItem>? = null
+    var orderItems: MutableSet<Item>? = null
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_id")
     var job: Job? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "supplier_id")
+    var supplier: Contact? = null
 
     @CreatedDate
     @Column(

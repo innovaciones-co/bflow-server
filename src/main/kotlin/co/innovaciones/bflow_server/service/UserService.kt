@@ -64,7 +64,7 @@ class UserService(
         user.firstName = userDTO.firstName
         user.lastName = userDTO.lastName
         user.username = userDTO.username
-        user.password = passwordEncoder.encode(userDTO.password)
+        user.password = if(userDTO.password == user.password) user.password else passwordEncoder.encode(userDTO.password)
         user.email = userDTO.email
         user.recoveryToken = userDTO.recoveryToken
         user.tokenExpirationDate = userDTO.tokenExpirationDate

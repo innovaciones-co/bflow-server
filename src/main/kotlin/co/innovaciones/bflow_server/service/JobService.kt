@@ -16,7 +16,9 @@ class JobService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val userRepository: UserRepository,
-    private val fileService: FileService
+    private val fileService: FileService,
+    private val contactService: ContactService,
+    private val purchaseOrderService: PurchaseOrderService
 ) {
 
     @Transactional(readOnly = true)
@@ -49,7 +51,7 @@ class JobService(
         jobRepository.deleteById(id)
     }
 
-    private fun mapToDTO(job: Job, jobDTO: JobReadDTO, includeChildren: Boolean = false): JobReadDTO {
+    protected fun mapToDTO(job: Job, jobDTO: JobReadDTO, includeChildren: Boolean = false): JobReadDTO {
         jobDTO.id = job.id
         jobDTO.jobNumber = job.jobNumber
         jobDTO.name = job.name
@@ -58,7 +60,7 @@ class JobService(
         jobDTO.address = job.address
         jobDTO.description = job.description
         jobDTO.buildingType = job.buildingType
-        jobDTO.client = job.client?.let { client -> mapToDTO(client, ContactDTO()) }
+        jobDTO.client = job.client?.let { client -> contactService.mapToDTO(client, ContactDTO()) }
         jobDTO.user = job.user?.let { user -> mapToDTO(user, UserDTO()) }
         jobDTO.stage = calculateStage(job.tasks)
         jobDTO.progress = calculateJobCompletionPercentage(job.tasks)
@@ -66,17 +68,14 @@ class JobService(
         if (includeChildren) {
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toSet()
+            jobDTO.purchaseOrders = job.purchaseOrders?.map { purchaseOrder ->
+                purchaseOrderService.mapToDTO(
+                    purchaseOrder,
+                    PurchaseOrderDTO()
+                )
+            }?.toSet()
         }
         return jobDTO
-    }
-
-    private fun mapToDTO(contact: Contact, contactDTO: ContactDTO): ContactDTO {
-        contactDTO.id = contact.id
-        contactDTO.name = contact.name
-        contactDTO.address = contact.address
-        contactDTO.email = contact.email
-        contactDTO.type = contact.type
-        return contactDTO
     }
 
     private fun mapToDTO(user: User, userDTO: UserDTO): UserDTO {
