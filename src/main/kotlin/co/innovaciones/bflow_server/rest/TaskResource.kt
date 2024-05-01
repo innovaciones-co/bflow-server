@@ -1,7 +1,9 @@
 package co.innovaciones.bflow_server.rest
 
+import co.innovaciones.bflow_server.model.TaskDTO
 import co.innovaciones.bflow_server.model.TaskWriteDTO
 import co.innovaciones.bflow_server.model.TaskReadDTO
+import co.innovaciones.bflow_server.model.TaskStatus
 import co.innovaciones.bflow_server.service.TaskService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -10,6 +12,7 @@ import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.handler.annotation.SendTo
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -53,6 +56,16 @@ class TaskResource(
     fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskWriteDTO): ResponseEntity<Long> {
         taskService.update(id, taskDTO)
         return ResponseEntity.ok(id)
+    }
+
+    @PutMapping("/{id}/confirm")
+    @SendTo("/task/update")
+    fun confirmTask(@PathVariable(name = "id") id: Long) : TaskDTO {
+        val task = taskService.get(id);
+        task.status = TaskStatus.CONFIRMED
+
+        taskService.update(id,taskService.convertToTaskWriteDTO(task));
+        return taskService.get(id);
     }
 
     @DeleteMapping("/{id}")

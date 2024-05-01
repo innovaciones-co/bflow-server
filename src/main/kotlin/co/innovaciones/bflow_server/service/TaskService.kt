@@ -129,6 +129,31 @@ class TaskService(
         return task
     }
 
+    fun convertToTaskWriteDTO(taskReadDTO: TaskReadDTO): TaskWriteDTO {
+        val taskWriteDTO = TaskWriteDTO()
+
+        // Copying common properties from TaskDTO
+        taskWriteDTO.id = taskReadDTO.id
+        taskWriteDTO.name = taskReadDTO.name
+        taskWriteDTO.startDate = taskReadDTO.startDate
+        taskWriteDTO.endDate = taskReadDTO.endDate
+        taskWriteDTO.bookingDate = taskReadDTO.bookingDate
+        taskWriteDTO.progress = taskReadDTO.progress
+        taskWriteDTO.status = taskReadDTO.status
+        taskWriteDTO.stage = taskReadDTO.stage
+        taskWriteDTO.description = taskReadDTO.description
+        taskWriteDTO.order = taskReadDTO.order
+        taskWriteDTO.parentTask = taskReadDTO.parentTask
+        taskWriteDTO.attachments = taskReadDTO.attachments
+        taskWriteDTO.job = taskReadDTO.job
+
+        // Copying supplier property
+        taskWriteDTO.supplier = taskReadDTO.supplier?.id // Assuming supplier property in TaskWriteDTO is Long
+
+        return taskWriteDTO
+    }
+
+
     fun getReferencedWarning(id: Long): ReferencedWarning? {
         val referencedWarning = ReferencedWarning()
         val task = taskRepository.findById(id)
