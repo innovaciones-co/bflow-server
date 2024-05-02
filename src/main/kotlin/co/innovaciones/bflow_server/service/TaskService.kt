@@ -19,7 +19,8 @@ class TaskService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val emailServiceV2: EmailServiceV2
 ) {
 
     fun findAll(): List<TaskReadDTO> {
@@ -82,6 +83,16 @@ class TaskService(
             OffsetDateTime.now().also { task.bookingDate = it }
             update(id, mapToCreateUpdateDTO(task))
         }
+    }
+
+    fun taskNotifyV2(ids:List<Long>){
+        for (id in ids) {
+            val task = get(id)
+            //emailService.sendEmail(task.supplier?.email, task.name?)
+            if (task.supplier == null){
+                continue
+            }
+            pass
     }
 
     private fun mapToDTO(task: Task, taskDTO: TaskDTO): TaskDTO {
