@@ -23,8 +23,6 @@ class ProductDTO {
     @NotNull
     var unitPrice: Double? = null
 
-    var vat: Double? = null
-
     @NotNull
     var unitOfMeasure: Units? = null
 
@@ -34,5 +32,8 @@ class ProductDTO {
     var url: String? = null
 
     var category: Long? = null
+
+    @NotNull
+    var supplier: Long? = null
 
 }

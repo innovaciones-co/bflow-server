@@ -5,7 +5,6 @@ import co.innovaciones.bflow_server.service.ProductService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
-import org.springframework.data.repository.query.Param
 import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -33,8 +32,9 @@ class ProductResource(
 ) {
 
     @GetMapping
-    fun getAllProducts(@RequestParam categoryId: Long?): ResponseEntity<List<ProductDTO>> {
+    fun getAllProducts(@RequestParam categoryId: Long?, @RequestParam supplierId: Long?): ResponseEntity<List<ProductDTO>> {
         if (categoryId != null) return ResponseEntity.ok(productService.findByCategory(categoryId))
+
 
         return ResponseEntity.ok(productService.findAll())
     }

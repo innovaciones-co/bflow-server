@@ -1,6 +1,5 @@
 package co.innovaciones.bflow_server.service
 
-import co.innovaciones.bflow_server.domain.Item
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.domain.Template
 import co.innovaciones.bflow_server.model.*
@@ -137,7 +136,7 @@ class TemplateService(
                     measure = product.unitOfMeasure
                     category = product.category?.id
                     job = jobDTO.id
-                    supplier = product.category!!.contact!!.id
+                    supplier = product.supplier!!.id
                 }
             }
         } ?: emptyList()

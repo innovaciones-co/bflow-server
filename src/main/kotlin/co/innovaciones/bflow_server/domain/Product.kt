@@ -74,6 +74,13 @@ class Product {
     @JoinColumn(name = "category_id")
     var category: Category? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supplier_id",
+        nullable = false
+    )
+    var supplier: Contact? = null
+
     @CreatedDate
     @Column(
         nullable = false,

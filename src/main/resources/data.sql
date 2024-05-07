@@ -150,36 +150,36 @@ INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, 
 INSERT INTO Tasks (end_date, progress, start_date, call_date, date_created, id, job_id, last_updated, parent_task_id, supplier_id, description, name, stage, status) VALUES ('2024-04-25', 0, '2024-04-21', null, '2024-01-22 09:15:00.000000 +00:00', 10040, 10004, '2024-01-22 09:15:00.000000 +00:00', null, 10001, null, 'Task 40', 'PCI', 'CREATED');
 
 -- Insert categories
-INSERT INTO Categories (id, name, date_created, last_updated, contact_id)
-VALUES (1, 'Wood', NOW(), NOW(), 10001),
-       (2, 'Metal', NOW(), NOW(), 10001),
-       (3, 'Concrete', NOW(), NOW(), 10001),
-       (4, 'Plumbing', NOW(), NOW(), 10004),
-       (5, 'Electrical', NOW(), NOW(), 10004);
+INSERT INTO Categories (id, name, trade_code, date_created, last_updated)
+VALUES (1, 'Wood', 100, NOW(), NOW()),
+       (2, 'Metal', 200, NOW(), NOW()),
+       (3, 'Concrete', 300, NOW(), NOW()),
+       (4, 'Plumbing', 400, NOW(), NOW()),
+       (5, 'Electrical', 500, NOW(), NOW());
 
 -- Insert products for suppliers
-INSERT INTO products (id, name, description, unit_price, uom_order_increment, unit_of_measure, category_id, date_created, last_updated, sku)
+INSERT INTO products (id, name, description, unit_price, uom_order_increment, unit_of_measure, category_id, date_created, last_updated, sku, supplier_id)
 VALUES
     -- Wood products
-    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 10, 'FEET', 1, NOW(), NOW(), 'WOOD001'),
-    (2, 'Plywood', 'Sheets of plywood for building', 25.00, 1, 'SQUARE_FEET', 1, NOW(), NOW(), 'WOOD002'),
-    (3, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 100, 'PIECES', 1, NOW(), NOW(), 'WOOD003'),
+    (1, 'Lumber', 'Various sizes of lumber for construction', 20.00, 10, 'FEET', 1, NOW(), NOW(), 'WOOD001', 10001),
+    (2, 'Plywood', 'Sheets of plywood for building', 25.00, 1, 'SQUARE_FEET', 1, NOW(), NOW(), 'WOOD002', 10001),
+    (3, 'Wood Screws', 'Assorted wood screws for fastening', 0.10, 100, 'PIECES', 1, NOW(), NOW(), 'WOOD003', 10001),
     -- Metal products
-    (4, 'Steel Beams', 'Structural steel beams for support', 50.00, 5, 'FEET', 2, NOW(), NOW(), 'METAL001'),
-    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 1, 'SQUARE_FEET', 2, NOW(), NOW(), 'METAL002'),
-    (6, 'Nails', 'Assorted nails for metal framing', 0.05, 200, 'PIECES', 2, NOW(), NOW(), 'METAL003'),
+    (4, 'Steel Beams', 'Structural steel beams for support', 50.00, 5, 'FEET', 2, NOW(), NOW(), 'METAL001', 10001),
+    (5, 'Aluminum Sheets', 'Sheets of aluminum for siding', 30.00, 1, 'SQUARE_FEET', 2, NOW(), NOW(), 'METAL002', 10001),
+    (6, 'Nails', 'Assorted nails for metal framing', 0.05, 200, 'PIECES', 2, NOW(), NOW(), 'METAL003', 10001),
     -- Concrete products
-    (7, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 1, 'EACH', 3, NOW(), NOW(), 'CONCRETE001'),
-    (8, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 1, 'CUBIC_METERS', 3, NOW(), NOW(), 'CONCRETE002'),
-    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 10, 'FEET', 3, NOW(), NOW(), 'CONCRETE003'),
+    (7, 'Concrete Blocks', 'Blocks for construction and landscaping', 3.00, 1, 'EACH', 3, NOW(), NOW(), 'CONCRETE001', 10001),
+    (8, 'Ready-Mix Concrete', 'Pre-mixed concrete for pouring', 100.00, 1, 'CUBIC_METERS', 3, NOW(), NOW(), 'CONCRETE002', 10001),
+    (9, 'Rebar', 'Steel reinforcement bars for concrete', 2.00, 10, 'FEET', 3, NOW(), NOW(), 'CONCRETE003', 10001),
     -- Plumbing products
-    (10, 'PVC Pipes', 'Pipes for plumbing installations', 2.50, 1, 'FEET', 4, NOW(), NOW(), 'PLUMBING001'),
-    (11, 'Faucets', 'Various faucets for sinks and showers', 30.00, 1, 'EACH', 4, NOW(), NOW(), 'PLUMBING002'),
-    (12, 'Pipe Fittings', 'Assorted fittings for plumbing systems', 1.00, 50, 'PIECES', 4, NOW(), NOW(), 'PLUMBING003'),
+    (10, 'PVC Pipes', 'Pipes for plumbing installations', 2.50, 1, 'FEET', 4, NOW(), NOW(), 'PLUMBING001', 10004),
+    (11, 'Faucets', 'Various faucets for sinks and showers', 30.00, 1, 'EACH', 4, NOW(), NOW(), 'PLUMBING002', 10004),
+    (12, 'Pipe Fittings', 'Assorted fittings for plumbing systems', 1.00, 50, 'PIECES', 4, NOW(), NOW(), 'PLUMBING003', 10004),
     -- Electrical products
-    (13, 'Electrical Wire', 'Wire for electrical installations', 0.75, 100, 'FEET', 5, NOW(), NOW(), 'ELECTRICAL001'),
-    (14, 'Light Fixtures', 'Various light fixtures for indoor and outdoor use', 50.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL002'),
-    (15, 'Circuit Breakers', 'Breakers for electrical panels', 20.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL003');
+    (13, 'Electrical Wire', 'Wire for electrical installations', 0.75, 100, 'FEET', 5, NOW(), NOW(), 'ELECTRICAL001', 10004),
+    (14, 'Light Fixtures', 'Various light fixtures for indoor and outdoor use', 50.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL002', 10004),
+    (15, 'Circuit Breakers', 'Breakers for electrical panels', 20.00, 1, 'EACH', 5, NOW(), NOW(), 'ELECTRICAL003', 10004);
 
 -- Generate sample purchase orders and items
 insert into public.purchase_orders (approved_date, completed_date, date_created, id, job_id, last_updated, sent_date, supplier_id, number, status)

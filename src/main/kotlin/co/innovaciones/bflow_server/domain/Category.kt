@@ -8,7 +8,6 @@ import jakarta.persistence.GeneratedValue
 import jakarta.persistence.GenerationType
 import jakarta.persistence.Id
 import jakarta.persistence.JoinColumn
-import jakarta.persistence.ManyToOne
 import jakarta.persistence.OneToMany
 import jakarta.persistence.OneToOne
 import jakarta.persistence.SequenceGenerator
@@ -44,12 +43,11 @@ class Category {
     @Column(nullable = false)
     var name: String? = null
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "contact_id",
+    @Column(
         nullable = false,
+        unique = true
     )
-    var contact: Contact? = null
+    var tradeCode: Int? = null
 
     @OneToMany(mappedBy = "category")
     var products: MutableSet<Product>? = null

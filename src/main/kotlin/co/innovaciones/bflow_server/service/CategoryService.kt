@@ -3,7 +3,6 @@ package co.innovaciones.bflow_server.service
 import co.innovaciones.bflow_server.domain.Category
 import co.innovaciones.bflow_server.model.CategoryDTO
 import co.innovaciones.bflow_server.repos.CategoryRepository
-import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.ItemRepository
 import co.innovaciones.bflow_server.repos.ProductRepository
 import co.innovaciones.bflow_server.util.NotFoundException
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Service
 @Service
 class CategoryService(
     private val categoryRepository: CategoryRepository,
-    private val contactRepository: ContactRepository,
     private val productRepository: ProductRepository,
     private val itemRepository: ItemRepository
 ) {
@@ -58,17 +56,14 @@ class CategoryService(
     private fun mapToDTO(category: Category, categoryDTO: CategoryDTO): CategoryDTO {
         categoryDTO.id = category.id
         categoryDTO.name = category.name
-        categoryDTO.contact = category.contact?.id
         categoryDTO.parentCategory = category.parentCategory?.id
+        categoryDTO.tradeCode = category.tradeCode
         return categoryDTO
     }
 
     private fun mapToEntity(categoryDTO: CategoryDTO, category: Category): Category {
         category.name = categoryDTO.name
-        val contact = if (categoryDTO.contact == null) null else
-                contactRepository.findById(categoryDTO.contact!!)
-                .orElseThrow { NotFoundException("contact not found") }
-        category.contact = contact
+        category.tradeCode = categoryDTO.tradeCode
         val parentCategory = if (categoryDTO.parentCategory == null) null else
                 categoryRepository.findById(categoryDTO.parentCategory!!)
                 .orElseThrow { NotFoundException("parentCategory not found") }
@@ -76,7 +71,9 @@ class CategoryService(
         return category
     }
 
-    fun contactExists(id: Long?): Boolean = categoryRepository.existsByContactId(id)
+    fun nameExists(name: String?): Boolean = categoryRepository.existsByNameIgnoreCase(name)
+
+    fun tradeCodeExists(tradeCode: Int?): Boolean = categoryRepository.existsByTradeCode(tradeCode)
 
     fun parentCategoryExists(id: Long?): Boolean = categoryRepository.existsByParentCategoryId(id)
 

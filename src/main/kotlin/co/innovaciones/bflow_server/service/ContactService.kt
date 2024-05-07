@@ -2,11 +2,7 @@ package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.model.ContactDTO
-import co.innovaciones.bflow_server.repos.CategoryRepository
-import co.innovaciones.bflow_server.repos.ContactRepository
-import co.innovaciones.bflow_server.repos.ItemRepository
-import co.innovaciones.bflow_server.repos.JobRepository
-import co.innovaciones.bflow_server.repos.TaskRepository
+import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import co.innovaciones.bflow_server.util.ReferencedWarning
 import org.springframework.data.domain.Sort
@@ -17,9 +13,9 @@ import org.springframework.stereotype.Service
 class ContactService(
     private val contactRepository: ContactRepository,
     private val jobRepository: JobRepository,
-    private val categoryRepository: CategoryRepository,
     private val taskRepository: TaskRepository,
-    private val itemRepository: ItemRepository
+    private val itemRepository: ItemRepository,
+    private val productRepository: ProductRepository
 ) {
 
     fun findAll(): List<ContactDTO> {
@@ -86,17 +82,11 @@ class ContactService(
     fun getReferencedWarning(id: Long): ReferencedWarning? {
         val referencedWarning = ReferencedWarning()
         val contact = contactRepository.findById(id)
-                .orElseThrow { NotFoundException() }
+            .orElseThrow { NotFoundException() }
         val clientJob = jobRepository.findFirstByClient(contact)
         if (clientJob != null) {
             referencedWarning.key = "contact.job.client.referenced"
             referencedWarning.addParam(clientJob.id)
-            return referencedWarning
-        }
-        val contactCategory = categoryRepository.findFirstByContact(contact)
-        if (contactCategory != null) {
-            referencedWarning.key = "contact.category.contact.referenced"
-            referencedWarning.addParam(contactCategory.id)
             return referencedWarning
         }
         val supplierTask = taskRepository.findFirstBySupplier(contact)
@@ -109,6 +99,12 @@ class ContactService(
         if (supplierItem != null) {
             referencedWarning.key = "contact.item.supplier.referenced"
             referencedWarning.addParam(supplierItem.id)
+            return referencedWarning
+        }
+        val supplierProduct = productRepository.findFirstBySupplier(contact)
+        if (supplierProduct != null) {
+            referencedWarning.key = "contact.product.supplier.referenced"
+            referencedWarning.addParam(supplierProduct.id)
             return referencedWarning
         }
         return null

@@ -10,6 +10,7 @@ import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -27,7 +28,8 @@ import org.springframework.web.bind.annotation.RestController
 )
 @SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
-    private val taskService: TaskService
+    private val taskService: TaskService,
+    private val messagingTemplate: SimpMessagingTemplate
 ) {
 
     @GetMapping
@@ -52,6 +54,7 @@ class TaskResource(
     @PutMapping("/{id}")
     fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskWriteDTO): ResponseEntity<Long> {
         taskService.update(id, taskDTO)
+        messagingTemplate.convertAndSend("/topic/tasks", taskService.get(id))
         return ResponseEntity.ok(id)
     }
 
