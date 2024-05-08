@@ -85,7 +85,8 @@ class TaskResource(
     @ApiResponse(responseCode = "201")
     fun taskNotification(@RequestBody tasks: List<Long>): ResponseEntity<String> {
         try {
-            taskService.taskNotify(tasks)
+            taskService.taskNotifyEmail(tasks)
+
             return ResponseEntity.ok("Tasks notification successfully")
         } catch (e: Exception){
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error processing tasks: ${e.message}")

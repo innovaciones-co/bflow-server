@@ -19,8 +19,7 @@ class TaskService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository,
-    private val emailService: EmailService,
-    private val emailServiceV2: EmailServiceV2
+    private val emailService: EmailService
 ) {
 
     fun findAll(): List<TaskReadDTO> {
@@ -85,14 +84,27 @@ class TaskService(
         }
     }
 
-    fun taskNotifyV2(ids:List<Long>){
+    fun taskNotifyEmail(ids:List<Long>){
         for (id in ids) {
             val task = get(id)
             //emailService.sendEmail(task.supplier?.email, task.name?)
             if (task.supplier == null){
                 continue
             }
-            pass
+
+            val notificationFactory = NotificationFactory()
+
+            val builder = notificationFactory.createNotificationBuilder("email",emailService)
+            val notification = builder
+                .withContent("This is a test email task ${task.id}")
+                .withSubject("Test Email Subject ${task.name}")
+                .withRecipients("diegofelipere@gmail.com")
+                .build()
+            notification.send()
+
+
+
+        }
     }
 
     private fun mapToDTO(task: Task, taskDTO: TaskDTO): TaskDTO {
