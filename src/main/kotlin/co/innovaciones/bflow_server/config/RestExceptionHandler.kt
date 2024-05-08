@@ -13,6 +13,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
+import org.springframework.web.method.annotation.HandlerMethodValidationException
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -28,16 +29,25 @@ class RestExceptionHandler {
         return ResponseEntity(errorResponse, HttpStatus.NOT_FOUND)
     }
 
+    @ExceptionHandler(HandlerMethodValidationException::class)
+    fun handleMethodValidation(exception: HandlerMethodValidationException): ResponseEntity<ErrorResponse> {
+        val errorResponse = ErrorResponse()
+        errorResponse.httpStatus = HttpStatus.BAD_REQUEST.value()
+        errorResponse.exception = exception::class.simpleName
+        errorResponse.message = exception.message
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
     @ExceptionHandler(MethodArgumentNotValidException::class)
     fun handleMethodArgumentNotValid(exception: MethodArgumentNotValidException): ResponseEntity<ErrorResponse> {
         val bindingResult: BindingResult = exception.bindingResult
         var fieldErrors: List<FieldError> = bindingResult.fieldErrors.stream().map { error ->
-                val fieldError = FieldError()
-                fieldError.errorCode = error.code
-                fieldError.field = error.field
-                fieldError.message = error.defaultMessage
-                fieldError
-            }.toList()
+            val fieldError = FieldError()
+            fieldError.errorCode = error.code
+            fieldError.field = error.field
+            fieldError.message = error.defaultMessage
+            fieldError
+        }.toList()
         fieldErrors = fieldErrors.plus(bindingResult.allErrors.stream().map { e ->
             val fieldError = FieldError()
             fieldError.message = e.defaultMessage

@@ -1,6 +1,8 @@
 package co.innovaciones.bflow_server.rest
 
 import co.innovaciones.bflow_server.model.ProductDTO
+import co.innovaciones.bflow_server.model.validators.OnCreate
+import co.innovaciones.bflow_server.model.validators.OnUpdate
 import co.innovaciones.bflow_server.service.ProductService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
@@ -9,6 +11,7 @@ import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.validation.annotation.Validated
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -33,8 +36,12 @@ class ProductResource(
 
     @GetMapping
     fun getAllProducts(@RequestParam categoryId: Long?, @RequestParam supplierId: Long?): ResponseEntity<List<ProductDTO>> {
+
+        if (categoryId != null && supplierId != null) return ResponseEntity.ok(productService.findBySupplierAndCategory(supplierId, categoryId))
+
         if (categoryId != null) return ResponseEntity.ok(productService.findByCategory(categoryId))
 
+        if (supplierId != null) return ResponseEntity.ok(productService.findBySupplier(supplierId))
 
         return ResponseEntity.ok(productService.findAll())
     }
@@ -46,16 +53,22 @@ class ProductResource(
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    fun createProduct(@RequestBody @Valid productDTO: ProductDTO): ResponseEntity<Long> {
+    fun createProduct(@RequestBody @Validated(OnCreate::class) productDTO: ProductDTO): ResponseEntity<Long> {
         val createdId = productService.create(productDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
-    fun updateProduct(@PathVariable(name = "id") id: Long, @RequestBody @Valid
+    fun updateProduct(@PathVariable(name = "id") id: Long, @RequestBody @Validated(OnUpdate::class)
             productDTO: ProductDTO): ResponseEntity<Long> {
         productService.update(id, productDTO)
         return ResponseEntity.ok(id)
+    }
+
+    @PutMapping("/upsert")
+    fun upsertProducts(@RequestBody @Validated(OnUpdate::class) productsListDTO: List<ProductDTO>): ResponseEntity<List<Long>> {
+        val updated = productService.upsertAll(productsListDTO)
+        return ResponseEntity.ok(updated)
     }
 
     @DeleteMapping("/{id}")

@@ -32,6 +32,23 @@ class ProductService(
             .toList()
     }
 
+    fun findBySupplier(supplierId: Long): List<ProductDTO> {
+        val supplier = contactRepository.findById(supplierId).get()
+        val products = productRepository.findAllBySupplier(supplier)
+        return products.stream()
+            .map { item -> mapToDTO(item, ProductDTO()) }
+            .toList()
+    }
+
+    fun findBySupplierAndCategory(supplierId: Long, categoryId: Long): List<ProductDTO> {
+        val category = categoryRepository.findById(categoryId).get()
+        val supplier = contactRepository.findById(supplierId).get()
+        val products = productRepository.findAllBySupplierAndCategory(supplier, category)
+        return products.stream()
+            .map { item -> mapToDTO(item, ProductDTO()) }
+            .toList()
+    }
+
     fun `get`(id: Long): ProductDTO = productRepository.findById(id)
         .map { product -> mapToDTO(product, ProductDTO()) }
         .orElseThrow { NotFoundException() }
@@ -40,6 +57,19 @@ class ProductService(
         val product = Product()
         mapToEntity(productDTO, product)
         return productRepository.save(product).id!!
+    }
+
+    fun upsertAll(productDTOList: List<ProductDTO>): List<Long> {
+        val updatedProducts = mutableListOf<ProductDTO>()
+
+        for (productDTO in productDTOList) {
+            val product : Product = productRepository.getBySku(productDTO.sku) ?: Product()
+            mapToEntity(productDTO, product)
+            val updatedProduct = productRepository.save(product)
+            updatedProducts.add(mapToDTO(updatedProduct, ProductDTO()))
+        }
+
+        return updatedProducts.map { it.id!! }.toList()
     }
 
     fun update(id: Long, productDTO: ProductDTO) {
@@ -64,6 +94,7 @@ class ProductService(
         productDTO.url = product.url
         productDTO.category = product.category?.id
         productDTO.supplier = product.supplier?.id
+        productDTO.dateUpdated = product.lastUpdated
         return productDTO
     }
 
