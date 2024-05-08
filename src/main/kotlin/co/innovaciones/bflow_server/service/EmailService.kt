@@ -15,23 +15,25 @@ class EmailService(
     private val sendSmtpEmail: SendSmtpEmail
 ) {
 
-    fun sendEmail(toSend: String, taskData: String): String {
+    fun sendEmail(recipients: List<String>, subject:String, content:String, params:Map<String,Any>): String  {
 
         var emailConfirmation: String
 
-        val to = SendSmtpEmailTo()
         val sender = SendSmtpEmailSender()
-        to.email = toSend
+        sender.email = "diegofelipere@hotmail.com"
+        sender.name = "Diego"
+        val replyTo = SendSmtpEmailTo()
+        replyTo.email = sender.email
+        replyTo.name = sender.name
+
+        val to = SendSmtpEmailTo()
+        for (recipient in recipients) {
+            to.email = recipient
+        }
         sendSmtpEmail.to = listOf(to)
-        sender.email = "test@correo.com"
-        sendSmtpEmail.sender = sender
-        sendSmtpEmail.subject = "Notificacion for task: $taskData"
-        sendSmtpEmail.htmlContent = "<p>This is the HTML content of the email /n $taskData</p>"
-        //val params = sendSmtpEmail.params("{\"TASK\":\"10003\",\"SUPPLIER\":\"$taskData\"}")
-        sendSmtpEmail.params = mapOf(
-            "TASK" to "10003",
-            "TASKDATA" to "$taskData"
-        )
+        sendSmtpEmail.subject = subject
+        sendSmtpEmail.htmlContent = content
+        sendSmtpEmail.params = params
         sendSmtpEmail.templateId = 1
 
         try {

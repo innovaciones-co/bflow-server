@@ -4,6 +4,7 @@ class EmailNotificationBuilder(private val emailService: EmailService):Notificat
     private var content:String=""
     private var subject:String=""
     private val recipients = mutableListOf<String>()
+    private var params: Map<String,Any> = emptyMap()
 
     override fun withContent(content: String): NotificationBuilder {
         this.content=content
@@ -18,8 +19,12 @@ class EmailNotificationBuilder(private val emailService: EmailService):Notificat
         this.recipients.addAll(recipients)
         return this
     }
+    fun withParams(params:Map<String,Any>):NotificationBuilder{
+        this.params = params
+        return this
+    }
 
     override fun build(): NotificationStrategy {
-        return EmailNotification(content,subject,recipients,emailService)
+        return EmailNotification(content,subject,recipients,emailService,params)
     }
 }

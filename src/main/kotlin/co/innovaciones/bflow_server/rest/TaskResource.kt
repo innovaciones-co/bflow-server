@@ -72,11 +72,14 @@ class TaskResource(
         //val tasks = taskService.findAllByIds(taskList)
         val task = taskService.get(id)
 
-        val emailTo = task.supplier?.email
+        val emailTo = listOf(task.supplier?.email)
         val emailDescription = task.name + " starting at " + task.startDate
-        val emailToTest = "diegofelipere@gmail.com"
-
-        val emailSentTest = emailTo?.let { emailService.sendEmail(it, emailDescription) }
+        val emailToTest = listOf("diegofelipere@gmail.com")
+        val params = mapOf(
+            "TASK" to "${task.id}",
+            "TASKDATA" to "${task.name}"
+        )
+        val emailSentTest = emailToTest?.let { emailService.sendEmail(it, "test",emailDescription,params) }
         //val emailSentTest = emailService.sendEmail(emailTo, emailDescription)
         return ResponseEntity(emailSentTest, HttpStatus.CREATED)
     }

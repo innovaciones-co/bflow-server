@@ -71,12 +71,16 @@ class TaskService(
         for (id in ids) {
             val task = get(id)
             //emailService.sendEmail(task.supplier?.email, task.name?)
-            if (task.supplier == null){
+            if (task.supplier == null) {
                 continue
             }
+            val params = mapOf(
+                "TASK" to "${task.id}",
+                "TASKDATA" to "${task.name}"
+            )
             emailService.sendEmail(
-                task.supplier?.email!!,
-                task.name?:"No name"
+                listOf(task.supplier?.email!!),
+                task.name ?: "No name", "TEST", params
             )
             task.status = TaskStatus.SENT
             OffsetDateTime.now().also { task.bookingDate = it }
@@ -84,25 +88,34 @@ class TaskService(
         }
     }
 
-    fun taskNotifyEmail(ids:List<Long>){
+    fun taskNotifyEmail(ids: List<Long>) {
         for (id in ids) {
             val task = get(id)
             //emailService.sendEmail(task.supplier?.email, task.name?)
-            if (task.supplier == null){
+            if (task.supplier == null) {
                 continue
             }
+            //content according to template
+            val params = mapOf(
+                "TASK" to "${task.id}",
+                "TASKDATA" to "${task.name}"
+            )
 
             val notificationFactory = NotificationFactory()
 
-            val builder = notificationFactory.createNotificationBuilder("email",emailService)
+            val builder =
+                notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
             val notification = builder
-                .withContent("This is a test email task ${task.id}")
-                .withSubject("Test Email Subject ${task.name}")
+                .withParams(params)
+                .withContent("\"<html><body><h1>Common: This is my first transactional email {{params.TASKDATA}}</h1></body></html>")
+                .withSubject("Notification for task: ${task.id}")
                 .withRecipients("diegofelipere@gmail.com")
                 .build()
             notification.send()
 
-
+            //task.status = TaskStatus.SENT
+            //OffsetDateTime.now().also { task.bookingDate = it }
+            //update(id, mapToCreateUpdateDTO(task))
 
         }
     }
