@@ -30,7 +30,7 @@ spring:
     defer-datasource-initialization: true
   sql:
     init:
-      mode: always
+      mode: never
   docker:
     compose:
       lifecycle-management: start-only
