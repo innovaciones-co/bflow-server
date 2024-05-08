@@ -1,12 +1,25 @@
 package co.innovaciones.bflow_server.domain
 
 import co.innovaciones.bflow_server.model.BuildingType
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.EntityListeners
+import jakarta.persistence.EnumType
+import jakarta.persistence.Enumerated
+import jakarta.persistence.FetchType
+import jakarta.persistence.GeneratedValue
+import jakarta.persistence.GenerationType
+import jakarta.persistence.Id
+import jakarta.persistence.JoinColumn
+import jakarta.persistence.ManyToOne
+import jakarta.persistence.OneToMany
+import jakarta.persistence.SequenceGenerator
+import jakarta.persistence.Table
+import java.time.LocalDate
+import java.time.OffsetDateTime
 import org.springframework.data.annotation.CreatedDate
 import org.springframework.data.annotation.LastModifiedDate
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
-import java.time.LocalDate
-import java.time.OffsetDateTime
 
 
 @Entity
@@ -23,7 +36,7 @@ class Job {
         name = "job_primary_sequence",
         sequenceName = "job_primary_sequence",
         allocationSize = 1,
-        initialValue = 10000
+        initialValue = 10050
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
@@ -73,6 +86,13 @@ class Job {
     )
     var user: User? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supervisor_id",
+        nullable = false
+    )
+    var supervisor: User? = null
+
     @OneToMany(mappedBy = "job")
     var files: MutableSet<File>? = null
 
@@ -81,6 +101,9 @@ class Job {
 
     @OneToMany(mappedBy = "job")
     var tasks: MutableSet<Task>? = null
+
+    @OneToMany(mappedBy = "job")
+    var materials: MutableSet<Item>? = null
 
     @CreatedDate
     @Column(

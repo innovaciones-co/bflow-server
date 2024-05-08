@@ -5,6 +5,7 @@ import co.innovaciones.bflow_server.model.FieldError
 import co.innovaciones.bflow_server.util.NotFoundException
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import jakarta.validation.ConstraintViolationException
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.validation.BindingResult
@@ -12,7 +13,6 @@ import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ExceptionHandler
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RestControllerAdvice
-import org.springframework.web.context.request.WebRequest
 import org.springframework.web.server.ResponseStatusException
 
 
@@ -41,6 +41,7 @@ class RestExceptionHandler {
         fieldErrors = fieldErrors.plus(bindingResult.allErrors.stream().map { e ->
             val fieldError = FieldError()
             fieldError.message = e.defaultMessage
+            fieldError.errorCode = e.code
             fieldError
         }.toList())
 
@@ -69,6 +70,26 @@ class RestExceptionHandler {
         errorResponse.message = "Invalid arguments"
 
         return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    @ExceptionHandler(value = [DataIntegrityViolationException::class])
+    fun handleConstraintViolationExceptions(
+        exception: DataIntegrityViolationException
+    ): ResponseEntity<ErrorResponse> {
+
+        val errorResponse = ErrorResponse()
+        errorResponse.httpStatus = HttpStatus.CONFLICT.value()
+        errorResponse.exception = exception::class.simpleName
+        errorResponse.fieldErrors = listOf(FieldError(message = extractDetailSection(exception.message)))
+        errorResponse.message = "Data integrity violation."
+
+        return ResponseEntity(errorResponse, HttpStatus.BAD_REQUEST)
+    }
+
+    private fun extractDetailSection(input: String?): String? {
+        val regex = Regex("Detail: (.+?)\\]")
+        val matchResult = if(input != null) regex.find(input) else null
+        return if(matchResult != null) matchResult?.groupValues?.get(1) else input
     }
 
     @ExceptionHandler(ResponseStatusException::class)

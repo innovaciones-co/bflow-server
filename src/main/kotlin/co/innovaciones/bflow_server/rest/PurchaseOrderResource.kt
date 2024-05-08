@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.rest
 
+import co.innovaciones.bflow_server.model.CreatePurchaseOrderDTO
 import co.innovaciones.bflow_server.model.PurchaseOrderDTO
 import co.innovaciones.bflow_server.service.PurchaseOrderService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -30,8 +32,13 @@ class PurchaseOrderResource(
 ) {
 
     @GetMapping
-    fun getAllPurchaseOrders(): ResponseEntity<List<PurchaseOrderDTO>> =
-            ResponseEntity.ok(purchaseOrderService.findAll())
+    fun getAllPurchaseOrders(@RequestParam jobId: Long?): ResponseEntity<List<PurchaseOrderDTO>> {
+        if (jobId != null) {
+            return ResponseEntity.ok(purchaseOrderService.findByJob(jobId))
+        }
+        return ResponseEntity.ok(purchaseOrderService.findAll())
+    }
+
 
     @GetMapping("/{id}")
     fun getPurchaseOrder(@PathVariable(name = "id") id: Long): ResponseEntity<PurchaseOrderDTO> =
@@ -43,6 +50,14 @@ class PurchaseOrderResource(
             ResponseEntity<Long> {
         val createdId = purchaseOrderService.create(purchaseOrderDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
+    }
+
+    @PostMapping("/items")
+    @ApiResponse(responseCode = "201")
+    fun createPurchaseOrder(@RequestBody @Valid createPurchaseOrderDTO: CreatePurchaseOrderDTO):
+            ResponseEntity<List<Long>> {
+        val orderIds = purchaseOrderService.createFromItems(createPurchaseOrderDTO)
+        return ResponseEntity(orderIds, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")

@@ -1,6 +1,6 @@
 package co.innovaciones.bflow_server.rest
 
-import co.innovaciones.bflow_server.model.TaskCreateUpdateDTO
+import co.innovaciones.bflow_server.model.TaskWriteDTO
 import co.innovaciones.bflow_server.model.TaskReadDTO
 import co.innovaciones.bflow_server.service.EmailService
 import co.innovaciones.bflow_server.service.TaskService
@@ -11,6 +11,7 @@ import java.lang.Void
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
+import org.springframework.messaging.simp.SimpMessagingTemplate
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -47,15 +48,16 @@ class TaskResource(
 
     @PostMapping
     @ApiResponse(responseCode = "201")
-    fun createTask(@RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<Long> {
+    fun createTask(@RequestBody @Valid taskDTO: TaskWriteDTO): ResponseEntity<Long> {
         val createdId = taskService.create(taskDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
     }
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskCreateUpdateDTO): ResponseEntity<TaskReadDTO> {
+    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskWriteDTO): ResponseEntity<Long> {
         taskService.update(id, taskDTO)
-        return ResponseEntity.ok(taskService.get(id))
+        messagingTemplate.convertAndSend("/topic/tasks", taskService.get(id))
+        return ResponseEntity.ok(id)
     }
 
     @DeleteMapping("/{id}")

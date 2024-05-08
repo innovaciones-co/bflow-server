@@ -43,13 +43,11 @@ class Category {
     @Column(nullable = false)
     var name: String? = null
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(
-        name = "contact_id",
+    @Column(
         nullable = false,
         unique = true
     )
-    var contact: Contact? = null
+    var tradeCode: Int? = null
 
     @OneToMany(mappedBy = "category")
     var products: MutableSet<Product>? = null
@@ -57,7 +55,7 @@ class Category {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(
         name = "parent_category_id",
-        unique = true
+        unique = false
     )
     var parentCategory: Category? = null
 

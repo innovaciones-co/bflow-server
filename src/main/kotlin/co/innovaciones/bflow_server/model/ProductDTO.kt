@@ -14,6 +14,7 @@ class ProductDTO {
 
     @NotNull
     @Size(max = 255)
+    @ProductSkuUnique
     var sku: String? = null
 
     @Size(max = 255)
@@ -31,5 +32,8 @@ class ProductDTO {
     var url: String? = null
 
     var category: Long? = null
+
+    @NotNull
+    var supplier: Long? = null
 
 }

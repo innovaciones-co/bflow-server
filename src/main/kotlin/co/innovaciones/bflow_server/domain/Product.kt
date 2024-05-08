@@ -57,6 +57,9 @@ class Product {
     @Column(nullable = false)
     var unitPrice: Double? = null
 
+    @Column(columnDefinition = "double precision default 0")
+    var vat: Double = 0.0
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     var unitOfMeasure: Units? = null
@@ -70,6 +73,13 @@ class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     var category: Category? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(
+        name = "supplier_id",
+        nullable = false
+    )
+    var supplier: Contact? = null
 
     @CreatedDate
     @Column(

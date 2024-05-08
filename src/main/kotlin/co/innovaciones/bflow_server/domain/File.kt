@@ -70,6 +70,10 @@ class File {
     @JoinColumn(name = "job_id")
     var job: Job? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "task_id")
+    var task: Task? = null
+
     @CreatedDate
     @Column(
         nullable = false,

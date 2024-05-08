@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 
@@ -31,8 +32,13 @@ class ProductResource(
 ) {
 
     @GetMapping
-    fun getAllProducts(): ResponseEntity<List<ProductDTO>> =
-            ResponseEntity.ok(productService.findAll())
+    fun getAllProducts(@RequestParam categoryId: Long?, @RequestParam supplierId: Long?): ResponseEntity<List<ProductDTO>> {
+        if (categoryId != null) return ResponseEntity.ok(productService.findByCategory(categoryId))
+
+
+        return ResponseEntity.ok(productService.findAll())
+    }
+
 
     @GetMapping("/{id}")
     fun getProduct(@PathVariable(name = "id") id: Long): ResponseEntity<ProductDTO> =

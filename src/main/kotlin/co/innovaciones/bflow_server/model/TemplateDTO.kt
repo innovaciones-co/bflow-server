@@ -9,7 +9,11 @@ class TemplateDTO {
     var id: Long? = null
 
     @NotNull
+    var type: TemplateType? = null
+
+    @NotNull
     @Size(max = 255)
+    @TemplateNameUnique
     var name: String? = null
 
     @NotNull
