@@ -31,7 +31,8 @@ import sibModel.TaskList
 @SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
     private val taskService: TaskService,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val messagingTemplate: SimpMessagingTemplate
 ) {
 
     @GetMapping

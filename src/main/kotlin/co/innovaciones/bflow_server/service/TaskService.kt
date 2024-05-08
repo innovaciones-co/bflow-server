@@ -20,7 +20,8 @@ class TaskService(
     private val jobRepository: JobRepository,
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository,
-    private val emailService: EmailService
+    private val emailService: EmailService,
+    private val contactService: ContactService
 ) {
 
     fun findAll(): List<TaskReadDTO> {
@@ -46,14 +47,6 @@ class TaskService(
             .map { task -> mapToDTO(task, TaskReadDTO()) }
             .toList()
     }
-
-    fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
-        val tasks = taskRepository.findByIdIn(ids)
-        return tasks.stream()
-            .map { task -> mapToDTO(task, TaskReadDTO()) }
-            .toList()
-    }
-
 
 
     fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
@@ -164,8 +157,8 @@ class TaskService(
         return taskDTO
     }*/
 
-    private fun mapToCreateUpdateDTO(taskReadDTO: TaskReadDTO): TaskCreateUpdateDTO {
-        val taskCreateUpdateDTO = TaskCreateUpdateDTO()
+    private fun mapToCreateUpdateDTO(taskReadDTO: TaskReadDTO): TaskWriteDTO {
+        val taskCreateUpdateDTO = TaskWriteDTO()
         //mapToDTO(taskReadDTO as Task, taskCreateUpdateDTO as TaskDTO)
 
 
