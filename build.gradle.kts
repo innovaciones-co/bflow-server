@@ -1,5 +1,6 @@
 import org.springframework.boot.gradle.tasks.run.BootRun
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 
 plugins {
     id("org.springframework.boot") version "3.2.1"
@@ -50,6 +51,19 @@ allOpen {
 tasks.getByName<BootRun>("bootRun") {
     environment["SPRING_PROFILES_ACTIVE"] = environment["SPRING_PROFILES_ACTIVE"] ?: "local"
 }
+
+tasks.getByName<BootBuildImage>("bootBuildImage") {
+    imageName.set("sdtorresl/${project.name}:${project.version}")
+    publish.set(true)
+    docker {
+        publishRegistry {
+            username.set(System.getenv("DOCKER_USERNAME"))
+            password.set(System.getenv("DOCKER_SECRET"))
+        }
+    }
+}
+
+
 
 tasks.withType<KotlinCompile> {
     kotlinOptions {
