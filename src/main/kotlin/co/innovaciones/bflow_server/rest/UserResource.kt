@@ -117,7 +117,7 @@ class UserResource(
     @PostMapping("/create-new-password")
     fun newPassword(@RequestBody @Valid newPassDTO: NewPassDTO) : ResponseEntity<Void> {
         // TODO
-        return  ResponseEntity.noContent().build();
+        return  ResponseEntity.noContent().build()
     }
 
 }
