@@ -101,14 +101,14 @@ class UserResource(
     @PostMapping("/recover-password")
     fun recoverPassword(@RequestBody @Valid recoveryDTO : RecoveryDTO) : ResponseEntity<Long> {
         try {
-            val username = recoveryDTO.username!!;
-            val userDTO = userService.get(username);
-            val token = UUID.randomUUID().toString();
-            userDTO.recoveryToken = token;
-            userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15);
+            val username = recoveryDTO.username!!
+            val userDTO = userService.get(username)
+            val token = UUID.randomUUID().toString()
+            userDTO.recoveryToken = token
+            userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15)
             userService.update(userDTO.id!!, userDTO)
             //TODO: Send an email with the token
-            return ResponseEntity.ok(userDTO.id!!);
+            return ResponseEntity.ok(userDTO.id!!)
         } catch (ex: NotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
