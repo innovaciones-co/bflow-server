@@ -1,7 +1,9 @@
 package co.innovaciones.bflow_server.model
 
+import co.innovaciones.bflow_server.model.validators.OnCreate
 import jakarta.validation.constraints.NotNull
 import jakarta.validation.constraints.Size
+import java.time.OffsetDateTime
 
 
 class ProductDTO {
@@ -14,7 +16,7 @@ class ProductDTO {
 
     @NotNull
     @Size(max = 255)
-    @ProductSkuUnique
+    @ProductSkuUnique(groups = [OnCreate::class])
     var sku: String? = null
 
     @Size(max = 255)
@@ -35,5 +37,7 @@ class ProductDTO {
 
     @NotNull
     var supplier: Long? = null
+
+    var dateUpdated: OffsetDateTime? = null
 
 }

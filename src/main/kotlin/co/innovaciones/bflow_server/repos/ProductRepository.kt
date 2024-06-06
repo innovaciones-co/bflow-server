@@ -17,6 +17,10 @@ interface ProductRepository : JpaRepository<Product, Long> {
 
     fun findAllBySupplier(contact: Contact): List<Product>
 
+    fun getBySku(sku: String?): Product?
+
+    fun findAllBySupplierAndCategory(supplier: Contact, category: Category): List<Product>
+
     fun findAllByCategory(category: Category, sort: Sort): List<Product>
 
     fun existsBySkuIgnoreCase(sku: String?): Boolean
