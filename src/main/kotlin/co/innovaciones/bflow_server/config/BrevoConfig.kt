@@ -5,11 +5,19 @@ import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import sibApi.TransactionalEmailsApi
 import sibModel.SendSmtpEmail
+import sibModel.SendSmtpEmailReplyTo
+import sibModel.SendSmtpEmailSender
 
 @Configuration
 class BrevoConfig {
     @Value("\${sendinblue.api-key}")
     private val apiKey: String = ""
+
+    @Value("\${sendinblue.from-email}")
+    private val senderEmail: String = ""
+
+    @Value("\${sendinblue.from-name}")
+    private val senderName: String = ""
 
     @Bean
     fun mailClient(): TransactionalEmailsApi{
@@ -22,7 +30,17 @@ class BrevoConfig {
     @Bean
     fun mailSender(): SendSmtpEmail{
         val sendSmtpEmail = SendSmtpEmail()
-        //sendSmtpEmail.sender.email= "test@correo.com"
+        val sender = SendSmtpEmailSender().apply {
+            email = senderEmail
+            name = senderName
+        }
+        val replyTo =  SendSmtpEmailReplyTo().apply {
+            email = senderEmail
+            name = senderName
+        }
+        sendSmtpEmail.sender = sender
+        sendSmtpEmail.replyTo = replyTo
+
         return sendSmtpEmail
     }
 

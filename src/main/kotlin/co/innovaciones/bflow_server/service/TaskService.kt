@@ -1,15 +1,16 @@
 package co.innovaciones.bflow_server.service
 
-import co.innovaciones.bflow_server.domain.Contact
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.*
-import co.innovaciones.bflow_server.repos.*
+import co.innovaciones.bflow_server.repos.ContactRepository
+import co.innovaciones.bflow_server.repos.FileRepository
+import co.innovaciones.bflow_server.repos.JobRepository
+import co.innovaciones.bflow_server.repos.TaskRepository
 import co.innovaciones.bflow_server.util.NotFoundException
 import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
-import java.time.LocalDateTime
 import java.time.OffsetDateTime
 
 
@@ -70,38 +71,29 @@ class TaskService(
         taskRepository.deleteById(id)
     }
 
-    fun taskNotify(ids: List<Long>) {
-        for (id in ids) {
-            val task = get(id)
-            //emailService.sendEmail(task.supplier?.email, task.name?)
-            if (task.supplier == null) {
-                continue
-            }
-            val params = mapOf(
-                "TASK" to "${task.id}",
-                "TASKDATA" to "${task.name}"
-            )
-            emailService.sendEmail(
-                listOf(task.supplier?.email!!),
-                task.name ?: "No name", "TEST", params
-            )
-            task.status = TaskStatus.SENT
-            OffsetDateTime.now().also { task.bookingDate = it }
-            update(id, mapToCreateUpdateDTO(task))
-        }
-    }
-
     fun taskNotifyEmail(ids: List<Long>) {
         for (id in ids) {
-            val task = get(id)
-            //emailService.sendEmail(task.supplier?.email, task.name?)
-            if (task.supplier == null) {
+            val task = taskRepository.findById(id).get()
+            if (task.supplier == null || task.supplier?.email == null) {
                 continue
             }
-            //content according to template
+
+            val job = task.job
             val params = mapOf(
-                "TASK" to "${task.id}",
-                "TASKDATA" to "${task.name}"
+                "taskName" to "${task.name}",
+                "jobNumber" to "${job?.jobNumber}",
+                "address" to "${job?.address}",
+                "supervisor" to "${job?.supervisor?.firstName} ${job?.supervisor?.lastName}",
+                "supervisorEmail" to "${job?.supervisor?.email}",
+                "supplier" to "${task.supplier?.name}",
+                "supplierEmail" to "${task.supplier?.email}",
+                "startDate" to "${task.startDate}",
+                "endDate" to "${task.endDate}",
+                "comments" to if (task.description != null) "${task.description}" else "",
+                "taskId" to "${task.id}",
+                "rejectURL" to "http://localhost:8080/tasks/${task.id}?action=reject",
+                "rescheduleURL" to "http://localhost:8080/tasks/${task.id}?action=reschedule",
+                "confirmURL" to "http://localhost:8080/tasks/${task.id}?action=confirm"
             )
 
             val notificationFactory = NotificationFactory()
@@ -109,17 +101,16 @@ class TaskService(
             val builder =
                 notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
             val notification = builder
+                .withTemplate(1)
                 .withParams(params)
-                .withContent("\"<html><body><h1>Common: This is my first transactional email {{params.TASKDATA}}</h1></body></html>")
-                .withSubject("Notification for task: ${task.id}")
-                .withRecipients("diegofelipere@gmail.com")
+                .withSubject("A new task was assigned to you (${task.id})")
+                .withRecipients(task.supplier!!.email!!, "testsh@mailinator.com", "test@mailinator.com")
                 .build()
             notification.send()
 
-            //task.status = TaskStatus.SENT
-            //OffsetDateTime.now().also { task.bookingDate = it }
-            //update(id, mapToCreateUpdateDTO(task))
-
+            task.status = TaskStatus.SENT
+            task.callDate = OffsetDateTime.now()
+            taskRepository.save(task)
         }
     }
 
@@ -148,45 +139,13 @@ class TaskService(
 
         return taskDTO
     }
-////
-    /*private fun mapToDTO(task: TaskReadDTO, taskDTO: TaskCreateUpdateDTO): TaskCreateUpdateDTO {
-        mapToDTO(task, taskDTO as TaskDTO)
-        task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }.also { taskDTO.supplier = it }
-        //taskDTO.supplier = task.supplier?.let { supplier -> mapToDTO(supplier, ContactDTO()) }
 
-        return taskDTO
-    }*/
-
-    private fun mapToCreateUpdateDTO(taskReadDTO: TaskReadDTO): TaskWriteDTO {
-        val taskCreateUpdateDTO = TaskWriteDTO()
-        //mapToDTO(taskReadDTO as Task, taskCreateUpdateDTO as TaskDTO)
-
-
-        taskCreateUpdateDTO.id = taskReadDTO.id
-        taskCreateUpdateDTO.name = taskReadDTO.name
-        taskCreateUpdateDTO.startDate = taskReadDTO.startDate
-        taskCreateUpdateDTO.endDate = taskReadDTO.endDate
-        taskCreateUpdateDTO.description = taskReadDTO.description
-        taskCreateUpdateDTO.progress = taskReadDTO.progress
-        taskCreateUpdateDTO.status = taskReadDTO.status
-        taskCreateUpdateDTO.stage = taskReadDTO.stage
-        taskCreateUpdateDTO.parentTask = taskReadDTO.parentTask
-        taskCreateUpdateDTO.attachments = taskReadDTO.attachments
-        taskCreateUpdateDTO.job = taskReadDTO.job
-
-        taskCreateUpdateDTO.supplier = taskReadDTO.supplier?.id
-
-        return taskCreateUpdateDTO
-    }
-
-
-    ////
     private fun mapToEntity(taskDTO: TaskDTO, task: Task): Task {
         task.name = taskDTO.name
         task.startDate = taskDTO.startDate
         task.endDate = taskDTO.endDate
         task.status = taskDTO.status
-        task.progress = if(taskDTO.status == TaskStatus.COMPLETED) 100.0 else taskDTO.progress
+        task.progress = if (taskDTO.status == TaskStatus.COMPLETED) 100.0 else taskDTO.progress
         task.stage = taskDTO.stage
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)

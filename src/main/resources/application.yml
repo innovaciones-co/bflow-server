@@ -62,6 +62,9 @@ aws:
     region: ${STORAGE_REGION}
     endpoint-url: ${STORAGE_ENDPOINT}
     default-bucket: ${STORAGE_BUCKET}
-
 sendinblue:
   api-key: ${SENDINBLUE_API_KEY}
+  from-email: ${SENDINBLUE_FROM_EMAIL}
+  from-name: "Superior Homes"
+  template-task-created: 1
+  action-url: "http://localhost:8080"

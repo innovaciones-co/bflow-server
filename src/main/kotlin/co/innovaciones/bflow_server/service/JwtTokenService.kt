@@ -19,9 +19,9 @@ class JwtTokenService(
     secret: String
 ) {
 
-    val hmac512: Algorithm
+    final val hmac512: Algorithm
 
-    val verifier: JWTVerifier
+    final val verifier: JWTVerifier
     init {
         this.hmac512 = Algorithm.HMAC512(secret)
         this.verifier = JWT.require(this.hmac512).build()
@@ -31,7 +31,7 @@ class JwtTokenService(
         val now = Instant.now()
         return JWT.create()
             .withSubject(userDetails.username)
-            .withIssuer("app")
+            .withIssuer("bflow")
             .withIssuedAt(now)
             .withExpiresAt(now.plusMillis(JWT_TOKEN_VALIDITY.toMillis()))
             .sign(this.hmac512)

@@ -1,17 +1,19 @@
 package co.innovaciones.bflow_server.service
 
-class EmailNotificationBuilder(private val emailService: EmailService):NotificationBuilder {
-    private var content:String=""
-    private var subject:String=""
-    private val recipients = mutableListOf<String>()
-    private var params: Map<String,Any> = emptyMap()
+class EmailNotificationBuilder(private val emailService: EmailService) : NotificationBuilder {
+    private var content: String = ""
+    private var subject: String = ""
+    private var recipients = mutableListOf<String>()
+    private var params: Map<String, Any> = emptyMap()
+    private var template: Long? = null
 
     override fun withContent(content: String): NotificationBuilder {
-        this.content=content
+        this.content = content
         return this
     }
+
     override fun withSubject(subject: String): NotificationBuilder {
-        this.subject=subject
+        this.subject = subject
         return this
     }
 
@@ -19,12 +21,18 @@ class EmailNotificationBuilder(private val emailService: EmailService):Notificat
         this.recipients.addAll(recipients)
         return this
     }
-    fun withParams(params:Map<String,Any>):NotificationBuilder{
+
+    fun withParams(params: Map<String, Any>): NotificationBuilder {
         this.params = params
         return this
     }
 
+    fun withTemplate(template: Long): EmailNotificationBuilder {
+        this.template = template
+        return this
+    }
+
     override fun build(): NotificationStrategy {
-        return EmailNotification(content,subject,recipients,emailService,params)
+        return EmailNotification(content, subject, recipients, emailService, params, template)
     }
 }

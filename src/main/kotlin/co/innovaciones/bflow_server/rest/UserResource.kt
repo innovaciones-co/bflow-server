@@ -51,7 +51,10 @@ class UserResource(
     fun getUser(@PathVariable(name = "id") id: Long): ResponseEntity<UserDTO> =
             ResponseEntity.ok(userService.get(id))
 
-
+    @SecurityRequirement(name = "bearer-jwt")
+    @GetMapping("/username/{username}")
+    fun getUser(@PathVariable(name = "username") username: String): ResponseEntity<UserDTO> =
+        ResponseEntity.ok(userService.get(username))
 
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
