@@ -28,8 +28,7 @@ import org.springframework.web.bind.annotation.RestController
 )
 @SecurityRequirement(name = "bearer-jwt")
 class TaskResource(
-    private val taskService: TaskService,
-    private val messagingTemplate: SimpMessagingTemplate
+    private val taskService: TaskService, private val messagingTemplate: SimpMessagingTemplate
 ) {
 
     @GetMapping
@@ -42,7 +41,8 @@ class TaskResource(
     }
 
     @GetMapping("/{id}")
-    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskReadDTO> = ResponseEntity.ok(taskService.get(id))
+    fun getTask(@PathVariable(name = "id") id: Long): ResponseEntity<TaskReadDTO> =
+        ResponseEntity.ok(taskService.get(id))
 
     @PostMapping
     @ApiResponse(responseCode = "201")
@@ -52,7 +52,9 @@ class TaskResource(
     }
 
     @PutMapping("/{id}")
-    fun updateTask(@PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskWriteDTO): ResponseEntity<Long> {
+    fun updateTask(
+        @PathVariable(name = "id") id: Long, @RequestBody @Valid taskDTO: TaskWriteDTO
+    ): ResponseEntity<Long> {
         taskService.update(id, taskDTO)
         messagingTemplate.convertAndSend("/topic/tasks", taskService.get(id))
         return ResponseEntity.ok(id)
@@ -65,4 +67,10 @@ class TaskResource(
         return ResponseEntity.noContent().build()
     }
 
+    @PostMapping("/send")
+    @ApiResponse(responseCode = "204")
+    fun taskNotification(@RequestBody tasks: List<Long>): ResponseEntity<String> {
+        this.taskService.taskNotifyEmail(tasks)
+        return ResponseEntity.noContent().build()
+    }
 }

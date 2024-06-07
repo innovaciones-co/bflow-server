@@ -51,7 +51,10 @@ class UserResource(
     fun getUser(@PathVariable(name = "id") id: Long): ResponseEntity<UserDTO> =
             ResponseEntity.ok(userService.get(id))
 
-
+    @SecurityRequirement(name = "bearer-jwt")
+    @GetMapping("/username/{username}")
+    fun getUser(@PathVariable(name = "username") username: String): ResponseEntity<UserDTO> =
+        ResponseEntity.ok(userService.get(username))
 
     @SecurityRequirement(name = "bearer-jwt")
     @PostMapping
@@ -98,14 +101,14 @@ class UserResource(
     @PostMapping("/recover-password")
     fun recoverPassword(@RequestBody @Valid recoveryDTO : RecoveryDTO) : ResponseEntity<Long> {
         try {
-            val username = recoveryDTO.username!!;
-            val userDTO = userService.get(username);
-            val token = UUID.randomUUID().toString();
-            userDTO.recoveryToken = token;
-            userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15);
+            val username = recoveryDTO.username!!
+            val userDTO = userService.get(username)
+            val token = UUID.randomUUID().toString()
+            userDTO.recoveryToken = token
+            userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15)
             userService.update(userDTO.id!!, userDTO)
             //TODO: Send an email with the token
-            return ResponseEntity.ok(userDTO.id!!);
+            return ResponseEntity.ok(userDTO.id!!)
         } catch (ex: NotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND)
         }
@@ -114,7 +117,7 @@ class UserResource(
     @PostMapping("/create-new-password")
     fun newPassword(@RequestBody @Valid newPassDTO: NewPassDTO) : ResponseEntity<Void> {
         // TODO
-        return  ResponseEntity.noContent().build();
+        return  ResponseEntity.noContent().build()
     }
 
 }
