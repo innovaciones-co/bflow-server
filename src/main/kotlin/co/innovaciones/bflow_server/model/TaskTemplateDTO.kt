@@ -9,7 +9,7 @@ data class TaskTemplateDTO(
     //val endDate: LocalDate?,
     //val jobId: Long?,
     val name: String,
-    //val order: Int?,
+    val order: Int?,
     //val parentTaskId: Long?,
     //val progress: Double?,
     val stage: TaskStage?,

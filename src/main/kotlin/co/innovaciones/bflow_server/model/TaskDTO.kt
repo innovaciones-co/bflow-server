@@ -44,8 +44,6 @@ open class TaskDTO {
 
     var parentTask: Long? = null
 
-    var attachments: List<Long>? = null
-
     @NotNull
     var job: Long? = null
 

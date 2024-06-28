@@ -22,6 +22,7 @@ class TaskService(
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository,
     private val emailService: EmailService,
+    private val fileService: FileService,
     private val contactService: ContactService
 ) {
 
@@ -55,6 +56,8 @@ class TaskService(
         .orElseThrow { NotFoundException() }
 
     fun create(taskDTO: TaskWriteDTO): Long {
+        if (taskDTO.order == null )
+            taskDTO.order = (findAllByJob(taskDTO.id!!).maxByOrNull { it.order ?: 0}?.order ?: -1 ) + 1
         val task = Task()
         mapToEntity(taskDTO, task)
         return taskRepository.save(task).id!!
@@ -63,8 +66,21 @@ class TaskService(
     fun update(id: Long, taskDTO: TaskWriteDTO) {
         val task = taskRepository.findById(id)
             .orElseThrow { NotFoundException() }
+        if (taskDTO.order == null || task.order == null)
+            taskDTO.order = (findAllByJob(taskDTO.id!!).maxByOrNull { it.order ?: 0}?.order ?: -1 ) + 1
         mapToEntity(taskDTO, task)
         taskRepository.save(task)
+    }
+
+    fun update(tasksDTO: List<TaskWriteDTO>) {
+        val tasks = tasksDTO.map { taskDTO ->
+            val task = taskRepository.findById(taskDTO.id!!)
+                .orElseThrow { NotFoundException() }
+            mapToEntity(taskDTO, task)
+            task
+        }
+
+        taskRepository.saveAll(tasks)
     }
 
     fun delete(id: Long) {
@@ -124,18 +140,19 @@ class TaskService(
         taskDTO.status = task.status
         taskDTO.stage = task.stage
         taskDTO.parentTask = task.parentTask?.id
-        taskDTO.attachments = task.attachments?.stream()
-            ?.map { file -> file.id!! }
-            ?.toList()
         taskDTO.job = task.job?.id
         taskDTO.order = if (task.order != null) task.order!! else 0
+        taskDTO.bookingDate = task.callDate
+
         return taskDTO
     }
 
     private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
         mapToDTO(task, taskDTO as TaskDTO)
         taskDTO.supplier = task.supplier?.let { supplier -> contactService.mapToDTO(supplier, ContactDTO()) }
-        taskDTO.bookingDate = task.callDate
+        taskDTO.attachments = task.attachments?.stream()
+            ?.map { file -> fileService.mapToDTO(file, FileDTO())}
+            ?.toList()
 
         return taskDTO
     }
@@ -150,21 +167,7 @@ class TaskService(
         val parentTask = if (taskDTO.parentTask == null) null else
             taskRepository.findById(taskDTO.parentTask!!)
                 .orElseThrow { NotFoundException("parentTask not found") }
-
-        if (parentTask != null) {
-            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
-            val endDateIsValid =
-                taskDTO.endDate!!.isBefore(parentTask.endDate) || taskDTO.endDate!!.isEqual(parentTask.endDate)
-        }
-
         task.parentTask = parentTask
-        val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
-        if (attachments.size != (if (taskDTO.attachments == null) 0 else
-                taskDTO.attachments!!.size)
-        ) {
-            throw NotFoundException("one of attachments not found")
-        }
-        task.attachments = attachments.toMutableSet()
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
@@ -175,6 +178,12 @@ class TaskService(
 
     private fun mapToEntity(taskWriteDTO: TaskWriteDTO, task: Task): Task {
         mapToEntity(taskWriteDTO as TaskDTO, task)
+        val attachments = fileRepository.findAllById(taskWriteDTO.attachments ?: emptyList()).toMutableSet()
+        if (attachments.size != (if (taskWriteDTO.attachments == null) 0 else
+                taskWriteDTO.attachments!!.size)) {
+            throw NotFoundException("one of attachments not found")
+        }
+        task.attachments = attachments
         val supplier = if (taskWriteDTO.supplier == null) null else
             contactRepository.findById(taskWriteDTO.supplier!!)
                 .orElseThrow { NotFoundException("supplier not found") }

@@ -39,7 +39,8 @@ class JwtSecurityConfig(
             .csrf { csrf -> csrf.disable() }
             .authorizeHttpRequests { authorize -> authorize
                 .requestMatchers("/api/users/**").permitAll()
-                .requestMatchers("/api/**").permitAll() //.authenticated()
+                .requestMatchers("/api/tasks/**").permitAll()
+                .requestMatchers("/api/**").authenticated() // permitAll()
                 .anyRequest().permitAll()
             }
             .authenticationManager(jwtAuthenticationManager())

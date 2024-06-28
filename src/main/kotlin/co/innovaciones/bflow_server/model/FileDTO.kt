@@ -31,6 +31,4 @@ class FileDTO {
 
     var job: Long? = null
 
-    var task: Long? = null
-
 }

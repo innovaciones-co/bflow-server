@@ -68,20 +68,6 @@ class TemplateResource(
         return ResponseEntity.noContent().build()
     }
 
-    /*@PostMapping("/{id}/tasks")
-    @ApiResponse(responseCode = "201")
-    fun createTasksFromTemplate(@PathVariable(name = "id") id: Long, @RequestParam jobId: Long): ResponseEntity<Void> {
-        templateService.createTasks(id, jobId)
-        return ResponseEntity.status(HttpStatus.CREATED).build()
-    }
-
-    @PostMapping("/{id}/materials")
-    @ApiResponse(responseCode = "201")
-    fun createMaterialsFromTemplate(@PathVariable(name = "id") id: Long, @RequestParam jobId: Long): ResponseEntity<Void> {
-        templateService.createMaterials(id, jobId)
-        return ResponseEntity.status(HttpStatus.CREATED).build()
-    }*/
-
     @PostMapping("/{id}")
     @ApiResponse(responseCode = "201")
     fun loadFromTemplate(@PathVariable(name = "id") id: Long, @RequestParam jobId: Long): ResponseEntity<Void> {
