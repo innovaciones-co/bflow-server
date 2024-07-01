@@ -25,7 +25,7 @@ open class TaskDTO {
     @NotNull
     var endDate: LocalDate? = null
 
-    var bookingDate: OffsetDateTime? = null
+    var callDate: OffsetDateTime? = null
 
     @NotNull
     var progress: Double? = null

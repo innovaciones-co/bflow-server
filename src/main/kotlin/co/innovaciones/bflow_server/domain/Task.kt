@@ -90,7 +90,6 @@ class Task {
     @Column
     var description: String? = null
 
-    @CreatedDate
     @Column
     var callDate: OffsetDateTime? = null
 

@@ -73,12 +73,9 @@ class TaskResource(
         @RequestBody @Valid tasksDTO: List<TaskWriteDTO>
     ): ResponseEntity<List<Long>> {
         logger.info("PUT /api/tasks called with tasksDTO: {}", tasksDTO)
-        taskService.update(tasksDTO)
-        val updatedTasks = tasksDTO.map { taskDTO ->
-            messagingTemplate.convertAndSend("/topic/tasks", taskService.get(taskDTO.id!!))
-            taskDTO.id!!
-        }
-        return ResponseEntity.ok(updatedTasks)
+        val updatedTasks = taskService.update(tasksDTO)
+        updatedTasks.map { messagingTemplate.convertAndSend("/topic/tasks", it) }
+        return ResponseEntity.ok(updatedTasks.map { it.id!! })
     }
 
     @DeleteMapping("/{id}")
