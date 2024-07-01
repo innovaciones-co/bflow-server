@@ -25,7 +25,7 @@ open class TaskDTO {
     @NotNull
     var endDate: LocalDate? = null
 
-    var bookingDate: OffsetDateTime? = null
+    var callDate: OffsetDateTime? = null
 
     @NotNull
     var progress: Double? = null
@@ -43,8 +43,6 @@ open class TaskDTO {
     var order: Int? = null
 
     var parentTask: Long? = null
-
-    var attachments: List<Long>? = null
 
     @NotNull
     var job: Long? = null

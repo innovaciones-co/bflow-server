@@ -22,14 +22,13 @@ class TaskService(
     private val contactRepository: ContactRepository,
     private val fileRepository: FileRepository,
     private val emailService: EmailService,
+    private val fileService: FileService,
     private val contactService: ContactService
 ) {
 
     fun findAll(): List<TaskReadDTO> {
         val tasks = taskRepository.findAll(Sort.by("id"))
-        return tasks.stream()
-            .map { task -> mapToDTO(task, TaskReadDTO()) }
-            .toList()
+        return tasks.stream().map { task -> mapToDTO(task, TaskReadDTO()) }.toList()
     }
 
     fun findAllByJob(jobId: Long): List<TaskReadDTO> {
@@ -37,22 +36,17 @@ class TaskService(
         if (job.isEmpty) return listOf()
 
         val tasks = taskRepository.findAllByJob(job.get(), Sort.by(Sort.Direction.DESC, "id"))
-        return tasks.stream()
-            .map { task -> mapToDTO(task, TaskReadDTO()) }
-            .toList()
+        return tasks.stream().map { task -> mapToDTO(task, TaskReadDTO()) }.toList()
     }
 
     fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
         val tasks = taskRepository.findByIdIn(ids)
-        return tasks.stream()
-            .map { task -> mapToDTO(task, TaskReadDTO()) }
-            .toList()
+        return tasks.stream().map { task -> mapToDTO(task, TaskReadDTO()) }.toList()
     }
 
 
-    fun `get`(id: Long): TaskReadDTO = taskRepository.findById(id)
-        .map { task -> mapToDTO(task, TaskReadDTO()) }
-        .orElseThrow { NotFoundException() }
+    fun `get`(id: Long): TaskReadDTO =
+        taskRepository.findById(id).map { task -> mapToDTO(task, TaskReadDTO()) }.orElseThrow { NotFoundException() }
 
     fun create(taskDTO: TaskWriteDTO): Long {
         val task = Task()
@@ -61,14 +55,27 @@ class TaskService(
     }
 
     fun update(id: Long, taskDTO: TaskWriteDTO) {
-        val task = taskRepository.findById(id)
-            .orElseThrow { NotFoundException() }
+        val task = taskRepository.findById(id).orElseThrow { NotFoundException() }
         mapToEntity(taskDTO, task)
         taskRepository.save(task)
     }
 
+    fun update(tasksDTO: List<TaskWriteDTO>): List<TaskReadDTO> {
+        val tasks = tasksDTO.map { taskDTO ->
+            val task = taskRepository.findById(taskDTO.id!!).orElseThrow { NotFoundException() }
+            mapToEntity(taskDTO, task)
+            task
+        }
+
+        return taskRepository.saveAll(tasks).map { mapToDTO(it, TaskReadDTO()) }
+    }
+
     fun delete(id: Long) {
+        val task = taskRepository.findById(id).orElseThrow { NotFoundException("Task not found") }
         taskRepository.deleteById(id)
+        if (task.job != null && task.stage != null && task.order != null) {
+            updateOrderAfterDeletion(task.job!!.id!!, task.stage!!, task.order!!)
+        }
     }
 
     fun taskNotifyEmail(ids: List<Long>) {
@@ -100,12 +107,9 @@ class TaskService(
 
             val builder =
                 notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
-            val notification = builder
-                .withTemplate(1)
-                .withParams(params)
-                .withSubject("A new task was assigned to you (${task.id})")
-                .withRecipients(task.supplier!!.email!!, "testsh@mailinator.com", "test@mailinator.com")
-                .build()
+            val notification =
+                builder.withTemplate(1).withParams(params).withSubject("A new task was assigned to you (${task.id})")
+                    .withRecipients(task.supplier!!.email!!, "testsh@mailinator.com", "test@mailinator.com").build()
             notification.send()
 
             task.status = TaskStatus.SENT
@@ -124,47 +128,37 @@ class TaskService(
         taskDTO.status = task.status
         taskDTO.stage = task.stage
         taskDTO.parentTask = task.parentTask?.id
-        taskDTO.attachments = task.attachments?.stream()
-            ?.map { file -> file.id!! }
-            ?.toList()
         taskDTO.job = task.job?.id
         taskDTO.order = if (task.order != null) task.order!! else 0
+        taskDTO.callDate = task.callDate
+
         return taskDTO
     }
 
     private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
         mapToDTO(task, taskDTO as TaskDTO)
         taskDTO.supplier = task.supplier?.let { supplier -> contactService.mapToDTO(supplier, ContactDTO()) }
-        taskDTO.bookingDate = task.callDate
+        taskDTO.attachments =
+            task.attachments?.stream()?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toList()
 
         return taskDTO
     }
 
     private fun mapToEntity(taskDTO: TaskDTO, task: Task): Task {
+        if (taskDTO.stage != null && taskDTO.order == null && taskDTO.job != null) {
+            val latestOrder = findLatestOrderByJobAndStage(taskDTO.job!!, taskDTO.stage!!)
+            taskDTO.order = if (latestOrder == null || latestOrder < 0) 0 else latestOrder + 1
+        }
+
         task.name = taskDTO.name
         task.startDate = taskDTO.startDate
         task.endDate = taskDTO.endDate
         task.status = taskDTO.status
         task.progress = if (taskDTO.status == TaskStatus.COMPLETED) 100.0 else taskDTO.progress
         task.stage = taskDTO.stage
-        val parentTask = if (taskDTO.parentTask == null) null else
-            taskRepository.findById(taskDTO.parentTask!!)
-                .orElseThrow { NotFoundException("parentTask not found") }
-
-        if (parentTask != null) {
-            val startDateIsValid = taskDTO.startDate!!.isAfter(parentTask.startDate)
-            val endDateIsValid =
-                taskDTO.endDate!!.isBefore(parentTask.endDate) || taskDTO.endDate!!.isEqual(parentTask.endDate)
-        }
-
+        val parentTask = if (taskDTO.parentTask == null) null else taskRepository.findById(taskDTO.parentTask!!)
+            .orElseThrow { NotFoundException("parentTask not found") }
         task.parentTask = parentTask
-        val attachments = fileRepository.findAllById(taskDTO.attachments ?: emptyList())
-        if (attachments.size != (if (taskDTO.attachments == null) 0 else
-                taskDTO.attachments!!.size)
-        ) {
-            throw NotFoundException("one of attachments not found")
-        }
-        task.attachments = attachments.toMutableSet()
         val job = if (taskDTO.job == null) null else jobRepository.findById(taskDTO.job!!)
             .orElseThrow { NotFoundException("job not found") }
         task.job = job
@@ -175,17 +169,34 @@ class TaskService(
 
     private fun mapToEntity(taskWriteDTO: TaskWriteDTO, task: Task): Task {
         mapToEntity(taskWriteDTO as TaskDTO, task)
-        val supplier = if (taskWriteDTO.supplier == null) null else
-            contactRepository.findById(taskWriteDTO.supplier!!)
-                .orElseThrow { NotFoundException("supplier not found") }
+        val attachments = fileRepository.findAllById(taskWriteDTO.attachments ?: emptyList()).toMutableSet()
+        if (attachments.size != (if (taskWriteDTO.attachments == null) 0 else taskWriteDTO.attachments!!.size)) {
+            throw NotFoundException("one of attachments not found")
+        }
+        task.attachments = attachments
+        val supplier = if (taskWriteDTO.supplier == null) null else contactRepository.findById(taskWriteDTO.supplier!!)
+            .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
         return task
     }
 
+    private fun findLatestOrderByJobAndStage(jobId: Long, stage: TaskStage): Int? {
+        val tasks = taskRepository.findAllByJobIdAndStage(jobId, stage)
+        return tasks.maxByOrNull { it.order ?: -1 }?.order
+    }
+
+    private fun updateOrderAfterDeletion(jobId: Long, stage: TaskStage, deletedOrder: Int) {
+        val tasksToUpdate = taskRepository.findAllByJobIdAndStageAndOrderGreaterThan(jobId, stage, deletedOrder)
+        tasksToUpdate.forEach {
+            it.order = if (it.order != null) it.order!! - 1 else null
+        }
+        taskRepository.saveAll(tasksToUpdate)
+    }
+
+
     fun getReferencedWarning(id: Long): ReferencedWarning? {
         val referencedWarning = ReferencedWarning()
-        val task = taskRepository.findById(id)
-            .orElseThrow { NotFoundException() }
+        val task = taskRepository.findById(id).orElseThrow { NotFoundException() }
         val parentTaskTask = taskRepository.findFirstByParentTaskAndIdNot(task, task.id)
         if (parentTaskTask != null) {
             referencedWarning.key = "task.task.parentTask.referenced"

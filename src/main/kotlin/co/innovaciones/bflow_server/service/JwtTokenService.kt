@@ -49,7 +49,7 @@ class JwtTokenService(
 
         val log: Logger = LoggerFactory.getLogger(JwtTokenService::class.java)
 
-        val JWT_TOKEN_VALIDITY: Duration = Duration.ofMinutes(20)
+        val JWT_TOKEN_VALIDITY: Duration = Duration.ofHours( 12)
 
     }
 
