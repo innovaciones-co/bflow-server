@@ -15,11 +15,7 @@ interface TaskRepository : JpaRepository<Task, Long> {
 
     fun findFirstBySupplier(contact: Contact): Task?
 
-    fun findFirstByAttachments(attachments: MutableSet<File>): Task?
-
-    fun findFirstByJob(job: Job): Task?
-
-    fun findAllByAttachments(attachments: MutableSet<File>): List<Task>
+    fun findAllByAttachments(`file`: File): List<Task>?
 
     fun findAllByJob(job: Job, sort: Sort?): List<Task>
 

@@ -20,7 +20,10 @@ class Task {
         nullable = false, updatable = false
     )
     @SequenceGenerator(
-        name = "task_primary_sequence", sequenceName = "task_primary_sequence", allocationSize = 1, initialValue = 10100
+        name = "task_primary_sequence",
+        sequenceName = "task_primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000,
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE, generator = "task_primary_sequence"

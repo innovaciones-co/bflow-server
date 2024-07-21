@@ -36,7 +36,7 @@ class Job {
         name = "job_primary_sequence",
         sequenceName = "job_primary_sequence",
         allocationSize = 1,
-        initialValue = 10050
+        initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,

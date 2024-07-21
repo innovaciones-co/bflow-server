@@ -60,13 +60,12 @@ class FileService(
         val file = fileRepository.findById(id)
                 .orElseThrow { NotFoundException() }
         // remove many-to-many relations at owning side
-        taskRepository.findAllByAttachments(file)
-                .forEach { task -> task.attachments!!.remove(file) }
+        taskRepository.findAllByAttachments(file)?.forEach { task -> task.attachments!!.remove(file) }
         try {
             s3Service.deleteObject(file.bucket, file.uuid)
         }
         catch ( e: NoSuchBucketException) {
-            println("Bucked do not exists")
+            println("Bucket do not exists")
         }
         fileRepository.delete(file)
     }

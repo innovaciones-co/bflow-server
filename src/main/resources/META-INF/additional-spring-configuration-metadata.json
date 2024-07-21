@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "sendinblue.template-task-created",
+      "type": "java.lang.String",
+      "description": "The sendinblue template to use when a task is created."
+    },
+    {
+      "name": "sendinblue.action-url",
+      "type": "java.lang.String",
+      "description": "The base URL that will be used on email links."
+    }
+  ] }

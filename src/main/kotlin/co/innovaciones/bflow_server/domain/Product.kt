@@ -31,14 +31,14 @@ class Product {
         updatable = false
     )
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "product_primary_sequence",
+        sequenceName = "product_primary_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "product_primary_sequence"
     )
     var id: Long? = null
 
