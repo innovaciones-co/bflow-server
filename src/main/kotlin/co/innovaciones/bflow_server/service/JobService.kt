@@ -1,6 +1,7 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.*
+import co.innovaciones.bflow_server.mappers.PurchaseOrderMapper
 import co.innovaciones.bflow_server.model.*
 import co.innovaciones.bflow_server.repos.ContactRepository
 import co.innovaciones.bflow_server.repos.JobRepository
@@ -18,7 +19,7 @@ class JobService(
     private val userRepository: UserRepository,
     private val fileService: FileService,
     private val contactService: ContactService,
-    private val purchaseOrderService: PurchaseOrderService
+    private val purchaseOrderMapper: PurchaseOrderMapper
 ) {
 
     @Transactional(readOnly = true)
@@ -70,7 +71,7 @@ class JobService(
             jobDTO.notes = job.notes?.map { note -> mapNoteToDTO(note, NoteDTO()) }?.toSet()
             jobDTO.files = job.files?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toSet()
             jobDTO.purchaseOrders = job.purchaseOrders?.map { purchaseOrder ->
-                purchaseOrderService.mapToDTO(
+                purchaseOrderMapper.mapToDTO(
                     purchaseOrder,
                     PurchaseOrderDTO()
                 )

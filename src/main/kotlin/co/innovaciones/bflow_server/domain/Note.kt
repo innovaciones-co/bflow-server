@@ -28,14 +28,14 @@ class Note {
         updatable = false
     )
     @SequenceGenerator(
-        name = "notes_primary_sequence",
-        sequenceName = "notes_primary_sequence",
+        name = "note_primary_sequence",
+        sequenceName = "note_primary_sequence",
         allocationSize = 1,
-        initialValue = 10050
+        initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "notes_primary_sequence"
+        generator = "note_primary_sequence"
     )
     var id: Long? = null
 

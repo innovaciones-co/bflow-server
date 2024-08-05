@@ -19,14 +19,14 @@ class Item {
         updatable = false
     )
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "item_primary_sequence",
+        sequenceName = "item_primary_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "item_primary_sequence"
     )
     var id: Long? = null
 

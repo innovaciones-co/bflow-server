@@ -20,7 +20,10 @@ class Task {
         nullable = false, updatable = false
     )
     @SequenceGenerator(
-        name = "task_primary_sequence", sequenceName = "task_primary_sequence", allocationSize = 1, initialValue = 10100
+        name = "task_primary_sequence",
+        sequenceName = "task_primary_sequence",
+        allocationSize = 1,
+        initialValue = 10000,
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE, generator = "task_primary_sequence"
@@ -86,6 +89,10 @@ class Task {
         name = "job_id", nullable = false
     )
     var job: Job? = null
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_order_id")
+    var purchaseOrder: PurchaseOrder? = null
 
     @Column
     var description: String? = null

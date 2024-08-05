@@ -29,14 +29,14 @@ class Category {
         updatable = false
     )
     @SequenceGenerator(
-        name = "primary_sequence",
-        sequenceName = "primary_sequence",
+        name = "category_primary_sequence",
+        sequenceName = "category_primary_sequence",
         allocationSize = 1,
         initialValue = 10000
     )
     @GeneratedValue(
         strategy = GenerationType.SEQUENCE,
-        generator = "primary_sequence"
+        generator = "category_primary_sequence"
     )
     var id: Long? = null
 
