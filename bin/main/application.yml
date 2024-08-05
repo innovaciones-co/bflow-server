@@ -1,0 +1,70 @@
+spring:
+  config:
+    import: optional:file:.env[.properties]
+  servlet:
+    multipart:
+      max-file-size: 50MB
+      max-request-size: 50MB
+  datasource:
+    url: ${DATABASE_URL}
+    username: ${DATABASE_USERNAME}
+    password: ${DATABASE_PASSWORD}
+    dbcp2:
+      validation-query: select 1
+  jpa:
+    hibernate:
+      ddl-auto: update
+    open-in-view: false
+    properties:
+      hibernate:
+        jakarta:
+          persistence:
+            validation:
+              group:
+                pre-create: co.innovaciones.bflow_server.model.validators.OnCreate
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        id:
+          new_generator_mappings: true
+    defer-datasource-initialization: true
+  sql:
+    init:
+      mode: never
+  docker:
+    compose:
+      lifecycle-management: start-only
+error:
+  handling:
+    http-status-in-json-response: true
+    exception-logging: NO_LOGGING
+    full-stacktrace-http-statuses: 5xx
+    log-levels:
+      5xx: ERROR
+    codes:
+      JobJobNumberUnique: JOB_JOB_NUMBER_UNIQUE
+      ProductSkuUnique: PRODUCT_SKU_UNIQUE
+      ContactEmailUnique: CONTACT_EMAIL_UNIQUE
+      CategoryParentCategoryUnique: CATEGORY_PARENT_CATEGORY_UNIQUE
+      PurchaseOrderNumberUnique: PURCHASE_ORDER_NUMBER_UNIQUE
+      UserUsernameUnique: USER_USERNAME_UNIQUE
+      UserEmailUnique: USER_EMAIL_UNIQUE
+      FileUriUnique: FILE_URI_UNIQUE
+      TemplateNameUnique: TEMPLATE_NAME_UNIQUE
+springdoc:
+  pathsToMatch: /api/**
+jwt:
+  secret: ${JWT_SECRET}
+aws:
+  s3:
+    access-key: ${STORAGE_ACCESS_KEY}
+    secret-key: ${STORAGE_SECRET_KEY}
+    region: ${STORAGE_REGION}
+    endpoint-url: ${STORAGE_ENDPOINT}
+    default-bucket: ${STORAGE_BUCKET}
+sendinblue:
+  api-key: ${SENDINBLUE_API_KEY}
+  from-email: ${SENDINBLUE_FROM_EMAIL}
+  from-name: "Superior Homes"
+  template-task-created: 1
+  action-url: "https://bflow.innovaciones.co"

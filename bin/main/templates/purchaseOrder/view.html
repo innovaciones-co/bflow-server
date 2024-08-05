@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Purchase Order - ' + ${order.number}"></title>
+
+    <link rel="stylesheet" th:href="${'/assets/css/base.css'}">
+</head>
+<body class="A4">
+<section class="sheet padding-10mm">
+
+    <div style="position: relative">
+        <div><h1 th:text="'Purchase Order -' + ${order.number}"></h1></div>
+
+        <div id="logo">
+            <img th:src="${'/assets/img/sh_logo.png'}" alt="logo">
+        </div>
+    </div>
+
+    <p th:text="'Date: ' + ${#temporals.format(order.createdDate,'EEEE d MMM, yyyy')}"></p>
+    <p th:text="'Order No.: ' + ${order.number}"></p>
+
+    <table style="margin-top: 15px; margin-bottom: 20px">
+        <thead>
+        <tr>
+            <th>Job Info</th>
+            <th>Supplier</th>
+        </tr>
+        </thead>
+
+        <tbody>
+
+        <tr>
+            <td>
+                <p th:text="'Ref.: ' + ${job.jobNumber}"></p>
+                <p th:text="'Address: ' + ${job.address}"></p>
+                <p th:text="'Phone: ' + ${job.client.phone}"></p>
+                <p th:text="'Supervisor: ' + ${job.supervisor.firstName} + ${job.supervisor.lastName}"></p>
+            </td>
+            <td>
+                <p th:text="'Name: ' + ${supplier.name}"></p>
+                <p th:text="'Phone: ' + ${supplier.phone}"></p>
+                <p th:text="'Address: ' + ${supplier.address}"></p>
+                <p th:text="'Email: ' + ${supplier.email}"></p>
+            </td>
+        </tr>
+
+        </tbody>
+
+
+    </table>
+
+
+    <table>
+        <thead>
+        <tr>
+            <th>Material</th>
+            <th>Units</th>
+            <th>Measure</th>
+            <th>Unit cost</th>
+            <th>VAT</th>
+            <th>Cost</th>
+        </tr>
+        </thead>
+        <tbody>
+        <div th:each="category : ${categories}">
+            <tr>
+                <td class="category" colspan="6" th:text="${category.id} + ' - ' +${category.name}"></td>
+            </tr>
+
+            <tr th:each="item : ${order.orderItems}" th:if="${category.id == item.category}">
+                <td th:text="${item.name}"></td>
+                <td class="ta-center" th:text="${item.units}">
+                <td class="ta-center" th:text="${item.measure}">
+                <td class="ta-right" th:text="'$' + ${item.unitPrice}"></td>
+                <td class="ta-center" th:text="${item.vat * 100} + '%'"></td>
+                <td class="ta-right" th:text="'$' + ${item.price}"></td>
+            </tr>
+        </div>
+        </tbody>
+
+        <tfoot>
+        <tr>
+            <td colspan="6" style="border:none"></td>
+        </tr>
+        <!--<tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SUBTOTAL:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr>
+        <tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SALES TAX:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr>
+        <tr>
+            <td style="border:none" colspan="4"></td>
+            <td style="border:none;text-align:right">SHIPPING & HANDLING:</td>
+            <td class="amount subtotal">0.00</td>
+        </tr> -->
+        <tr>
+            <td colspan="4" style="border:none"></td>
+            <td class="ta-right" style="border:none">TOTAL:</td>
+            <td class="amount subtotal" th:class="ta-right" th:text="'$' + ${total}"></td>
+        </tr>
+        </tfoot>
+    </table>
+</section>
+</body>
+</html>
