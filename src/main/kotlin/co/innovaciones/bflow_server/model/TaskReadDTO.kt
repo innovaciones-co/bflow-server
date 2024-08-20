@@ -5,4 +5,5 @@ class TaskReadDTO: TaskDTO() {
 
     var attachments: List<FileDTO>? = null
 
+    var purchaseOrder: PurchaseOrderDTO? = null
 }

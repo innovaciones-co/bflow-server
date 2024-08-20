@@ -90,6 +90,10 @@ class Task {
     )
     var job: Job? = null
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "purchase_order_id")
+    var purchaseOrder: PurchaseOrder? = null
+
     @Column
     var description: String? = null
 

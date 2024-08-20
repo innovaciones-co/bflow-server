@@ -1,6 +1,7 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.PurchaseOrder
+import co.innovaciones.bflow_server.mappers.PurchaseOrderMapper
 import co.innovaciones.bflow_server.model.CreatePurchaseOrderDTO
 import co.innovaciones.bflow_server.model.ItemDTO
 import co.innovaciones.bflow_server.model.OrderStatus
@@ -24,13 +25,14 @@ class PurchaseOrderService(
     private val jobRepository: JobRepository,
     private val itemRepository: ItemRepository,
     private val itemService: ItemService,
-    private val contactRepository: ContactRepository
+    private val contactRepository: ContactRepository,
+    private val purchaseOrderMapper: PurchaseOrderMapper,
 ) {
 
     fun findAll(): List<PurchaseOrderDTO> {
         val purchaseOrders = purchaseOrderRepository.findAll(Sort.by("id"))
         return purchaseOrders.stream()
-                .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
+                .map { purchaseOrder -> purchaseOrderMapper.mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
                 .toList()
     }
 
@@ -38,12 +40,12 @@ class PurchaseOrderService(
         val job = jobRepository.findById(jobId).get()
         val purchaseOrders = purchaseOrderRepository.findByJob(job)
         return purchaseOrders.stream()
-            .map { item -> mapToDTO(item, PurchaseOrderDTO()) }
-            .toList()
+            .map { item -> purchaseOrderMapper.mapToDTO(item, PurchaseOrderDTO()) }
+            .toList() as List<PurchaseOrderDTO>
     }
 
     fun `get`(id: Long): PurchaseOrderDTO = purchaseOrderRepository.findById(id)
-            .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
+            .map { purchaseOrder -> purchaseOrderMapper.mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
             .orElseThrow { NotFoundException() }
 
     fun create(purchaseOrderDTO: PurchaseOrderDTO): Long {
@@ -89,21 +91,6 @@ class PurchaseOrderService(
 
     fun delete(id: Long) {
         purchaseOrderRepository.deleteById(id)
-    }
-
-    fun mapToDTO(purchaseOrder: PurchaseOrder, purchaseOrderDTO: PurchaseOrderDTO):
-            PurchaseOrderDTO {
-        purchaseOrderDTO.id = purchaseOrder.id
-        purchaseOrderDTO.number = purchaseOrder.number
-        purchaseOrderDTO.createdDate = purchaseOrder.dateCreated
-        purchaseOrderDTO.sentDate = purchaseOrder.sentDate
-        purchaseOrderDTO.approvedDate = purchaseOrder.approvedDate
-        purchaseOrderDTO.completedDate = purchaseOrder.completedDate
-        purchaseOrderDTO.status = purchaseOrder.status
-        purchaseOrderDTO.job = purchaseOrder.job?.id
-        purchaseOrderDTO.supplier = purchaseOrder.supplier?.id
-        purchaseOrderDTO.orderItems = purchaseOrder.orderItems?.map { orderItem ->  itemService.mapToDTO(orderItem, ItemDTO()) }?.toSet()
-        return purchaseOrderDTO
     }
 
     private fun mapToEntity(createPurchaseOrderDTO: CreatePurchaseOrderDTO, purchaseOrder: PurchaseOrder):
@@ -166,7 +153,7 @@ class PurchaseOrderService(
         val job = jobRepository.findById(jobId).get()
         val purchaseOrders = purchaseOrderRepository.findByJob(job)
         return purchaseOrders.stream()
-            .map { purchaseOrder -> mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
+            .map { purchaseOrder -> purchaseOrderMapper.mapToDTO(purchaseOrder, PurchaseOrderDTO()) }
             .toList()
     }
 

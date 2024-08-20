@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "sendinblue.template-task-created",
+      "type": "java.lang.String",
+      "description": "Sendinblue template for task created."
+    },
+    {
+      "name": "sendinblue.action-url",
+      "type": "java.lang.String",
+      "description": "The URL of the Bflow client that will be used on the mails."
+    }
+  ] }

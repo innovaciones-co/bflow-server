@@ -1,11 +1,9 @@
 package co.innovaciones.bflow_server.service
 
 import co.innovaciones.bflow_server.domain.Task
+import co.innovaciones.bflow_server.mappers.PurchaseOrderMapper
 import co.innovaciones.bflow_server.model.*
-import co.innovaciones.bflow_server.repos.ContactRepository
-import co.innovaciones.bflow_server.repos.FileRepository
-import co.innovaciones.bflow_server.repos.JobRepository
-import co.innovaciones.bflow_server.repos.TaskRepository
+import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
@@ -23,7 +21,9 @@ class TaskService(
     private val fileRepository: FileRepository,
     private val emailService: EmailService,
     private val fileService: FileService,
-    private val contactService: ContactService
+    private val contactService: ContactService,
+    private val purchaseOrderRepository: PurchaseOrderRepository,
+    private val purchaseOrderMapper: PurchaseOrderMapper,
 ) {
 
     fun findAll(): List<TaskReadDTO> {
@@ -135,9 +135,15 @@ class TaskService(
         return taskDTO
     }
 
+
     private fun mapToDTO(task: Task, taskDTO: TaskReadDTO): TaskReadDTO {
         mapToDTO(task, taskDTO as TaskDTO)
         taskDTO.supplier = task.supplier?.let { supplier -> contactService.mapToDTO(supplier, ContactDTO()) }
+        taskDTO.purchaseOrder = task.purchaseOrder?.let { purchaseOrder ->
+            purchaseOrderMapper.mapToDTO(
+                purchaseOrderRepository.getReferenceById(purchaseOrder.id!!), PurchaseOrderDTO()
+            )
+        }
         taskDTO.attachments =
             task.attachments?.stream()?.map { file -> fileService.mapToDTO(file, FileDTO()) }?.toList()
 
@@ -177,6 +183,9 @@ class TaskService(
         val supplier = if (taskWriteDTO.supplier == null) null else contactRepository.findById(taskWriteDTO.supplier!!)
             .orElseThrow { NotFoundException("supplier not found") }
         task.supplier = supplier
+        task.purchaseOrder =
+            if (taskWriteDTO.purchaseOrder == null) null else purchaseOrderRepository.findById(taskWriteDTO.purchaseOrder!!)
+                .orElseThrow { NotFoundException("purchase order not found") }
         return task
     }
 
