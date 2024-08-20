@@ -13,4 +13,6 @@ interface UserRepository : JpaRepository<User, Long> {
 
     fun findByUsernameIgnoreCase(username: String?): Optional<User>
 
+    fun findByRecoveryToken(token: String): User?
+
 }
