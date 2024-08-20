@@ -55,7 +55,9 @@ jobs:
         SPRING_PROFILES_ACTIVE: production
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_SECRET: ${{ secrets.DOCKER_SECRET }}
-      run: ./gradlew bootBuildImage
+      run: 
+        echo $DOCKER_USERNAME
+        ./gradlew bootBuildImage
         
   dependency-submission:
 
