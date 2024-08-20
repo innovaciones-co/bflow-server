@@ -56,7 +56,7 @@ jobs:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_SECRET: ${{ secrets.DOCKER_SECRET }}
       run: 
-        echo $DOCKER_USERNAME
+        echo "$DOCKER_USERNAME";
         ./gradlew bootBuildImage
         
   dependency-submission:
