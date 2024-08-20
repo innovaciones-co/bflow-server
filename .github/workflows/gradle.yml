@@ -53,8 +53,8 @@ jobs:
     - name: Build and tag the Docker image using bootBuildImage
       env:
         SPRING_PROFILES_ACTIVE: production
-        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
-        DOCKER_SECRET: ${{ secrets.DOCKER_SECRET }}
+        DOCKER_USERNAME: ${{secrets.DOCKER_USERNAME}}
+        DOCKER_SECRET: ${{secrets.DOCKER_SECRET}}
       run: 
         echo "$DOCKER_USERNAME";
         ./gradlew bootBuildImage
