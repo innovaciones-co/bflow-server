@@ -12,7 +12,7 @@ class JobMatchValidator @Autowired constructor(
 
     override fun isValid(taskWriteDTO: TaskWriteDTO, context: ConstraintValidatorContext): Boolean {
         val purchaseOrderId = taskWriteDTO.purchaseOrder ?: return true
-        val purchaseOrder = purchaseOrderService.get(purchaseOrderId) ?: return true
+        val purchaseOrder = purchaseOrderService.get(purchaseOrderId)
         return purchaseOrder.job == taskWriteDTO.job
     }
 }

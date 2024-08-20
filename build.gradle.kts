@@ -5,13 +5,14 @@ import org.springframework.boot.gradle.tasks.bundling.BootBuildImage
 plugins {
     id("org.springframework.boot") version "3.2.1"
     id("io.spring.dependency-management") version "1.1.4"
+    id("org.shipkit.shipkit-auto-version") version "2.0.10"
     kotlin("jvm") version "1.9.21"
     kotlin("plugin.spring") version "1.9.21"
     kotlin("plugin.allopen") version "1.9.21"
 }
 
 group = "co.innovaciones"
-version = "0.0.3-SNAPSHOT"
+//version = "0.0.3-SNAPSHOT"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
