@@ -32,6 +32,7 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        fetch-depth: '0' # will fetch the entire history, required for automatic versioning
 
     # Configure Gradle for optimal use in GitHub Actions, including caching of downloaded dependencies.
     # See: https://github.com/gradle/actions/blob/main/setup-gradle/README.md

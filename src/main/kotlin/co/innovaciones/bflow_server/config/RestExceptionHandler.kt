@@ -97,9 +97,9 @@ class RestExceptionHandler {
     }
 
     private fun extractDetailSection(input: String?): String? {
-        val regex = Regex("Detail: (.+?)\\]")
+        val regex = Regex("Detail: (.+?)]")
         val matchResult = if(input != null) regex.find(input) else null
-        return if(matchResult != null) matchResult?.groupValues?.get(1) else input
+        return matchResult?.groupValues?.get(1) ?: input
     }
 
     @ExceptionHandler(ResponseStatusException::class)
