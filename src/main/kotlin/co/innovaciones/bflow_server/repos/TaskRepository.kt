@@ -5,8 +5,10 @@ import co.innovaciones.bflow_server.domain.File
 import co.innovaciones.bflow_server.domain.Job
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.model.TaskStage
+import co.innovaciones.bflow_server.model.TaskStatus
 import org.springframework.data.domain.Sort
 import org.springframework.data.jpa.repository.JpaRepository
+import java.time.LocalDate
 
 
 interface TaskRepository : JpaRepository<Task, Long> {
@@ -24,5 +26,9 @@ interface TaskRepository : JpaRepository<Task, Long> {
     fun findAllByJobIdAndStage(jobId: Long, stage: TaskStage): List<Task>
 
     fun findAllByJobIdAndStageAndOrderGreaterThan(jobId: Long, stage: TaskStage, order: Int): List<Task>
+
+    fun findAllByJobAndStatusNotIn(job: Job?, listOf: List<TaskStatus>, by: Sort): List<Task>
+
+    fun findAllByJobAndEndDateBeforeAndStatusNotIn(job: Job, endDate: LocalDate, status: List<TaskStatus>, sort: Sort): List<Task>
 
 }

@@ -30,7 +30,7 @@ open class JobDTO {
     @NotNull
     var buildingType: BuildingType? = null
 
-   var stage: TaskStage = TaskStage.SLAB_DOWN
+    var stage: TaskStage = TaskStage.SLAB_DOWN
 
     var progress: Double = 0.0
 

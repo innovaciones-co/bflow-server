@@ -39,6 +39,26 @@ class TaskService(
         return tasks.stream().map { task -> mapToDTO(task, TaskReadDTO()) }.toList()
     }
 
+    fun findNextTaskByJob(jobId: Long): TaskReadDTO? {
+        val job = jobRepository.findById(jobId).orElseThrow { NotFoundException("Job not found") }
+        return taskRepository.findAllByJobAndStatusNotIn(
+            job,
+            listOf(TaskStatus.COMPLETED, TaskStatus.CANCELED),
+            Sort.by(Sort.Direction.ASC, "startDate")
+        ).firstOrNull()?.let { mapToDTO(it, TaskReadDTO()) }
+    }
+
+    fun findOverdueTasksByJob(jobId: Long, reportDate: OffsetDateTime): List<TaskReadDTO> {
+        val job = jobRepository.findById(jobId).orElseThrow { NotFoundException("Job not found") }
+        return taskRepository.findAllByJobAndEndDateBeforeAndStatusNotIn(
+            job,
+            reportDate.toLocalDate(),
+            listOf(TaskStatus.COMPLETED, TaskStatus.CANCELED),
+            Sort.by(Sort.Direction.ASC, "endDate")
+        ).map { mapToDTO(it, TaskReadDTO()) }
+    }
+
+
     fun findAllByIds(ids: List<Long>): List<TaskReadDTO> {
         val tasks = taskRepository.findByIdIn(ids)
         return tasks.stream().map { task -> mapToDTO(task, TaskReadDTO()) }.toList()

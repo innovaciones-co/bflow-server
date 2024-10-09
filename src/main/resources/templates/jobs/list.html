@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title th:text="'Work In Progress Report'"></title>
+
+  <link rel="stylesheet" th:href="${'/assets/css/base.css'}">
+  <style>
+    table {
+      width: 100%;
+      table-layout: fixed;
+    }
+    th, td {
+      width: 25%; /* Adjust as necessary for fixed column widths */
+    }
+
+  </style>
+</head>
+<body class="A4">
+<section class="sheet padding-10mm">
+
+  <div style="position: relative; margin-bottom:5rem">
+    <div><h1 th:text="'Work In Progress Report'"></h1></div>
+
+    <div id="logo">
+      <img th:src="${'/assets/img/sh_logo.png'}" alt="logo">
+    </div>
+
+    <!-- Display the generation time -->
+    <div>
+      <p th:text="'Report generated on: ' + ${reportDate}"></p>
+    </div>
+  </div>
+
+  <div th:each="entry : ${jobReports}">
+    <h2 th:text="${entry.value[0].job.supervisor?.fullName}">Supervisor Name</h2>
+    <table class="table table-striped">
+      <thead>
+      <tr>
+        <th>Name</th>
+        <th>Address</th>
+        <th>Progress</th>
+        <th>Stage</th>
+        <th>Tasks</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="jobReport : ${entry.value}">
+        <td th:text="${jobReport.job.name}">Job Name</td>
+        <td th:text="${jobReport.job.address}">Job Address</td>
+        <td>
+          <p th:text="${T(java.lang.Math).round(jobReport.job.progress) + '%'}"></p>
+          <progress th:value="${jobReport.job.progress}" max="100" th:text="${T(java.lang.Math).round(jobReport.job.progress) + '%'}"></progress>
+        </td>
+        <td th:text="${jobReport.job.stage}">Job Stage</td>
+        <td>
+          <h3>Next:</h3>
+          <p th:text="${jobReport.nextTask?.name ?: 'No upcoming task'}">Next Task</p>
+          <h3>Overdue:</h3>
+          <ul>
+            <li th:each="task : ${jobReport.overdueTasks}" th:text="${task.name}">Overdue Task</li>
+          </ul>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+</section>
+</body>
+</html>

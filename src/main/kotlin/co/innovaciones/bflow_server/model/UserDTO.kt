@@ -39,4 +39,7 @@ class UserDTO {
 
     var tokenExpirationDate: OffsetDateTime? = null
 
+    val fullName: String
+        get() = "${firstName.orEmpty()} ${lastName.orEmpty()}".trim()
+
 }
