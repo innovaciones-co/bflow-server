@@ -26,7 +26,7 @@ class LocalDevConfig(
             val fileTemplateResolver = FileTemplateResolver()
             fileTemplateResolver.prefix = sourceRoot.path + "/src/main/resources/templates/"
             fileTemplateResolver.suffix = ".html"
-            fileTemplateResolver.setCacheable(false)
+            fileTemplateResolver.isCacheable = false
             fileTemplateResolver.characterEncoding = "UTF-8"
             fileTemplateResolver.checkExistence = true
             templateEngine.setTemplateResolver(fileTemplateResolver)

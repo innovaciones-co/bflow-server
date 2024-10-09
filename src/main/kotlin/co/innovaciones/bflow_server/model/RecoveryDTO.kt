@@ -6,5 +6,5 @@ import jakarta.validation.constraints.Size
 class RecoveryDTO {
     @NotNull
     @Size(max = 255)
-    val username: String? = null;
+    val username: String? = null
 }

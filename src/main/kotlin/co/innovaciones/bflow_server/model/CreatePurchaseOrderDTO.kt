@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull
 @ItemsInJob
 class CreatePurchaseOrderDTO {
     @NotNull
-    var job : Long? = null;
+    var job : Long? = null
 
     @NotNull
-    var items : List<ItemDTO>? = null;
+    var items : List<ItemDTO>? = null
 }
