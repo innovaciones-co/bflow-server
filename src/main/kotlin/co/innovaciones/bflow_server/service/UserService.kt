@@ -4,6 +4,8 @@ import co.innovaciones.bflow_server.domain.User
 import co.innovaciones.bflow_server.model.UserDTO
 import co.innovaciones.bflow_server.repos.UserRepository
 import co.innovaciones.bflow_server.util.NotFoundException
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
@@ -15,6 +17,13 @@ class UserService(
     private val passwordEncoder: PasswordEncoder,
     private val emailService: EmailService,
 ) {
+    @Value("\${sendinblue.template-password-change}")
+    private val templatePasswordChange: Long? = null
+
+    @Value("\${sendinblue.action-url}")
+    private val clientUrl: String = "http://localhost"
+
+    private val logger = LoggerFactory.getLogger(this.javaClass)
 
     fun findAll(): List<UserDTO> {
         val users = userRepository.findAll(Sort.by("id"))
@@ -29,10 +38,10 @@ class UserService(
 
     fun `get`(username: String): UserDTO = userRepository.findByUsernameIgnoreCase(username)
         .map { user -> mapToDTO(user, UserDTO()) }
-        .orElseThrow { NotFoundException() }
+        .orElseThrow { NotFoundException("The username is not registered") }
 
     fun getByToken(token: String): UserDTO = userRepository.findByRecoveryToken(token)
-        .let { user -> if (user != null) mapToDTO(user, UserDTO()) else throw (NotFoundException()) }
+        .let { user -> if (user != null) mapToDTO(user, UserDTO()) else throw (NotFoundException("The token is not longer valid")) }
 
 
     fun create(userDTO: UserDTO): Long {
@@ -84,20 +93,28 @@ class UserService(
 
     fun emailExists(email: String?): Boolean = userRepository.existsByEmailIgnoreCase(email)
 
-    fun passwrodNotifyEmail(userDTO: UserDTO) {
+    fun passwordNotifyEmail(userDTO: UserDTO) {
+        logger.info("Sending password notification for user {}...", userDTO.username)
+
         val toEmail = userDTO.email ?: return
 
         val params = mapOf(
             "token" to "${userDTO.recoveryToken}",
-            "changePassURL" to "http://localhost:8080/recover-pass?token${userDTO.recoveryToken}"
+            "changePassURL" to "${clientUrl}/recover-pass?token=${userDTO.recoveryToken}"
         )
 
         val notificationFactory = NotificationFactory()
 
         val builder =
             notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
+
+        if (templatePasswordChange == null) {
+            logger.error("Template was not configured")
+            return;
+        }
+
         val notification =
-            builder.withTemplate(1).withParams(params).withSubject("Password update requested")
+            builder.withTemplate(templatePasswordChange).withParams(params).withSubject("Password update requested")
                 .withRecipients(toEmail).build()
         notification.send()
     }

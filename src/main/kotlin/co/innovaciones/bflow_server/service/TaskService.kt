@@ -7,6 +7,9 @@ import co.innovaciones.bflow_server.repos.*
 import co.innovaciones.bflow_server.util.NotFoundException
 import co.innovaciones.bflow_server.util.ReferencedWarning
 import jakarta.transaction.Transactional
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
 import java.time.OffsetDateTime
@@ -25,6 +28,13 @@ class TaskService(
     private val purchaseOrderRepository: PurchaseOrderRepository,
     private val purchaseOrderMapper: PurchaseOrderMapper,
 ) {
+    @Value("\${sendinblue.template-task-created}")
+    private val templateTaskCreated: Long? = null
+
+    @Value("\${sendinblue.action-url}")
+    private val clientUrl: String = "http://localhost"
+
+    private val logger: Logger = LoggerFactory.getLogger(TaskService::class.java)
 
     fun findAll(): List<TaskReadDTO> {
         val tasks = taskRepository.findAll(Sort.by("id"))
@@ -105,6 +115,9 @@ class TaskService(
                 continue
             }
 
+            logger.info("Sending task notification for supplier {}...", task.supplier?.email)
+
+
             val job = task.job
             val params = mapOf(
                 "taskName" to "${task.name}",
@@ -118,17 +131,23 @@ class TaskService(
                 "endDate" to "${task.endDate}",
                 "comments" to if (task.description != null) "${task.description}" else "",
                 "taskId" to "${task.id}",
-                "rejectURL" to "http://localhost:8080/tasks/${task.id}?action=reject",
-                "rescheduleURL" to "http://localhost:8080/tasks/${task.id}?action=reschedule",
-                "confirmURL" to "http://localhost:8080/tasks/${task.id}?action=confirm"
+                "rejectURL" to "${clientUrl}/tasks/${task.id}?action=reject",
+                "rescheduleURL" to "${clientUrl}/tasks/${task.id}?action=reschedule",
+                "confirmURL" to "${clientUrl}/tasks/${task.id}?action=confirm"
             )
 
             val notificationFactory = NotificationFactory()
 
             val builder =
                 notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
+
+            if (templateTaskCreated == null) {
+                logger.error("Template was not configured")
+                return;
+            }
+
             val notification =
-                builder.withTemplate(1).withParams(params).withSubject("A new task was assigned to you (${task.id})")
+                builder.withTemplate(templateTaskCreated).withParams(params).withSubject("A new task was assigned to you (${task.id})")
                     .withRecipients(task.supplier!!.email!!, "testsh@mailinator.com", "test@mailinator.com").build()
             notification.send()
 

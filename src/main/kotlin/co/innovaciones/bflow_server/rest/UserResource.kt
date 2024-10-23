@@ -93,7 +93,7 @@ class UserResource(
         userDTO.recoveryToken = token
         userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15)
         userService.update(userDTO.id!!, userDTO)
-        userService.passwrodNotifyEmail(userDTO)
+        userService.passwordNotifyEmail(userDTO)
         return ResponseEntity.ok(userDTO.id!!)
     }
 

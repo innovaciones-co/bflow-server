@@ -7,3 +7,13 @@ services:
     - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
     ports:
     - 5433:${DATABASE_PORT}
+   pgadmin:
+    image: dpage/pgadmin4
+    environment:
+    - PGADMIN_DEFAULT_EMAIL=user@domain.com
+    - PGADMIN_DEFAULT_PASSWORD=SuperSecret
+    - PGADMIN_CONFIG_ENHANCED_COOKIE_PROTECTION=True
+    - PGADMIN_CONFIG_LOGIN_BANNER="Authorised users only!"
+    - PGADMIN_CONFIG_CONSOLE_LOG_LEVEL=10
+    ports:
+     - 80:80

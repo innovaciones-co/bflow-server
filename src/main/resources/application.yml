@@ -67,4 +67,5 @@ sendinblue:
   from-email: ${SENDINBLUE_FROM_EMAIL}
   from-name: "Superior Homes"
   template-task-created: 1
+  template-password-change: 2
   action-url: "https://bflow.innovaciones.co"
