@@ -110,7 +110,7 @@ class UserService(
 
         if (templatePasswordChange == null) {
             logger.error("Template was not configured")
-            return;
+            return
         }
 
         val notification =
