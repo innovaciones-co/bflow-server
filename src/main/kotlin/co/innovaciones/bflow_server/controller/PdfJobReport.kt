@@ -22,11 +22,11 @@ import java.io.ByteArrayOutputStream
 @Component
 class PdfJobReport : JobReport {
 
-    private val defaultFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
     private val headerBackgroundColor = DeviceRgb(52, 131, 250)
     private val whiteColor = DeviceRgb(255, 255, 255)
 
     override fun generateReport(jobReports: Map<Long, List<JobReportDTO>>, reportDate: String): ByteArray {
+        val defaultFont: PdfFont = PdfFontFactory.createFont(StandardFonts.HELVETICA)
         val outputStream = ByteArrayOutputStream()
         val pdfDocument = PdfDocument(PdfWriter(outputStream))
         val document = Document(pdfDocument).apply {
@@ -66,7 +66,7 @@ class PdfJobReport : JobReport {
 
         // Create and populate the table
         val table = Table(UnitValue.createPercentArray(floatArrayOf(2f, 3f, 1f, 1f, 5f))).apply {
-            setWidth(UnitValue.createPercentValue(100f))
+            width = UnitValue.createPercentValue(100f)
         }
 
         addTableHeader(table, "Job Name")
