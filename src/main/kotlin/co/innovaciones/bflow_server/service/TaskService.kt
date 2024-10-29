@@ -131,9 +131,9 @@ class TaskService(
                 "endDate" to "${task.endDate}",
                 "comments" to if (task.description != null) "${task.description}" else "",
                 "taskId" to "${task.id}",
-                "rejectURL" to "${clientUrl}/tasks/${task.id}?action=reject",
-                "rescheduleURL" to "${clientUrl}/tasks/${task.id}?action=reschedule",
-                "confirmURL" to "${clientUrl}/tasks/${task.id}?action=confirm"
+                "rejectURL" to "${clientUrl}/#/tasks/${task.id}?action=reject",
+                "rescheduleURL" to "${clientUrl}/#/tasks/${task.id}?action=reschedule",
+                "confirmURL" to "${clientUrl}/#/tasks/${task.id}?action=confirm"
             )
 
             val notificationFactory = NotificationFactory()
@@ -143,12 +143,12 @@ class TaskService(
 
             if (templateTaskCreated == null) {
                 logger.error("Template was not configured")
-                return;
+                return
             }
 
             val notification =
                 builder.withTemplate(templateTaskCreated).withParams(params).withSubject("A new task was assigned to you (${task.id})")
-                    .withRecipients(task.supplier!!.email!!, "testsh@mailinator.com", "test@mailinator.com").build()
+                    .withRecipients(task.supplier!!.email!!).build()
             notification.send()
 
             task.status = TaskStatus.SENT
