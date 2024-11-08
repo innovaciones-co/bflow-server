@@ -1,10 +1,10 @@
 package co.innovaciones.bflow_server.service
 
+import brevoApi.TransactionalEmailsApi
+import brevoModel.SendSmtpEmail
+import brevoModel.SendSmtpEmailTo
 import jakarta.transaction.Transactional
 import org.springframework.stereotype.Service
-import sibApi.TransactionalEmailsApi
-import sibModel.SendSmtpEmail
-import sibModel.SendSmtpEmailTo
 
 @Service
 @Transactional

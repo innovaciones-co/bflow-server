@@ -12,7 +12,6 @@ plugins {
 }
 
 group = "co.innovaciones"
-//version = "0.0.3-SNAPSHOT"
 
 java.sourceCompatibility = JavaVersion.VERSION_17
 
@@ -33,14 +32,14 @@ dependencies {
     implementation("io.github.wimdeblauwe:error-handling-spring-boot-starter:4.2.0")
     implementation("org.springframework.boot:spring-boot-starter-thymeleaf")
     implementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
-    implementation("com.itextpdf:itext7-core:7.2.3")
+    implementation("com.itextpdf:itext7-core:8.0.5")
     runtimeOnly("org.postgresql:postgresql")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
     implementation("org.springframework.boot:spring-boot-starter-websocket")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     developmentOnly("org.springframework.boot:spring-boot-docker-compose")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    implementation("com.sendinblue:sib-api-v3-sdk:7.0.0")
+    implementation("com.brevo:brevo:1.0.0")
 }
 
 allOpen {
@@ -64,8 +63,6 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
     }
 }
 
-
-
 tasks.withType<KotlinCompile> {
     kotlinOptions {
         freeCompilerArgs = listOf("-Xjsr305=strict")
@@ -75,4 +72,8 @@ tasks.withType<KotlinCompile> {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+springBoot {
+    buildInfo()
 }

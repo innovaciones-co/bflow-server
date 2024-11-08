@@ -1,3 +1,6 @@
+# application.properties
+app:
+  name: "BFlow Server"
 spring:
   config:
     import: optional:file:.env[.properties]

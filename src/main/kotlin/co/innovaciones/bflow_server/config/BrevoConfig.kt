@@ -1,12 +1,12 @@
 package co.innovaciones.bflow_server.config
 
+import brevoApi.TransactionalEmailsApi
+import brevoModel.SendSmtpEmail
+import brevoModel.SendSmtpEmailReplyTo
+import brevoModel.SendSmtpEmailSender
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import sibApi.TransactionalEmailsApi
-import sibModel.SendSmtpEmail
-import sibModel.SendSmtpEmailReplyTo
-import sibModel.SendSmtpEmailSender
 
 @Configuration
 class BrevoConfig {
@@ -20,7 +20,7 @@ class BrevoConfig {
     private val senderName: String = ""
 
     @Bean
-    fun mailClient(): TransactionalEmailsApi{
+    fun mailClient(): TransactionalEmailsApi {
         val transactionalEmailsApi = TransactionalEmailsApi()
         transactionalEmailsApi.apiClient.setApiKey(apiKey)
         return transactionalEmailsApi
@@ -28,7 +28,7 @@ class BrevoConfig {
 
 
     @Bean
-    fun mailSender(): SendSmtpEmail{
+    fun mailSender(): SendSmtpEmail {
         val sendSmtpEmail = SendSmtpEmail()
         val sender = SendSmtpEmailSender().apply {
             email = senderEmail
