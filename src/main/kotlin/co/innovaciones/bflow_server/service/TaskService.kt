@@ -1,5 +1,6 @@
 package co.innovaciones.bflow_server.service
 
+import brevoModel.SendSmtpEmailAttachment
 import co.innovaciones.bflow_server.domain.Task
 import co.innovaciones.bflow_server.mappers.PurchaseOrderMapper
 import co.innovaciones.bflow_server.model.*
@@ -12,7 +13,9 @@ import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Service
+import java.net.URL
 import java.time.OffsetDateTime
+import java.util.*
 
 
 @Service
@@ -117,7 +120,6 @@ class TaskService(
 
             logger.info("Sending task notification for supplier {}...", task.supplier?.email)
 
-
             val job = task.job
             val params = mapOf(
                 "taskName" to "${task.name}",
@@ -141,14 +143,30 @@ class TaskService(
             val builder =
                 notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
 
+            val attachments: List<SendSmtpEmailAttachment>? = task.attachments?.map { file ->
+                val fileDTO = fileService.get(file.id!!)
+                val temporaryUrl = fileDTO.temporaryUrl
+                val attachmentContent = URL(temporaryUrl).readBytes()
+
+                SendSmtpEmailAttachment().apply {
+                    content = attachmentContent
+                    name = fileDTO.name
+                }
+            }
+
             if (templateTaskCreated == null) {
                 logger.error("Template was not configured")
                 return
             }
 
             val notification =
-                builder.withTemplate(templateTaskCreated).withParams(params).withSubject("A new task was assigned to you (${task.id})")
-                    .withRecipients(task.supplier!!.email!!).build()
+                builder
+                    .withTemplate(templateTaskCreated)
+                    .withAttachments(attachments)
+                    .withParams(params)
+                    .withSubject("A new task was assigned to you (${task.id})")
+                    .withRecipients(task.supplier!!.email!!, "sdtorresl@innovaciones.co").build()
+
             notification.send()
 
             task.status = TaskStatus.SENT

@@ -1,11 +1,14 @@
 package co.innovaciones.bflow_server.service
 
+import brevoModel.SendSmtpEmailAttachment
+
 class EmailNotificationBuilder(private val emailService: EmailService) : NotificationBuilder {
     private var content: String = ""
     private var subject: String = ""
     private var recipients = mutableListOf<String>()
     private var params: Map<String, Any> = emptyMap()
     private var template: Long? = null
+    private var attachments: List<SendSmtpEmailAttachment>? = null
 
     override fun withContent(content: String): NotificationBuilder {
         this.content = content
@@ -32,7 +35,12 @@ class EmailNotificationBuilder(private val emailService: EmailService) : Notific
         return this
     }
 
+    fun withAttachments(attachments: List<SendSmtpEmailAttachment>?) : EmailNotificationBuilder {
+        this.attachments = attachments
+        return this
+    }
+
     override fun build(): NotificationStrategy {
-        return EmailNotification(content, subject, recipients, emailService, params, template)
+        return EmailNotification(content, subject, recipients, emailService, params, template, attachments)
     }
 }
