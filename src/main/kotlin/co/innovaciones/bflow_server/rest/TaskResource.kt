@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController
 class TaskResource(
     private val taskService: TaskService, private val messagingTemplate: SimpMessagingTemplate
 ) {
-    private val logger: Logger = LoggerFactory.getLogger(TaskResource::class.java)
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @GetMapping
     fun getAllTasks(@RequestParam(name = "job_id") jobId: Long?): ResponseEntity<List<TaskReadDTO>> {
