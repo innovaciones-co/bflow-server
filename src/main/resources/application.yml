@@ -36,7 +36,7 @@ spring:
       mode: never
   docker:
     compose:
-      lifecycle-management: start-only
+      lifecycle-management: none
 error:
   handling:
     http-status-in-json-response: true
@@ -69,6 +69,6 @@ sendinblue:
   api-key: ${SENDINBLUE_API_KEY}
   from-email: ${SENDINBLUE_FROM_EMAIL}
   from-name: "Superior Homes"
-  template-task-created: 1
-  template-password-change: 2
+  template-task-created: ${SENDINBLUE_TASK_TEMPLATE}
+  template-password-change: ${SENDINBLUE_PASSWORD_TEMPLATE}
   action-url: "https://bflow.innovaciones.co"
