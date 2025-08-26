@@ -7,6 +7,8 @@ import co.innovaciones.bflow_server.service.UserService
 import io.swagger.v3.oas.annotations.responses.ApiResponse
 import io.swagger.v3.oas.annotations.security.SecurityRequirement
 import jakarta.validation.Valid
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -30,6 +32,7 @@ class UserResource(
     private val jwtTokenService: JwtTokenService,
     private val userService: UserService,
 ) {
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     @SecurityRequirement(name = "bearer-jwt")
     @GetMapping
@@ -49,6 +52,7 @@ class UserResource(
     @ApiResponse(responseCode = "201")
     fun createUser(@RequestBody @Valid userDTO: UserDTO): ResponseEntity<Long> {
         val createdId = userService.create(userDTO)
+        userService.notifyUserCreated(userDTO)
         return ResponseEntity(createdId, HttpStatus.CREATED)
     }
 
@@ -76,6 +80,7 @@ class UserResource(
                 )
             )
         } catch (ex: BadCredentialsException) {
+            logger.error("Invalid username/password supplied in authentication request", ex)
             throw ResponseStatusException(HttpStatus.UNAUTHORIZED)
         }
 
@@ -93,7 +98,7 @@ class UserResource(
         userDTO.recoveryToken = token
         userDTO.tokenExpirationDate = OffsetDateTime.now().plusMinutes(15)
         userService.update(userDTO.id!!, userDTO)
-        userService.passwordNotifyEmail(userDTO)
+        userService.notifyPasswordChangeRequest(userDTO)
         return ResponseEntity.ok(userDTO.id!!)
     }
 

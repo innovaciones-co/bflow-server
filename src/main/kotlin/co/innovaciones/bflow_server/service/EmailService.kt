@@ -34,8 +34,7 @@ EmailService(
         try {
             emailApi.sendTransacEmail(sendSmtpEmail)
         } catch (e: ApiException) {
-            log.error(e.code.toString() + ": " + e.message)
-            throw e
+            log.error("Email service replied with status " + e.code.toString() + ": " + e.responseBody)
         }
     }
 }
