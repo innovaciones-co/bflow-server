@@ -11,6 +11,11 @@
       "description": "The sendinblue template to use when a new password is required."
     },
     {
+      "name": "sendinblue.template-user_created",
+      "type": "java.lang.Long",
+      "description": "The sendinblue template to use when a new user is created."
+    },
+    {
       "name": "sendinblue.action-url",
       "type": "java.lang.String",
       "description": "The URL of the Bflow client that will be used on the mails."

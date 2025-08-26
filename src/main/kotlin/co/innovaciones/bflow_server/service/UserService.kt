@@ -20,6 +20,10 @@ class UserService(
     @Value("\${sendinblue.template-password-change}")
     private val templatePasswordChange: Long? = null
 
+    @Value("\${sendinblue.template-user-created}")
+    private val templateUserCreated: Long? = null
+
+
     @Value("\${sendinblue.action-url}")
     private val clientUrl: String = "http://localhost"
 
@@ -41,14 +45,18 @@ class UserService(
         .orElseThrow { NotFoundException("The username is not registered") }
 
     fun getByToken(token: String): UserDTO = userRepository.findByRecoveryToken(token)
-        .let { user -> if (user != null) mapToDTO(user, UserDTO()) else throw (NotFoundException("The token is not longer valid")) }
+        .let { user ->
+            if (user != null) mapToDTO(
+                user,
+                UserDTO()
+            ) else throw (NotFoundException("The token is not longer valid"))
+        }
 
 
     fun create(userDTO: UserDTO): Long {
         val user = User()
         mapToEntity(userDTO, user)
         return userRepository.save(user).id!!
-
     }
 
     fun update(id: Long, userDTO: UserDTO) {
@@ -93,7 +101,7 @@ class UserService(
 
     fun emailExists(email: String?): Boolean = userRepository.existsByEmailIgnoreCase(email)
 
-    fun passwordNotifyEmail(userDTO: UserDTO) {
+    fun notifyPasswordChangeRequest(userDTO: UserDTO) {
         logger.info("Sending password notification for user {}...", userDTO.username)
 
         val toEmail = userDTO.email ?: return
@@ -117,5 +125,31 @@ class UserService(
             builder.withTemplate(templatePasswordChange).withParams(params).withSubject("Password update requested")
                 .withRecipients(toEmail).build()
         notification.send()
+    }
+
+    fun notifyUserCreated(userDTO: UserDTO) {
+        logger.info("Sending user notification for user {}...", userDTO.username)
+        val toEmail = userDTO.email ?: return
+        val params = mapOf(
+            "username" to "${userDTO.username}",
+            "name" to "${userDTO.firstName}",
+            "email" to "${userDTO.firstName}"
+        )
+        val notificationFactory = NotificationFactory()
+        val builder =
+            notificationFactory.createNotificationBuilder("email", emailService) as EmailNotificationBuilder
+        if (templateUserCreated == null) {
+            logger.error("User created template was not configured")
+            return
+        }
+        val notification = builder
+            .withTemplate(templateUserCreated)
+            .withParams(params)
+            .withSubject("Your BFlow account has been created")
+            .withRecipients(toEmail)
+            .build()
+
+        notification.send()
+        logger.info("User notification sent to {}", toEmail)
     }
 }
